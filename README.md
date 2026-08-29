@@ -6,16 +6,29 @@
 
 ## 로컬에서 실행
 
+미리보기는 **정적 `out/` 서버**를 씁니다. Cursor 미리보기에서는 `npm run dev`가 막히므로 쓰지 마세요.
+
 ```bash
 npm install
-npm run dev
+npm run build
+npm run preview:serve
 ```
 
 브라우저에서 [http://127.0.0.1:43127](http://127.0.0.1:43127) 을 엽니다.
 
+이미 떠 있는지는 바로 확인합니다. 200이면 재시작·빌드하지 않습니다.
+
+```bash
+npm run preview:check
+npm run preview
+```
+
+소스를 바꾼 뒤에만 다시 빌드합니다.
+
 ```bash
 npm test
 npm run build
+npm run preview:restart
 ```
 
 ## 도메인 확정

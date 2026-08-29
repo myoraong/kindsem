@@ -1,0 +1,12 @@
+---
+description: Keep the KindSem preview fast — curl first, never next dev
+alwaysApply: true
+---
+
+# Preview (fast path)
+
+- URL: `http://127.0.0.1:43127/`
+- Serve the static export in `out/` with Python. Do **not** run `npm run dev` / `next dev` for the Preview card — the iframe blocks Next.js scripts.
+- Before any restart or rebuild, run: `npm run preview:check` (or `curl --max-time 2`). If it is 200, **stop**. Do not kill the server. Do not `npm run build`.
+- Rebuild only after source/UI changes: `npm run build`, then `npm run preview:restart`.
+- `npm run preview` / `scripts/preview.sh ensure` is a no-op when the port already responds.
