@@ -38,7 +38,7 @@ export function SiteHeader({ current }: { current: "home" | "guide" }) {
               }),
             )}
           >
-            도메인 연결
+            도메인 사는 법
             <Badge variant="outline" className="ml-1 hidden sm:inline-flex">
               GitHub
             </Badge>

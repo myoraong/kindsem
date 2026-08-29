@@ -17,14 +17,14 @@ export default function HomePage() {
           </h1>
           <p className="mt-2 text-sm leading-6 text-stone-600 sm:text-base">
             사칙연산, 메모리, 계산 기록을 지원합니다. 키보드로도 입력할 수
-            있습니다. 내 주소로 열고 싶다면{" "}
+            있습니다.             내 주소로 열고 싶다면{" "}
             <Link
               href="/guide/"
               className="font-medium text-stone-900 underline underline-offset-4"
             >
-              도메인을 GitHub에 연결
+              도메인 사는 법
             </Link>
-            하세요.
+            부터 보세요.
           </p>
         </div>
         <Calculator />
