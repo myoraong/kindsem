@@ -14,7 +14,7 @@ export function SiteShell({
   width?: "wide" | "narrow";
 }) {
   return (
-    <div className="flex min-h-full flex-col bg-[#faf7f2] text-stone-900">
+    <div className="flex min-h-full flex-col bg-[#F4EFE4] text-[#1C1915]">
       <SiteHeader current={current} />
       <main
         className={cn(

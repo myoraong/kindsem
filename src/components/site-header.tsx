@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Calculator as CalculatorIcon } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
-import { isDomainLocked } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export function SiteHeader({
@@ -11,14 +10,14 @@ export function SiteHeader({
   current: "home" | "guide" | "connect";
 }) {
   return (
-    <header className="border-b border-stone-200/80 bg-[#faf7f2]/90 backdrop-blur">
+    <header className="border-b border-[#DDD4C4] bg-[#F4EFE4]/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
-        <Link href="/" className="flex items-center gap-2 text-stone-900">
-          <span className="flex size-8 items-center justify-center rounded-xl bg-stone-900 text-amber-300">
+        <Link href="/" className="flex items-center gap-2 text-[#1C1915]">
+          <span className="flex size-8 items-center justify-center rounded-xl bg-[#1C1915] text-[#E2B54A]">
             <CalculatorIcon className="size-4" />
           </span>
           <span className="font-heading text-sm font-semibold tracking-tight">
-            계산기
+            KindSem
           </span>
         </Link>
         <nav className="flex items-center gap-1">
@@ -32,29 +31,6 @@ export function SiteHeader({
             )}
           >
             계산기
-          </Link>
-          <Link
-            href="/connect/"
-            className={cn(
-              buttonVariants({
-                variant: current === "connect" ? "secondary" : "ghost",
-                size: "sm",
-              }),
-            )}
-          >
-            {isDomainLocked() ? "도메인" : "도메인 확정"}
-          </Link>
-          <Link
-            href="/guide/"
-            className={cn(
-              buttonVariants({
-                variant: current === "guide" ? "secondary" : "ghost",
-                size: "sm",
-              }),
-              "hidden sm:inline-flex",
-            )}
-          >
-            사는 법
           </Link>
         </nav>
       </div>

@@ -190,7 +190,7 @@ export function Calculator() {
       >
         <div className="mb-3 flex items-center justify-between px-1">
           <p className="text-[11px] font-medium tracking-[0.22em] text-stone-500 uppercase">
-            DeskCalc
+            KindSem
           </p>
           <div className="flex items-center gap-2">
             {state.memory !== 0 ? (
