@@ -7,7 +7,12 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   trailingSlash: true,
   basePath,
-  allowedDevOrigins: ["127.0.0.1", "localhost"],
+  allowedDevOrigins: [
+    "127.0.0.1",
+    "localhost",
+    "*.cursor.com",
+    "*.cursor.sh",
+  ],
 };
 
 export default nextConfig;
