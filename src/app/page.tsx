@@ -22,9 +22,9 @@ export default function HomePage() {
               href="/guide/"
               className="font-medium text-stone-900 underline underline-offset-4"
             >
-              도메인 사는 법
+              Cloudflare에서 도메인 사는 법
             </Link>
-            부터 보세요.
+            을 보세요.
           </p>
         </div>
         <Calculator />

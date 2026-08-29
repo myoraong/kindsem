@@ -20,25 +20,25 @@ npm run build
 
 `npm run build` 결과는 `out/` 폴더의 정적 파일입니다. GitHub Pages는 이 폴더를 배포합니다.
 
-## 도메인 사는 법
+## 도메인 사는 법 (Cloudflare)
 
-도메인은 사이트 주소입니다. 1년 단위로 빌려 쓰며, 결제는 등록 기관에서만 할 수 있습니다.
+도메인은 사이트 주소입니다. 결제는 Cloudflare 계정에서만 할 수 있습니다. `.kr` 과 한글 도메인은 Cloudflare에서 살 수 없으니 `.com` 을 고르세요.
 
-1. 짧은 영문 이름을 정합니다. 예: `mycalc`
-2. 처음이면 확장자는 `.com` (또는 `.kr`)
-3. [가비아](https://www.gabia.com/)에 가입하고 검색창에 이름을 넣습니다. 영어가 되고 가격을 낮추려면 [Cloudflare](https://dash.cloudflare.com/)도 됩니다.
-4. **등록 가능**인 주소를 장바구니에 담습니다. 웹호스팅, 메일, SSL은 빼세요. 도메인만 사면 됩니다.
-5. 1년 기간, 실제 받을 수 있는 이메일·전화로 결제합니다.
-6. 마이페이지 도메인 목록에 주소가 보이면 구매가 끝난 것입니다.
+1. [Cloudflare 가입](https://dash.cloudflare.com/sign-up) 후 이메일을 인증합니다.
+2. [Register domains](https://dash.cloudflare.com/?to=/:account/domains/register)에서 `mycalc.com` 을 검색합니다.
+3. **Purchase** → 기간 1년. 연락처는 영문(로마자)만 됩니다.
+4. 국내 카드는 해외 결제를 켠 뒤 **Complete purchase**. 안 되면 PayPal.
+5. ICANN 이메일 인증 메일의 링크를 반드시 누릅니다. 안 누르면 도메인이 정지됩니다.
+6. Manage domains 목록에 주소가 보이면 구매가 끝난 것입니다.
 
-그다음 GitHub Pages와 DNS 연결은 아래와 사이트 **도메인 사는 법** 페이지를 보세요.
+그다음 GitHub Pages 연결과 DNS 값은 사이트 **도메인 사는 법** 페이지를 보세요. Cloudflare DNS 레코드는 Proxy를 **DNS only**(회색 구름)로 두세요.
 
 ## GitHub에 올리고 도메인 연결
 
 1. Cursor에서 **Create repo**로 GitHub 저장소를 만듭니다. 이 작업 공간은 아직 GitHub 저장소가 아닙니다.
 2. 저장소 **Settings → Pages**에서 Source를 **GitHub Actions**로 선택합니다.
-3. Cloudflare, 가비아, 후이즈 등에서 도메인을 구매합니다.
-4. DNS에 GitHub Pages 주소를 넣습니다.
+3. [Cloudflare Register domains](https://dash.cloudflare.com/?to=/:account/domains/register)에서 도메인을 구매합니다.
+4. Cloudflare DNS에 GitHub Pages 주소를 넣고, Proxy는 DNS only로 둡니다.
 
 루트 도메인(`example.com`) A 레코드:
 
