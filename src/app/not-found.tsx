@@ -1,14 +1,13 @@
 import Link from "next/link";
 
-import { SiteHeader } from "@/components/site-header";
+import { SiteShell } from "@/components/site-shell";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-full flex-col bg-[#faf7f2] text-stone-900">
-      <SiteHeader current="home" />
-      <main className="mx-auto flex w-full max-w-lg flex-1 flex-col justify-center px-4 py-16 text-center">
+    <SiteShell current="home" width="narrow">
+      <div className="flex flex-1 flex-col justify-center py-8 text-center">
         <p className="text-xs font-semibold tracking-[0.18em] text-amber-700 uppercase">
           404
         </p>
@@ -21,7 +20,7 @@ export default function NotFound() {
         <Link href="/" className={cn(buttonVariants(), "mt-6 self-center")}>
           계산기로 돌아가기
         </Link>
-      </main>
-    </div>
+      </div>
+    </SiteShell>
   );
 }

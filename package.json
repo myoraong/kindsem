@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start --port 43127",
     "lint": "eslint",
-    "test": "node --experimental-strip-types --test src/lib/calculator-engine.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/calculator-engine.test.ts src/lib/domain.test.ts",
+    "set-domain": "node --experimental-strip-types scripts/set-domain.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",

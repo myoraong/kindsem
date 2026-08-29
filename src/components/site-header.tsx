@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { Calculator as CalculatorIcon } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
+import { isDomainLocked } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
-export function SiteHeader({ current }: { current: "home" | "guide" }) {
+export function SiteHeader({
+  current,
+}: {
+  current: "home" | "guide" | "connect";
+}) {
   return (
     <header className="border-b border-stone-200/80 bg-[#faf7f2]/90 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
@@ -30,18 +34,27 @@ export function SiteHeader({ current }: { current: "home" | "guide" }) {
             계산기
           </Link>
           <Link
+            href="/connect/"
+            className={cn(
+              buttonVariants({
+                variant: current === "connect" ? "secondary" : "ghost",
+                size: "sm",
+              }),
+            )}
+          >
+            {isDomainLocked() ? "도메인" : "도메인 확정"}
+          </Link>
+          <Link
             href="/guide/"
             className={cn(
               buttonVariants({
                 variant: current === "guide" ? "secondary" : "ghost",
                 size: "sm",
               }),
+              "hidden sm:inline-flex",
             )}
           >
-            도메인 사는 법
-            <Badge variant="outline" className="ml-1 hidden sm:inline-flex">
-              GitHub
-            </Badge>
+            사는 법
           </Link>
         </nav>
       </div>
