@@ -6,7 +6,7 @@
 
 ## 로컬에서 실행
 
-미리보기는 **정적 `out/` 서버**를 씁니다. Cursor 미리보기에서는 `npm run dev`가 막히므로 쓰지 마세요.
+미리보기는 **정적 `out/` 서버**를 씁니다. Cursor에서 Preview가 Start로 바뀌면 `npm start`가 이 서버를 켭니다. `next dev`는 미리보기에서 막히므로 쓰지 마세요.
 
 ```bash
 npm install

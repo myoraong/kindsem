@@ -1,7 +1,7 @@
 {
   "name": "KindSem",
   "install": "npm ci",
-  "start": "test -f out/index.html || npm run build",
+  "start": "bash scripts/preview.sh boot",
   "terminals": [
     {
       "name": "preview",

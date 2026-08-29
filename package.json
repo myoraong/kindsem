@@ -9,7 +9,7 @@
     "preview:serve": "bash scripts/preview.sh serve",
     "preview:restart": "bash scripts/preview.sh restart",
     "build": "next build",
-    "start": "next start --port 43127",
+    "start": "bash scripts/preview.sh serve",
     "lint": "eslint",
     "test": "node --experimental-strip-types --test src/lib/calculator-engine.test.ts src/lib/domain.test.ts",
     "set-domain": "node --experimental-strip-types scripts/set-domain.ts"
