@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation"
 import { AcquisitionCalc } from "@/components/calc/acquisition-calc"
+import { AnnualLeave } from "@/components/calc/annual-leave"
 import { BenefitNet } from "@/components/calc/benefit-net"
 import { BrokerageCalc } from "@/components/calc/brokerage-calc"
 import { CertPayback } from "@/components/calc/cert-payback"
@@ -12,7 +13,9 @@ import { MortgageCalc } from "@/components/calc/mortgage-calc"
 import { MovingCost } from "@/components/calc/moving-cost"
 import { OfferCompareCalc } from "@/components/calc/offer-compare-calc"
 import { QuickCalc } from "@/components/calc/quick-calc"
+import { RentConvert } from "@/components/calc/rent-convert"
 import { SaleVat } from "@/components/calc/sale-vat"
+import { Severance } from "@/components/calc/severance-calc"
 import { SideJobTax } from "@/components/calc/side-job-tax"
 import { TakeHomeCalc } from "@/components/calc/take-home-calc"
 import {
@@ -24,6 +27,8 @@ import {
   InheritanceCalc,
   LicenseTaxCalc,
 } from "@/components/calc/tax-pack"
+import { VehicleTax } from "@/components/calc/vehicle-tax"
+import { WeeklyHoliday } from "@/components/calc/weekly-holiday"
 import { YieldCalc } from "@/components/calc/yield-calc"
 import { CALCULATORS, getCalculator } from "@/lib/catalog"
 import type { Metadata } from "next"
@@ -64,8 +69,16 @@ export default async function CalcPage({
       return <DutchPay item={item} />
     case "sale-vat":
       return <SaleVat item={item} />
+    case "vehicle-tax":
+      return <VehicleTax item={item} />
     case "take-home":
       return <TakeHomeCalc item={item} />
+    case "weekly-holiday":
+      return <WeeklyHoliday item={item} />
+    case "annual-leave":
+      return <AnnualLeave item={item} />
+    case "severance":
+      return <Severance item={item} />
     case "offer-compare":
       return <OfferCompareCalc item={item} />
     case "side-job-tax":
@@ -80,6 +93,8 @@ export default async function CalcPage({
       return <MovingCost item={item} />
     case "jeonse":
       return <JeonseLoan item={item} />
+    case "rent-convert":
+      return <RentConvert item={item} />
     case "acquisition":
       return <AcquisitionCalc item={item} />
     case "capital-gains":

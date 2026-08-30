@@ -74,4 +74,40 @@ export const LAW_SOURCES = {
     "https://www.law.go.kr/법령/법인세법",
     "토지등 양도소득 추가과세는 비사업용토지 10%만 단순 반영합니다.",
   ),
+  laborHoliday: {
+    title: "근로기준법 제18조·제55조, 최저임금법 시행령 제5조",
+    href: "https://www.law.go.kr/법령/근로기준법",
+    effective: "현행",
+    note: "주 15시간 미만은 주휴 미적용. 주휴시간 = 8×(주소정/40).",
+  },
+  laborLeave: {
+    title: "근로기준법 제60조",
+    href: "https://www.law.go.kr/법령/근로기준법",
+    effective: "현행",
+    note: "1년 15일, 3년 이상 매 2년 1일 가산, 한도 25일. 단시간은 비례.",
+  },
+  severance: {
+    title: "근로자퇴직급여 보장법 제4조·제8조, 근로기준법 제2조",
+    href: "https://www.law.go.kr/법령/근로자퇴직급여 보장법",
+    effective: "현행",
+    note: "평균임금 30일분×근속연수. 1년 미만은 적용 제외.",
+  },
+  rentConvert: {
+    title: "주택임대차보호법 제7조의2, 시행령 제9조",
+    href: "https://www.law.go.kr/법령/주택임대차보호법 시행령",
+    effective: "현행",
+    note: "상한은 연 10%와 한국은행 기준금리+2%p 중 낮은 비율. 기준금리는 직접 입력.",
+  },
+  vehicle: {
+    title: "지방세법 제12조 제1항 제2호·제151조 제1항 제1호",
+    href: "https://www.law.go.kr/법령/지방세법",
+    effective: "현행",
+    note: "비영업 승용 7%, 경형 4%, 그 밖의 비영업 5%, 영업용 4%. 교육세는 (세율-2%)×20%.",
+  },
+  compactCar: {
+    title: "지방세특례제한법 제67조",
+    href: "https://www.law.go.kr/법령/지방세특례제한법",
+    effective: "현행",
+    note: "비영업 경형 승용 취득세 75만 원 한도 감면. 2027.12.31.까지.",
+  },
 } as const

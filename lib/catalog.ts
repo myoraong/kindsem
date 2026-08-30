@@ -17,7 +17,7 @@ export const GROUPS: { id: LifeGroup; title: string; subtitle: string }[] = [
   {
     id: "work",
     title: "급여",
-    subtitle: "실수령, 이직 제안, 알바 세금을 한 화면에서",
+    subtitle: "실수령, 주휴·연차·퇴직금, 이직 제안을 한 화면에서",
   },
   {
     id: "rent",
@@ -54,10 +54,38 @@ export const CALCULATORS: CalcItem[] = [
     group: "today",
   },
   {
+    slug: "vehicle-tax",
+    title: "자동차 취득세",
+    blurb: "비영업 7%·경형 4%와 지방교육세.",
+    when: "출고·이전 등록 전에",
+    group: "today",
+  },
+  {
     slug: "take-home",
     title: "실수령",
     blurb: "연봉을 넣으면 4대보험과 세금이 줄줄이 빠집니다.",
     when: "월급 명세서를 보기 전에",
+    group: "work",
+  },
+  {
+    slug: "weekly-holiday",
+    title: "주휴수당",
+    blurb: "주 15시간 이상, 개근한 주의 유급 주휴.",
+    when: "시급·알바 계약 전에",
+    group: "work",
+  },
+  {
+    slug: "annual-leave",
+    title: "연차 일수·수당",
+    blurb: "제60조 일수와 미사용 통상임금.",
+    when: "입사 1년, 퇴사 정산",
+    group: "work",
+  },
+  {
+    slug: "severance",
+    title: "퇴직금",
+    blurb: "3개월 평균임금 30일분 × 근속연수.",
+    when: "퇴사일 정하기 전에",
     group: "work",
   },
   {
@@ -107,6 +135,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "전세대출 이자",
     blurb: "이자만 내는 전세자금의 월 부담.",
     when: "전세 계약과 대출 한도 가늠",
+    group: "rent",
+  },
+  {
+    slug: "rent-convert",
+    title: "전월세 전환율",
+    blurb: "기준금리+2%p 상한으로 전세↔월세.",
+    when: "보증금을 월세로 나눌 때",
     group: "rent",
   },
   {
