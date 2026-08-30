@@ -1,0 +1,116 @@
+"use client"
+
+import { useMemo, useState } from "react"
+import { CheckRow } from "@/components/calc/check-row"
+import { ChoiceGroup } from "@/components/calc/choice-group"
+import { CalcShell } from "@/components/calc/calc-shell"
+import { MoneyField } from "@/components/calc/money-field"
+import { ResultReceipt } from "@/components/calc/result-receipt"
+import { calcAcquisition, judicialEstimate, stampDuty, type HomeCount } from "@/lib/acquisition"
+import { calcBrokerage } from "@/lib/brokerage"
+import { LAW_SOURCES } from "@/lib/law-sources"
+import { formatWon, manwonToWon } from "@/lib/format"
+import type { CalcItem } from "@/lib/catalog"
+import { LawNote } from "@/components/calc/law-note"
+
+export function ClosingCost({ item }: { item: CalcItem }) {
+  const [price, setPrice] = useState("65000")
+  const [homes, setHomes] = useState<HomeCount>("1")
+  const [adjusted, setAdjusted] = useState(false)
+  const [over85, setOver85] = useState(false)
+  const [first, setFirst] = useState(true)
+  const [shrinking, setShrinking] = useState(false)
+
+  const result = useMemo(() => {
+    const p = manwonToWon(Number(price) || 0)
+    if (!p) return null
+    const tax = calcAcquisition({
+      price: p,
+      homeCount: homes,
+      adjustedArea: adjusted,
+      over85,
+      firstHome: first,
+      shrinkingArea: shrinking,
+    })
+    const fee = calcBrokerage({
+      deal: "sale",
+      property: "house",
+      price: p,
+      includeVat: true,
+    })
+    const judicial = judicialEstimate(p)
+    const stamp = stampDuty(p, true)
+    const total = tax.total + fee.total + judicial + stamp
+    return { tax, fee: fee.total, judicial, stamp, total }
+  }, [price, homes, adjusted, over85, first, shrinking])
+
+  return (
+    <CalcShell
+      item={item}
+      result={
+        <ResultReceipt
+          title="매수 시 필요 비용"
+          amount={result?.total ?? null}
+          caption="집값과 별도로 나가는 현금"
+          rows={
+            result
+              ? [
+                  { label: "취득세 합계", value: formatWon(result.tax.total) },
+                  { label: "중개보수(상한+부가세)", value: formatWon(result.fee) },
+                  { label: "법무사 보수(추정)", value: formatWon(result.judicial) },
+                  { label: "인지세", value: formatWon(result.stamp) },
+                ]
+              : []
+          }
+          empty="매매가만 넣으면 잔금 전에 준비할 현금이 모여요."
+        />
+      }
+    >
+      <div className="space-y-5">
+        <MoneyField id="price" label="매매가" value={price} onChange={setPrice} />
+        <ChoiceGroup
+          label="취득 후 주택 수"
+          value={homes}
+          onChange={setHomes}
+          options={[
+            { value: "1", label: "1주택" },
+            { value: "2", label: "2주택" },
+            { value: "3", label: "3주택" },
+            { value: "4+", label: "4주택+" },
+          ]}
+        />
+        {homes !== "1" ? (
+          <CheckRow id="close-adjusted" checked={adjusted} onChange={setAdjusted}>
+            조정대상지역
+          </CheckRow>
+        ) : null}
+        <CheckRow id="close-over85" checked={over85} onChange={setOver85}>
+          전용 85㎡ 초과
+        </CheckRow>
+        {homes === "1" ? (
+          <>
+            <CheckRow id="close-first" checked={first} onChange={setFirst}>
+              생애최초
+            </CheckRow>
+            {first ? (
+              <CheckRow id="close-shrinking" checked={shrinking} onChange={setShrinking}>
+                인구감소지역 주택
+              </CheckRow>
+            ) : null}
+          </>
+        ) : null}
+        <p className="text-sm leading-6 text-muted-foreground">
+          국민주택채권 할인료, 이사비, 화재보험은 빠져 있습니다. 법무사 보수는 시세 추정입니다.
+        </p>
+        <LawNote
+          lines={[
+            LAW_SOURCES.acquisition,
+            LAW_SOURCES.brokerage,
+            LAW_SOURCES.stamp,
+            LAW_SOURCES.firstHome,
+          ]}
+        />
+      </div>
+    </CalcShell>
+  )
+}

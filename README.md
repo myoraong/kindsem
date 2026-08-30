@@ -1,71 +1,40 @@
-# 계산기 (DeskCalc)
+# Kindsem · 카인드셈
 
-브라우저에서 바로 쓰는 계산기입니다. 사칙연산, 메모리, 계산 기록, 키보드 입력을 지원합니다. GitHub Pages 배포와 도메인 확정 뼈대가 들어 있습니다.
+친절한 생활 계산 사이트입니다. Kind(친절)와 셈(계산)을 붙인 이름으로, 세법 백과사전 대신 살 때·빌릴 때·오늘 필요한 숫자만 따뜻하게 보여 줍니다.
 
-도메인을 사면 사이트 **도메인 확정**(`/connect/`)에 주소를 넣고, 나온 명령을 실행하면 그 주소로 고정됩니다.
+공개 주소는 [https://kindsem.com](https://kindsem.com) 입니다. GitHub Pages로 정적 사이트를 올립니다.
+
+## 테마
+
+따뜻한 크림 종이 위에 부드러운 세이지 그린입니다. 눈 편한 색감으로, 이름처럼 부담 없이 쓰도록 맞췄습니다. 마스코트 **세나**는 셈과 나(내가 세어 줄게요)를 붙인 이름으로, 부르기 쉽게 맞춰 두었습니다.
+
+## 계산기
+
+**오늘 쓰는** 바로 계산, 더치페이, 할인·부가세
+
+**빌릴 때** 중개수수료, 자취 초기비용, 전세대출 이자
+
+**살 때** 취득세, 살 때 총비용, 주택담보대출, 임대수익률
+
+중개수수료·취득세·인지세는 법제처 현행 법령을 조회해 반영했습니다. 세액은 추정치입니다.
 
 ## 로컬에서 실행
 
-미리보기는 **정적 `out/` 서버**를 씁니다. Cursor에서 Preview가 Start로 바뀌면 `npm start`가 이 서버를 켭니다. `next dev`는 미리보기에서 막히므로 쓰지 마세요.
-
 ```bash
 npm install
+npm run dev
+```
+
+브라우저에서 [http://127.0.0.1:43217](http://127.0.0.1:43217) 을 엽니다.
+
+정적 사이트(GitHub Pages와 동일)로 확인하려면:
+
+```bash
 npm run build
-npm run preview:serve
 ```
 
-브라우저에서 [http://127.0.0.1:43127](http://127.0.0.1:43127) 을 엽니다.
+`out/` 폴더가 배포본입니다.
 
-이미 떠 있는지는 바로 확인합니다. 200이면 재시작·빌드하지 않습니다.
+## kindsem.com 배포
 
-```bash
-npm run preview:check
-npm run preview
-```
-
-소스를 바꾼 뒤에만 다시 빌드합니다.
-
-```bash
-npm test
-npm run build
-npm run preview:restart
-```
-
-## 도메인 확정
-
-Cloudflare에서 산 뒤:
-
-```bash
-npm run set-domain -- mycalc.com
-```
-
-이 명령이 `public/CNAME`과 `src/lib/site-domain.ts`에 주소를 씁니다. 커밋하고 `main`에 푸시하세요.
-
-그다음:
-
-1. Cursor에서 **Create repo**로 GitHub 저장소를 만듭니다. 아직 GitHub 저장소가 아닙니다.
-2. 저장소 Settings → Pages에서 Source를 **GitHub Actions**로 둡니다.
-3. Custom domain에 같은 주소를 넣습니다.
-4. Cloudflare DNS에 사이트 **도메인 확정** 페이지가 보여 주는 레코드를 넣고, Proxy는 **DNS only**로 둡니다.
-5. GitHub에서 Enforce HTTPS를 켭니다.
-
-사는 순서는 `/guide/` 또는 아래를 보세요.
-
-## 도메인 사는 법 (Cloudflare)
-
-`.kr` 과 한글 도메인은 Cloudflare에서 살 수 없으니 `.com` 을 고르세요.
-
-1. [Cloudflare 가입](https://dash.cloudflare.com/sign-up) 후 이메일을 인증합니다.
-2. [Register domains](https://dash.cloudflare.com/?to=/:account/domains/register)에서 `mycalc.com` 을 검색합니다.
-3. **Purchase** → 기간 1년. 연락처는 영문(로마자)만 됩니다.
-4. 국내 카드는 해외 결제를 켠 뒤 **Complete purchase**. 안 되면 PayPal.
-5. ICANN 이메일 인증 메일의 링크를 반드시 누릅니다.
-
-## 계산기 기능
-
-- 더하기, 빼기, 곱하기, 나누기
-- 등호를 다시 누르면 마지막 연산을 반복
-- `%`, 부호 전환, 현재 값 지우기 / 전체 지우기
-- 메모리 `MC` `MR` `M+` `M−`
-- 계산 기록(이 브라우저 localStorage)
-- 키보드: 숫자, `+ - * /`, Enter, Esc, Backspace
+`main`에 푸시하면 GitHub Actions가 `out/`을 만들어 GitHub Pages에 올립니다. 저장소 Settings → Pages의 Source는 **GitHub Actions**, Custom domain은 `kindsem.com` 입니다. Cloudflare DNS는 GitHub Pages 주소로, Proxy는 DNS only입니다.
