@@ -26,6 +26,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: node scripts/refresh-policy.mjs
+        env:
+          POLICY_STRICT: "1"
       - id: commit
         name: Commit if rates changed
         run: |

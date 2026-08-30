@@ -740,10 +740,15 @@ function isDirectRun() {
 if (isDirectRun()) {
   refreshPolicy().catch((error) => {
     console.error(error)
-    if (existsSync(join(root, "lib/policy.generated.ts"))) {
+    const hasPrev = existsSync(join(root, "lib/policy.generated.ts"))
+    if (hasPrev) {
       console.error("이전 세율 파일을 그대로 씁니다.")
-      process.exit(0)
     }
-    process.exit(1)
+    // 사이트 빌드(prebuild)는 법령 조회가 잠깐 깨져도 막지 않습니다.
+    // 자동 갱신 잡(POLICY_STRICT=1)은 실패로 끝내서 파서를 고치러 오게 합니다.
+    if (process.env.POLICY_STRICT === "1" || !hasPrev) {
+      process.exit(1)
+    }
+    process.exit(0)
   })
 }
