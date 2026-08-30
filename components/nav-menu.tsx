@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 
@@ -27,25 +28,40 @@ export function NavMenu({
   const rootRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
+  const [box, setBox] = useState({ top: 0, left: 0, width: 288 })
+  const [mounted, setMounted] = useState(false)
 
-  function keepInView() {
-    const el = panelRef.current
-    if (!el) return
-    el.style.transform = ""
-    const rect = el.getBoundingClientRect()
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  function place() {
+    const trigger = rootRef.current
+    if (!trigger) return
+    const rect = trigger.getBoundingClientRect()
     const vw = document.documentElement.clientWidth
-    let dx = 0
-    if (rect.right > vw - EDGE) dx = vw - EDGE - rect.right
-    if (rect.left + dx < EDGE) dx = EDGE - rect.left
-    el.style.transform = dx ? `translateX(${dx}px)` : ""
+    const width = Math.min(288, vw - EDGE * 2)
+    let left = align === "right" ? rect.right - width : rect.left
+    if (left + width > vw - EDGE) left = vw - EDGE - width
+    if (left < EDGE) left = EDGE
+    setBox({ top: rect.bottom, left, width })
   }
 
   useLayoutEffect(() => {
     if (!open) return
-    keepInView()
-    window.addEventListener("resize", keepInView)
-    return () => window.removeEventListener("resize", keepInView)
-  }, [open, items])
+    place()
+    window.addEventListener("resize", place)
+    window.addEventListener("scroll", place, true)
+    return () => {
+      window.removeEventListener("resize", place)
+      window.removeEventListener("scroll", place, true)
+    }
+  }, [open, align])
+
+  function closeIfOutside(event: React.MouseEvent) {
+    if (isInside(event.relatedTarget as Node)) return
+    setOpen(false)
+  }
 
   useEffect(() => {
     if (!open) return
@@ -53,7 +69,7 @@ export function NavMenu({
       if (event.key === "Escape") setOpen(false)
     }
     function onPointer(event: MouseEvent) {
-      if (!rootRef.current?.contains(event.target as Node)) setOpen(false)
+      if (!isInside(event.target as Node)) setOpen(false)
     }
     document.addEventListener("keydown", onKey)
     document.addEventListener("mousedown", onPointer)
@@ -63,12 +79,48 @@ export function NavMenu({
     }
   }, [open])
 
+  const panel =
+    open && mounted
+      ? createPortal(
+          <div
+            ref={panelRef}
+            id={openId}
+            style={{ top: box.top, left: box.left, width: box.width }}
+            className="fixed z-50 overflow-hidden rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={(event) => {
+              if (isInside(event.relatedTarget as Node)) return
+              setOpen(false)
+            }}
+          >
+            <ul className="max-h-[min(20rem,calc(100dvh-5.75rem))] space-y-0.5 overflow-y-auto overscroll-contain">
+              {items.map((item) => (
+                <li key={item.slug}>
+                  <Link
+                    href={`/calc/${item.slug}`}
+                    onClick={() => setOpen(false)}
+                    className="block rounded-xl px-3 py-2 text-sm hover:bg-muted"
+                  >
+                    <span className="font-medium">{item.title}</span>
+                    <span className="mt-0.5 block text-xs text-muted-foreground">{item.blurb}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>,
+          document.body,
+        )
+      : null
+
   return (
     <div
       ref={rootRef}
       className="relative"
       onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseLeave={(event) => {
+        if (isInside(event.relatedTarget as Node)) return
+        setOpen(false)
+      }}
     >
       <Link
         href={href}
@@ -88,31 +140,7 @@ export function NavMenu({
       >
         {label}
       </Link>
-      {open ? (
-        <div
-          ref={panelRef}
-          id={openId}
-          className={cn(
-            "absolute top-full z-40 w-[min(18rem,calc(100vw-1rem))] overflow-hidden rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4",
-            align === "right" ? "right-0" : "left-0",
-          )}
-        >
-          <ul className="max-h-[min(20rem,calc(100dvh-5.75rem))] space-y-0.5 overflow-y-auto overscroll-contain">
-            {items.map((item) => (
-              <li key={item.slug}>
-                <Link
-                  href={`/calc/${item.slug}`}
-                  onClick={() => setOpen(false)}
-                  className="block rounded-xl px-3 py-2 text-sm hover:bg-muted"
-                >
-                  <span className="font-medium">{item.title}</span>
-                  <span className="mt-0.5 block text-xs text-muted-foreground">{item.blurb}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
+      {panel}
     </div>
   )
 }

@@ -9,7 +9,7 @@ export function BrandMark() {
       </span>
       <span className="flex min-w-0 flex-col leading-none">
         <span className="text-[16px] font-semibold tracking-tight">Kindsem</span>
-        <span className="mt-1 text-[11px] font-medium tracking-wide text-muted-foreground">
+        <span className="mt-1 hidden text-[11px] font-medium tracking-wide text-muted-foreground sm:block">
           친절한 생활 계산
         </span>
       </span>
