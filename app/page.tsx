@@ -15,7 +15,6 @@ import {
 } from "lucide-react"
 import { Sena } from "@/components/sena"
 import { CALCULATORS, GROUPS, type CalcItem } from "@/lib/catalog"
-import { MASCOT } from "@/lib/brand"
 
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   quick: Calculator,
@@ -64,7 +63,7 @@ export default function HomePage() {
             차가운 계산기 대신, 살 때·빌릴 때·오늘 쓰는 계산을 따뜻하게 풀어 줍니다. 입력하는 즉시
             결과가 나오고, 부동산 금액은 보기 편한 만 원 단위입니다.
           </p>
-          <p className="mt-4 text-sm text-primary">{MASCOT.line}</p>
+          <p className="mt-4 text-sm text-primary">칸만 채우면 됩니다.</p>
         </div>
         <figure className="w-[4.5rem] shrink-0 sm:w-[5.25rem] md:w-24 lg:w-[6.5rem]">
           <Sena className="sena-bob" priority />
