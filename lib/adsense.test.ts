@@ -39,6 +39,8 @@ test("광고 스크립트 client는 NEXT_PUBLIC_ADSENSE_CLIENT가 있을 때만 
 
 test("인페이지 광고는 개인정보·문의 경로에는 넣지 않는다", () => {
   assert.equal(shouldRenderAdOnPath("/"), true)
+  assert.equal(shouldRenderAdOnPath("/calc/take-home"), true)
+  assert.equal(shouldRenderAdOnPath("/calc/take-home/"), true)
   assert.equal(shouldRenderAdOnPath("/calc/severance"), true)
   assert.equal(shouldRenderAdOnPath("/calc/severance/"), true)
   assert.equal(shouldRenderAdOnPath("/realty"), true)

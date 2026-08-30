@@ -118,8 +118,9 @@ export function CalcShell({
           {result}
         </div>
       )}
-      <RelatedCalcs slug={item.slug} />
+      {/* 결과 카드 바로 아래. 입력칸·복사·키패드를 가리지 않고, FAQ·관련 계산기보다 위에 둡니다. */}
       <AdSenseInPage />
+      <RelatedCalcs slug={item.slug} />
       {faq}
       <PolicyStamp />
     </div>

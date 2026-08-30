@@ -26,7 +26,7 @@ export function AdSenseInPage({ className }: { className?: string }) {
     } catch {
       // adsbygoogle가 아직 없거나 이미 채운 ins는 건너뜁니다.
     }
-  }, [show])
+  }, [show, pathname])
 
   if (!show || !client) return null
 
@@ -34,15 +34,15 @@ export function AdSenseInPage({ className }: { className?: string }) {
     <aside
       aria-label="광고"
       className={cn(
-        "mt-8 overflow-hidden rounded-2xl bg-muted/50 p-3 ring-1 ring-dashed ring-foreground/12",
+        "mt-6 min-h-[140px] overflow-hidden rounded-2xl bg-muted/50 p-3 ring-1 ring-dashed ring-foreground/12",
         className,
       )}
     >
       <p className="mb-2 text-center text-[11px] leading-none text-muted-foreground">광고</p>
       <ins
         ref={insRef}
-        className="adsbygoogle block min-h-[90px]"
-        style={{ display: "block" }}
+        className="adsbygoogle block min-h-[100px] w-full"
+        style={{ display: "block", minHeight: 100 }}
         data-ad-client={client}
         data-ad-format="auto"
         data-full-width-responsive="true"
