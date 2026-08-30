@@ -58,9 +58,15 @@ export function NavMenu({
     }
   }, [open, align])
 
-  function closeIfOutside(event: React.MouseEvent) {
-    if (isInside(event.relatedTarget as Node)) return
-    setOpen(false)
+  function isInside(node: Node | null) {
+    return Boolean(
+      (node && rootRef.current?.contains(node)) || (node && panelRef.current?.contains(node)),
+    )
+  }
+
+  function openMenu() {
+    place()
+    setOpen(true)
   }
 
   useEffect(() => {
@@ -87,7 +93,7 @@ export function NavMenu({
             id={openId}
             style={{ top: box.top, left: box.left, width: box.width }}
             className="fixed z-50 overflow-hidden rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4"
-            onMouseEnter={() => setOpen(true)}
+            onMouseEnter={openMenu}
             onMouseLeave={(event) => {
               if (isInside(event.relatedTarget as Node)) return
               setOpen(false)
@@ -116,7 +122,7 @@ export function NavMenu({
     <div
       ref={rootRef}
       className="relative"
-      onMouseEnter={() => setOpen(true)}
+      onMouseEnter={openMenu}
       onMouseLeave={(event) => {
         if (isInside(event.relatedTarget as Node)) return
         setOpen(false)
@@ -136,7 +142,7 @@ export function NavMenu({
           setOpen(false)
           onNavigate?.()
         }}
-        onFocus={() => setOpen(true)}
+        onFocus={openMenu}
       >
         {label}
       </Link>
