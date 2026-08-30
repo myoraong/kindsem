@@ -35,8 +35,8 @@ export function CalcShell({
   const realty = categoryForSlug(item.slug)
   const work = isWorkSlug(item.slug)
   const today = isTodaySlug(item.slug)
-  const backHref = realty ? "/#realty" : work ? "/#work" : today ? "/#today" : "/"
-  const backLabel = realty ? "부동산" : work ? "급여" : today ? "생활" : "계산 모음"
+  const backHref = "/#all"
+  const backLabel = "전체"
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 md:py-10">
