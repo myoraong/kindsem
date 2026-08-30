@@ -10,6 +10,16 @@ export function rememberRecentCalc(slug: string, storage: Pick<Storage, "getItem
   storage.setItem(RECENT_CALCS_KEY, JSON.stringify(next))
 }
 
+export function forgetRecentCalc(slug: string, storage: Pick<Storage, "getItem" | "setItem"> | null) {
+  if (!storage || !slug) return
+  const next = readRecentCalcs(storage).filter((item) => item !== slug)
+  if (next.length === 0) {
+    storage.setItem(RECENT_CALCS_KEY, "[]")
+    return
+  }
+  storage.setItem(RECENT_CALCS_KEY, JSON.stringify(next))
+}
+
 export function readRecentCalcs(storage: Pick<Storage, "getItem"> | null): string[] {
   if (!storage) return []
   try {

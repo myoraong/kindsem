@@ -4,6 +4,8 @@ import { useLayoutEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { CalcDirRow } from "@/components/calc-card"
+import { HomeQuickCalc } from "@/components/home-quick-calc"
+import { PopularCalcs } from "@/components/popular-calcs"
 import { RecentCalcs } from "@/components/recent-calcs"
 import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
@@ -26,11 +28,48 @@ const JUMP = [
   { id: "realty", label: "부동산" },
 ] as const
 
+function CategoryJump({
+  section,
+  flush = false,
+}: {
+  section: ReturnType<typeof useHomeSection>
+  flush?: boolean
+}) {
+  return (
+    <nav
+      data-home-jump
+      aria-label="계산 분류"
+      className={cn(
+        "sticky top-[var(--site-header-h)] z-20 flex flex-wrap gap-2 bg-background/90 backdrop-blur-md",
+        flush ? "py-1" : "-mx-4 mt-6 px-4 pt-4 pb-3",
+      )}
+    >
+      {JUMP.map((item) => (
+        <a
+          key={item.id}
+          href={`#${item.id}`}
+          aria-current={item.id === section ? "true" : undefined}
+          className={cn(
+            "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
+            homeChipClass(item.id, section),
+          )}
+          onClick={(event) => {
+            event.preventDefault()
+            goHomeSection(item.id)
+          }}
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  )
+}
+
 function CatalogSectionHeading({ title, blurb }: { title: string; blurb: string }) {
   return (
-    <header className="mb-3.5 min-w-0">
+    <header className="mb-2.5 min-w-0">
       <h2 className="text-2xl font-semibold tracking-tight sm:text-[1.75rem]">{title}</h2>
-      <p className="mt-1 max-w-2xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
+      <p className="mt-0.5 max-w-2xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
         {blurb}
       </p>
     </header>
@@ -94,31 +133,20 @@ export function HomeBrowse() {
         </div>
       </form>
 
-      {!searching ? <RecentCalcs /> : null}
-
-      <nav
-        data-home-jump
-        aria-label="계산 분류"
-        className="sticky top-[var(--site-header-h)] z-20 -mx-4 mt-6 flex flex-wrap gap-2 bg-background/90 px-4 pt-4 pb-3 backdrop-blur-md"
-      >
-        {JUMP.map((item) => (
-          <a
-            key={item.id}
-            href={`#${item.id}`}
-            aria-current={item.id === section ? "true" : undefined}
-            className={cn(
-              "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
-              homeChipClass(item.id, section),
-            )}
-            onClick={(event) => {
-              event.preventDefault()
-              goHomeSection(item.id)
-            }}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
+      {!searching ? (
+        <div className="mt-6 grid md:grid-cols-[minmax(0,1fr)_23.5rem] md:items-stretch md:gap-x-6">
+          <div className="flex min-w-0 flex-col gap-5">
+            <PopularCalcs />
+            <RecentCalcs />
+            <CategoryJump section={section} flush />
+          </div>
+          <div className="hidden h-full w-full min-h-0 md:flex">
+            <HomeQuickCalc />
+          </div>
+        </div>
+      ) : (
+        <CategoryJump section={section} />
+      )}
 
       {searching ? (
         <section className="mt-4" aria-live="polite">

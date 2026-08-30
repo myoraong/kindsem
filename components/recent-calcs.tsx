@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { getCalculator } from "@/lib/catalog"
-import { readRecentCalcs } from "@/lib/recent-calcs"
+import { forgetRecentCalc, readRecentCalcs } from "@/lib/recent-calcs"
 
 export function RecentCalcs() {
   const [slugs, setSlugs] = useState<string[]>([])
@@ -12,22 +12,37 @@ export function RecentCalcs() {
     setSlugs(readRecentCalcs(window.localStorage))
   }, [])
 
+  function remove(slug: string) {
+    forgetRecentCalc(slug, window.localStorage)
+    setSlugs(readRecentCalcs(window.localStorage))
+  }
+
   const items = slugs.map((slug) => getCalculator(slug)).filter((item) => Boolean(item))
   if (items.length === 0) return null
 
   return (
-    <section className="mt-6" aria-label="최근 본 계산기">
+    <section aria-label="최근 본 계산기">
       <h2 className="text-sm font-medium text-muted-foreground">최근 본 계산기</h2>
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) =>
           item ? (
-            <li key={item.slug}>
-              <Link
-                href={`/calc/${item.slug}`}
-                className="inline-flex h-9 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
-              >
+            <li
+              key={item.slug}
+              className="inline-flex h-8 items-center rounded-full bg-card pl-3 pr-1 ring-1 ring-foreground/8 hover:bg-accent"
+            >
+              <Link href={`/calc/${item.slug}`} className="text-sm">
                 {item.title}
               </Link>
+              <button
+                type="button"
+                className="-mr-0.5 grid size-6 shrink-0 place-items-center text-muted-foreground hover:text-foreground"
+                aria-label={`${item.title} 삭제`}
+                onClick={() => remove(item.slug)}
+              >
+                <span aria-hidden="true" className="text-[15px] leading-none">
+                  ×
+                </span>
+              </button>
             </li>
           ) : null,
         )}

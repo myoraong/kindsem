@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { readRecentCalcs, rememberRecentCalc, RECENT_CALCS_MAX } from "./recent-calcs.ts"
+import { readRecentCalcs, rememberRecentCalc, forgetRecentCalc, RECENT_CALCS_MAX } from "./recent-calcs.ts"
 
 function memoryStorage(initial: Record<string, string> = {}) {
   const data = { ...initial }
@@ -23,4 +23,14 @@ test("최근 본 계산기는 앞에 쌓이고 다섯 개를 넘기지 않는다
   for (let i = 0; i < 8; i += 1) rememberRecentCalc(`s${i}`, storage)
   assert.equal(readRecentCalcs(storage).length, RECENT_CALCS_MAX)
   assert.equal(readRecentCalcs(storage)[0], "s7")
+})
+
+test("최근 본 계산기는 하나씩 지울 수 있다", () => {
+  const storage = memoryStorage()
+  rememberRecentCalc("dutch", storage)
+  rememberRecentCalc("dsr", storage)
+  forgetRecentCalc("dutch", storage)
+  assert.deepEqual(readRecentCalcs(storage), ["dsr"])
+  forgetRecentCalc("dsr", storage)
+  assert.deepEqual(readRecentCalcs(storage), [])
 })
