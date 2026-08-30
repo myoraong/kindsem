@@ -11,10 +11,22 @@ export function RealtyMenu() {
   const openId = useId()
   const rootRef = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
+  const [hash, setHash] = useState("")
   const parts = pathname.split("/").filter(Boolean)
   const onRealty =
-    parts[0] === "realty" || (parts[0] === "calc" && isRealtySlug(parts[1] ?? ""))
+    parts[0] === "realty" ||
+    (parts[0] === "calc" && isRealtySlug(parts[1] ?? "")) ||
+    ((pathname === "/" || pathname === "") && hash === "#realty")
   const items = allRealtyItems()
+
+  useEffect(() => {
+    function syncHash() {
+      setHash(window.location.hash)
+    }
+    syncHash()
+    window.addEventListener("hashchange", syncHash)
+    return () => window.removeEventListener("hashchange", syncHash)
+  }, [pathname])
 
   useEffect(() => {
     if (!open) return
@@ -40,7 +52,7 @@ export function RealtyMenu() {
       onMouseLeave={() => setOpen(false)}
     >
       <Link
-        href="/realty"
+        href="/#realty"
         aria-expanded={open}
         aria-controls={openId}
         className={cn(
@@ -49,7 +61,10 @@ export function RealtyMenu() {
             ? "border-primary font-medium text-foreground"
             : "border-transparent text-muted-foreground hover:text-foreground"
         )}
-        onClick={() => setOpen(false)}
+        onClick={() => {
+          setOpen(false)
+          setHash("#realty")
+        }}
         onFocus={() => setOpen(true)}
       >
         부동산

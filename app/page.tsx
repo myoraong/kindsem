@@ -1,13 +1,5 @@
-import { CalcDirRow } from "@/components/calc-card"
-import { RealtyCatalog } from "@/components/realty-catalog"
+import { HomeBrowse } from "@/components/home-browse"
 import { Sena } from "@/components/sena"
-import { CALCULATORS, GROUPS } from "@/lib/catalog"
-
-const JUMP = [
-  { id: "today", label: "생활" },
-  { id: "work", label: "급여" },
-  { id: "realty", label: "부동산" },
-] as const
 
 export default function HomePage() {
   return (
@@ -29,38 +21,7 @@ export default function HomePage() {
         </figure>
       </section>
 
-      <nav
-        aria-label="분류로 이동"
-        className="sticky top-[4.25rem] z-20 -mx-4 mt-6 flex gap-2 overflow-x-auto bg-background/90 px-4 py-3 backdrop-blur-md"
-      >
-        {JUMP.map((item) => (
-          <a
-            key={item.id}
-            href={`#${item.id}`}
-            className="inline-flex h-9 shrink-0 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
-
-      <div className="mt-4 space-y-8">
-        {GROUPS.filter((group) => group.id === "today" || group.id === "work").map((group) => (
-          <section key={group.id} id={group.id} className="scroll-mt-28">
-            <h2 className="mb-3 text-lg font-semibold">{group.title}</h2>
-            <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
-              {CALCULATORS.filter((item) => item.group === group.id).map((item) => (
-                <CalcDirRow key={item.slug} item={item} />
-              ))}
-            </div>
-          </section>
-        ))}
-
-        <section id="realty" className="scroll-mt-28">
-          <h2 className="mb-3 text-lg font-semibold">부동산</h2>
-          <RealtyCatalog />
-        </section>
-      </div>
+      <HomeBrowse />
     </div>
   )
 }
