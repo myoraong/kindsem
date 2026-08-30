@@ -6,6 +6,7 @@ import { ArrowLeft } from "lucide-react"
 import { RelatedCalcs } from "@/components/calc/related-calcs"
 import { Sena } from "@/components/sena"
 import type { CalcItem } from "@/lib/catalog"
+import { calcSeo } from "@/lib/seo"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
 import { backLinkFor, homeSectionForGroup, readBackSection } from "@/lib/home-back"
 import { categoryForSlug } from "@/lib/realty"
@@ -44,6 +45,7 @@ export function CalcShell({
   const today = isTodaySlug(item.slug)
   const backHref = back.href
   const backLabel = back.label
+  const seo = calcSeo(item.slug)
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 md:py-10">
@@ -65,8 +67,13 @@ export function CalcShell({
                   ? `생활 · ${item.when}`
                   : item.when}
           </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">{item.title}</h1>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">{seo.query}</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">{item.blurb}</p>
+          {seo.also.length > 0 ? (
+            <p className="mt-2 max-w-xl text-xs leading-6 text-muted-foreground">
+              {seo.also.join(" · ")}
+            </p>
+          ) : null}
         </div>
         <Sena className="hidden w-12 shrink-0 sm:block md:w-14" />
       </div>

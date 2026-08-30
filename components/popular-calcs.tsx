@@ -2,6 +2,7 @@ import Link from "next/link"
 import { popularCalculators } from "@/lib/popular-calcs"
 import { rememberBackSection } from "@/lib/home-back"
 import type { HomeSection } from "@/lib/home-section"
+import { calcSeo } from "@/lib/seo"
 
 export function PopularCalcs({ from }: { from?: HomeSection }) {
   const items = popularCalculators()
@@ -20,7 +21,7 @@ export function PopularCalcs({ from }: { from?: HomeSection }) {
               }}
               className="inline-flex h-9 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
             >
-              {item.title}
+              {calcSeo(item.slug).query}
             </Link>
           </li>
         ))}

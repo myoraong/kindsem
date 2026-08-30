@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "개인정보 안내",
   description:
     "Kindsem은 회원가입 없이 계산하며, 개인정보를 수집하지 않습니다.",
+  alternates: { canonical: "/privacy/" },
 }
 
 export default function PrivacyPage() {

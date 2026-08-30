@@ -28,6 +28,15 @@ test("별칭으로 복비·DSR을 찾는다", () => {
   assert.equal(searchCalculators("전세vs월세")[0]?.slug, "jeonse-vs-rent")
 })
 
+test("계산기 검색어로도 찾는다", () => {
+  assert.equal(searchCalculators("실수령액 계산기")[0]?.slug, "take-home")
+  assert.equal(searchCalculators("퇴직금 계산기")[0]?.slug, "severance")
+  assert.equal(searchCalculators("주휴수당 계산기")[0]?.slug, "weekly-holiday")
+  assert.equal(searchCalculators("중개수수료 계산기")[0]?.slug, "brokerage")
+  assert.equal(searchCalculators("취득세 계산기").some((row) => row.slug === "acquisition"), true)
+  assert.equal(searchCalculators("자동차세 계산기")[0]?.slug, "car-tax")
+})
+
 test("여러 단어는 모두 맞아야 한다", () => {
   const rows = searchCalculators("양도 법인")
   assert.equal(rows[0]?.slug, "corporate-gains")

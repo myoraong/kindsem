@@ -1,5 +1,6 @@
 import { CALCULATORS, type CalcItem, type LifeGroup } from "./catalog.ts"
 import type { HomeSection } from "./home-section.ts"
+import { calcSearchText } from "./seo.ts"
 
 const REALTY_GROUPS = new Set<LifeGroup>(["rent", "buy", "loan"])
 
@@ -24,28 +25,40 @@ const ALIASES: Record<string, string[]> = {
   dutch: ["더치", "엔빵", "n빵", "더치페이"],
   "sale-vat": ["부가세", "부가가치세", "할인", "세일", "vat"],
   "vehicle-tax": ["취등록세", "차량취득세", "자동차취득세", "출고세금"],
-  "car-tax": ["자동차세", "보유자동차세", "배기량세", "차령"],
+  "car-tax": ["자동차세", "보유자동차세", "배기량세", "차령", "자동차세계산기"],
   "import-duty": ["해외직구", "관세", "직구", "목록통관", "소액면세", "부가세"],
   deposit: ["예금", "적금", "복리", "단리", "예적금", "이자"],
-  "take-home": ["월급", "실수령", "실수령액", "넷페이", "세후", "세후월급", "연봉", "4대보험"],
-  "weekly-holiday": ["주휴", "주휴수당", "주휴일", "주휴일수당"],
+  "take-home": [
+    "월급",
+    "실수령",
+    "실수령액",
+    "넷페이",
+    "세후",
+    "세후월급",
+    "연봉",
+    "4대보험",
+    "실수령액계산기",
+    "월급계산기",
+    "연봉계산기",
+  ],
+  "weekly-holiday": ["주휴", "주휴수당", "주휴일", "주휴일수당", "주휴수당계산기"],
   "part-time-month": ["알바월급", "시급월급", "알바비"],
   "prorate-pay": ["일할", "월급일할", "퇴사정산", "입사정산"],
   "overtime-pay": ["연장", "야간", "휴일수당", "연장수당", "야간수당", "특근"],
   "parental-leave": ["육아휴직", "육휴", "육아휴직급여"],
   "annual-leave": ["연차", "연차수당", "연차일수", "휴가"],
-  severance: ["퇴직", "퇴직금", "평균임금"],
+  severance: ["퇴직", "퇴직금", "평균임금", "퇴직금계산기"],
   "offer-compare": ["이직", "연봉비교", "제안"],
   "side-job-tax": ["알바", "3.3", "프리랜서", "종소세"],
   "benefit-net": ["실업급여", "내일배움", "지원금"],
   "cert-payback": ["자격증", "자격"],
-  brokerage: ["복비", "복비얼마", "중개", "중개보수", "수수료"],
+  brokerage: ["복비", "복비얼마", "중개", "중개보수", "수수료", "복비계산기", "중개수수료계산기"],
   moving: ["이사", "이사비용", "이사비"],
   jeonse: ["전세대출", "전세이자"],
   "rent-convert": ["전월세", "전환율", "반전세", "월세전환"],
   "rent-credit": ["월세공제", "월세세액공제", "청년월세"],
   "jeonse-vs-rent": ["전세월세", "전세vs월세", "전세대비", "월세비교"],
-  acquisition: ["주택취득세", "집취득세", "살때세금"],
+  acquisition: ["주택취득세", "집취득세", "살때세금", "취득세계산기"],
   "capital-gains": ["양도", "양도소득세"],
   "corporate-gains": ["법인양도", "법인세"],
   "holding-tax": ["재산세", "종부세", "보유"],
@@ -79,9 +92,15 @@ export function searchCalculators(query: string, section: HomeSection = "all"): 
   return CALCULATORS.filter((item) => {
     if (!itemInHomeSection(item, section)) return false
     const hay = compact(
-      [item.title, item.blurb, item.when, item.slug, groupLabel(item.group), ...(ALIASES[item.slug] ?? [])].join(
-        " ",
-      ),
+      [
+        item.title,
+        item.blurb,
+        item.when,
+        item.slug,
+        groupLabel(item.group),
+        calcSearchText(item.slug),
+        ...(ALIASES[item.slug] ?? []),
+      ].join(" "),
     )
     return tokens.every((token) => hay.includes(token))
   })

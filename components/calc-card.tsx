@@ -34,6 +34,7 @@ import {
 import type { CalcItem } from "@/lib/catalog"
 import { rememberBackSection } from "@/lib/home-back"
 import type { HomeSection } from "@/lib/home-section"
+import { calcSeo } from "@/lib/seo"
 
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   quick: Calculator,
@@ -81,7 +82,7 @@ export function CalcDirRow({ item, from }: { item: CalcItem; from?: HomeSection 
         <Icon className="size-4" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium">{item.title}</span>
+        <span className="block text-sm font-medium">{calcSeo(item.slug).query}</span>
         <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.when}</span>
       </span>
     </Link>

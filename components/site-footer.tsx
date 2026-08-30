@@ -20,6 +20,9 @@ export function SiteFooter() {
         </p>
         <p className="text-xs">세금·대출 세율·상한은 현행 법령·고시입니다. 빠진 공제·사실관계가 있으면 결과가 달라집니다. 신고·대출 심사는 세무사·은행과 하세요.</p>
         <nav aria-label="안내" className="flex flex-wrap gap-x-4 gap-y-1">
+          <Link href="/calc/" className="w-fit underline underline-offset-2 hover:text-foreground">
+            계산기 목록
+          </Link>
           <Link href="/privacy" className="w-fit underline underline-offset-2 hover:text-foreground">
             개인정보 안내
           </Link>

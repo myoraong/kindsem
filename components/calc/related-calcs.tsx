@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { relatedCalculators } from "@/lib/related-calcs"
+import { calcSeo } from "@/lib/seo"
 
 export function RelatedCalcs({ slug }: { slug: string }) {
   const items = relatedCalculators(slug)
@@ -15,7 +16,7 @@ export function RelatedCalcs({ slug }: { slug: string }) {
               href={`/calc/${item.slug}`}
               className="inline-flex h-9 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
             >
-              {item.title}
+              {calcSeo(item.slug).query}
             </Link>
           </li>
         ))}

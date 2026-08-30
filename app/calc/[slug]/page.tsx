@@ -39,8 +39,11 @@ import { ProratePay } from "@/components/calc/prorate-pay"
 import { DepositCalc } from "@/components/calc/deposit-calc"
 import { RentCredit } from "@/components/calc/rent-credit"
 import { YieldCalc } from "@/components/calc/yield-calc"
-import { CALCULATORS, getCalculator } from "@/lib/catalog"
+import { JsonLd } from "@/components/json-ld"
+import { CALCULATORS, getCalculator, type CalcItem } from "@/lib/catalog"
+import { calcJsonLd, calcMetadata } from "@/lib/seo"
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 
 export const dynamicParams = false
 
@@ -56,10 +59,7 @@ export async function generateMetadata({
   const { slug } = await params
   const item = getCalculator(slug)
   if (!item) return {}
-  return {
-    title: item.title,
-    description: item.blurb,
-  }
+  return calcMetadata(item)
 }
 
 export default async function CalcPage({
@@ -71,6 +71,15 @@ export default async function CalcPage({
   const item = getCalculator(slug)
   if (!item) notFound()
 
+  return (
+    <>
+      <JsonLd data={calcJsonLd(item)} />
+      {calcBody(slug, item)}
+    </>
+  )
+}
+
+function calcBody(slug: string, item: CalcItem): ReactNode {
   switch (slug) {
     case "quick":
       return <QuickCalc item={item} />

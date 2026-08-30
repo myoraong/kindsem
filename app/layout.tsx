@@ -5,7 +5,8 @@ import { AdSenseScript } from "@/components/adsense-script"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { MASCOT } from "@/lib/brand"
-import { SITE_URL } from "@/lib/site"
+import { ADSENSE_CLIENT } from "@/lib/adsense"
+import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { THEME_BOOT_SCRIPT } from "@/lib/theme"
 import "./globals.css"
 
@@ -17,12 +18,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Kindsem 카인드셈 — 친절한 생활 계산",
+    default: `생활·급여·부동산 계산기 · ${SITE_NAME}`,
     template: "%s · Kindsem",
   },
   description:
-    "Kindsem(카인드셈)은 밥값 나누기부터 중개수수료, 취득세, 대출 월납입까지 실생활에 필요한 계산만 친절하게 보여 줍니다.",
-  alternates: { canonical: "/" },
+    "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 계산기. 법령·고시 기준.",
+  robots: { index: true, follow: true },
+  other: { "google-adsense-account": ADSENSE_CLIENT },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -34,7 +36,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: "/",
-    siteName: "Kindsem 카인드셈",
+    siteName: SITE_NAME,
     images: [
       {
         url: "/kindsem-sena-icon.png",

@@ -120,7 +120,7 @@ export function HomeBrowse() {
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="주휴수당, 취득세, DSR…"
+            placeholder="실수령액 계산기, 퇴직금, 복비…"
             autoComplete="off"
             enterKeyHint="search"
             className="h-12 rounded-2xl bg-card pr-11 pl-10 text-base md:text-base"
