@@ -39,6 +39,7 @@ test("페이지 메타에 홈 canonical을 쓰지 않는다", () => {
   assert.equal(meta.alternates?.canonical, "/calc/take-home/")
   assert.notEqual(meta.alternates?.canonical, "/")
   assert.match(String(meta.description), /실수령액 계산기/)
+  assert.doesNotMatch(String(meta.description), /전에에/)
 })
 
 test("검색 텍스트에 별칭이 들어간다", () => {
