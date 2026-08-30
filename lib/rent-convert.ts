@@ -31,7 +31,7 @@ export function calcRentConvert(input: {
     const monthlyCap = Math.round((converted * cap) / 12)
     const monthlyAgreed = Math.round((converted * rate) / 12)
     return {
-      mode: input.mode as const,
+      mode: "to-monthly" as const,
       converted,
       cap,
       appliedRate: overCap ? cap : rate,
@@ -47,7 +47,7 @@ export function calcRentConvert(input: {
   const convertedAgreed = Math.round((input.monthly * 12) / rate)
   const convertedCap = Math.round((input.monthly * 12) / cap)
   return {
-    mode: input.mode as const,
+    mode: "to-jeonse" as const,
     converted: convertedCap,
     cap,
     appliedRate: overCap ? cap : rate,

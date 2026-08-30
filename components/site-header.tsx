@@ -9,8 +9,8 @@ import { toggleTheme } from "@/lib/theme"
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-[4.25rem] max-w-5xl items-center gap-1 px-4 sm:gap-3">
+    <header className="sticky top-0 z-30 overflow-visible border-b border-border/70 bg-background/85 backdrop-blur-md">
+      <div className="mx-auto flex h-[4.25rem] max-w-5xl items-center gap-1 overflow-visible px-4 sm:gap-3">
         <BrandLink />
         <nav aria-label="계산 분류" className="ml-auto flex min-w-0 items-center gap-0 text-sm sm:gap-0.5">
           <TodayMenu />
