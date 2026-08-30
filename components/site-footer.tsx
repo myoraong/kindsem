@@ -6,14 +6,16 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-border/70">
       <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-8 text-sm text-muted-foreground">
         <div>
-          <p className="font-semibold text-foreground">Kindsem 카인드셈</p>
-          <p className="mt-1 text-xs">친절한 생활 계산</p>
+          <p className="text-2xl font-semibold tracking-tight text-foreground sm:text-[1.7rem]">
+            Kindsem 카인드셈
+          </p>
+          <p className="mt-1.5 text-xs tracking-wide text-muted-foreground">친절한 생활 계산</p>
         </div>
-        <p>
-          <span className="text-muted-foreground/80">이메일</span>{" "}
+        <p className="text-[11px] leading-relaxed text-muted-foreground/80">
+          <span>이메일</span>{" "}
           <a
             href={`mailto:${CONTACT_EMAIL}`}
-            className="text-foreground underline-offset-2 hover:underline"
+            className="text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
           >
             {CONTACT_EMAIL}
           </a>
