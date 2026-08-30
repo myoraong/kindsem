@@ -6,7 +6,7 @@ import { Search, X } from "lucide-react"
 import { CalcDirRow } from "@/components/calc-card"
 import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
-import { CALCULATORS, GROUPS } from "@/lib/catalog"
+import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
 import { searchCalculators } from "@/lib/search"
 import { useHomeSection } from "@/lib/use-home-section"
 import { cn } from "@/lib/utils"
@@ -18,14 +18,23 @@ const JUMP = [
   { id: "realty", label: "부동산" },
 ] as const
 
+function CatalogSectionHeading({ title, blurb }: { title: string; blurb: string }) {
+  return (
+    <header className="mb-3.5 min-w-0">
+      <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">{title}</h2>
+      <p className="mt-1 max-w-2xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
+        {blurb}
+      </p>
+    </header>
+  )
+}
+
 export function HomeBrowse() {
   const router = useRouter()
   const section = useHomeSection()
   const [query, setQuery] = useState("")
   const results = useMemo(() => searchCalculators(query, section), [query, section])
   const searching = query.trim().length > 0
-  const todayGroup = GROUPS.find((group) => group.id === "today")
-  const workGroup = GROUPS.find((group) => group.id === "work")
 
   return (
     <>
@@ -109,9 +118,9 @@ export function HomeBrowse() {
         </section>
       ) : (
         <div className="mt-4 space-y-8">
-          {(section === "all" || section === "today") && todayGroup ? (
+          {section === "all" || section === "today" ? (
             <section id="today" className="scroll-mt-28">
-              <h2 className="mb-3 text-lg font-semibold">{todayGroup.title}</h2>
+              <CatalogSectionHeading {...CATALOG_HEADINGS.today} />
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {CALCULATORS.filter((item) => item.group === "today").map((item) => (
                   <CalcDirRow key={item.slug} item={item} />
@@ -120,9 +129,9 @@ export function HomeBrowse() {
             </section>
           ) : null}
 
-          {(section === "all" || section === "work") && workGroup ? (
+          {section === "all" || section === "work" ? (
             <section id="work" className="scroll-mt-28">
-              <h2 className="mb-3 text-lg font-semibold">{workGroup.title}</h2>
+              <CatalogSectionHeading {...CATALOG_HEADINGS.work} />
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {CALCULATORS.filter((item) => item.group === "work").map((item) => (
                   <CalcDirRow key={item.slug} item={item} />
@@ -133,7 +142,7 @@ export function HomeBrowse() {
 
           {section === "all" || section === "realty" ? (
             <section id="realty" className="scroll-mt-28">
-              <h2 className="mb-3 text-lg font-semibold">부동산</h2>
+              <CatalogSectionHeading {...CATALOG_HEADINGS.realty} />
               <RealtyCatalog />
             </section>
           ) : null}

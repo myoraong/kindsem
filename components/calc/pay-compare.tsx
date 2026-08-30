@@ -179,8 +179,8 @@ export function PayCompare({ item }: { item: CalcItem }) {
             compare
               ? [
                   { value: "none", label: "없음" },
-                  { value: "current", label: "지금만" },
-                  { value: "offer", label: "제안만" },
+                  { value: "current", label: "지금 직장" },
+                  { value: "offer", label: "이직 제안" },
                   { value: "both", label: "둘 다" },
                 ]
               : [

@@ -8,16 +8,32 @@ export type CalcItem = {
   group: LifeGroup
 }
 
+/** 홈 카탈로그 섹션 제목·한 줄 설명. 슬로건이 아니라 그 칸에서 하는 계산만. */
+export const CATALOG_HEADINGS = {
+  today: {
+    title: "생활",
+    blurb: "더치페이, 자동차 취득세, 일상에서 쓰는 계산.",
+  },
+  work: {
+    title: "급여",
+    blurb: "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.",
+  },
+  realty: {
+    title: "부동산",
+    blurb: "취득·보유·양도, 전월세, 대출 한도. 법령·고시.",
+  },
+} as const
+
 export const GROUPS: { id: LifeGroup; title: string; subtitle: string }[] = [
   {
     id: "today",
-    title: "생활",
-    subtitle: "밥값, 할인, 부가세처럼 지금 바로 쓰는 계산",
+    title: CATALOG_HEADINGS.today.title,
+    subtitle: CATALOG_HEADINGS.today.blurb,
   },
   {
     id: "work",
-    title: "급여",
-    subtitle: "실수령, 주휴·연차·퇴직금, 이직 제안을 한 화면에서",
+    title: CATALOG_HEADINGS.work.title,
+    subtitle: CATALOG_HEADINGS.work.blurb,
   },
   {
     id: "rent",
