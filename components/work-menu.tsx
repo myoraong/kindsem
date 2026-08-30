@@ -56,9 +56,9 @@ export function WorkMenu() {
       {open ? (
         <div
           id={openId}
-          className="absolute top-full left-0 z-40 w-[min(18rem,calc(100vw-2rem))] rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4"
+          className="absolute top-full left-0 z-40 w-[min(18rem,calc(100vw-2rem))] overflow-hidden rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4"
         >
-          <ul className="space-y-0.5">
+          <ul className="max-h-[min(20rem,calc(100dvh-5.75rem))] space-y-0.5 overflow-y-auto overscroll-contain">
             {items.map((item) => (
               <li key={item.slug}>
                 <Link
