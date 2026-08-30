@@ -139,6 +139,9 @@ export function HomeBrowse() {
             <PopularCalcs />
             <RecentCalcs />
             <CategoryJump section={section} flush />
+            <div className="md:hidden">
+              <HomeQuickCalc folded />
+            </div>
           </div>
           <div className="hidden h-full w-full min-h-0 md:flex">
             <HomeQuickCalc />
@@ -160,11 +163,14 @@ export function HomeBrowse() {
               </div>
             </>
           ) : (
-            <div className="rounded-2xl bg-card px-5 py-10 text-center ring-1 ring-foreground/8">
-              <p className="text-sm font-medium">맞는 계산기가 없습니다</p>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                주휴, 복비, 양도세처럼 이름이나 상황을 짧게 넣어 보세요.
-              </p>
+            <div className="space-y-6">
+              <div className="rounded-2xl bg-card px-5 py-10 text-center ring-1 ring-foreground/8">
+                <p className="text-sm font-medium">맞는 계산기가 없습니다</p>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                  주휴, 복비, 양도세처럼 이름이나 상황을 짧게 넣어 보세요.
+                </p>
+              </div>
+              <PopularCalcs />
             </div>
           )}
         </section>
