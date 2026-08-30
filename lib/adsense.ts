@@ -1,6 +1,9 @@
 /** Google ads.txt certification authority ID for AdSense. */
 export const ADSENSE_ADS_TXT_CERT = "f08c47fec0942fa0"
 
+/** 애드센스가 준 게시자 번호. 헤드 확인용 스크립트에 씁니다. */
+export const ADSENSE_CLIENT = "ca-pub-1559116385038077"
+
 const PUB_ID_RE = /pub-\d+/
 
 export function parseAdsensePublisherId(value: string | undefined | null): string | null {

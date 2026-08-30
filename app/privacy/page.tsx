@@ -18,7 +18,9 @@ export default function PrivacyPage() {
           <h2 className="text-base font-semibold text-foreground">수집하지 않는 정보</h2>
           <p>
             Kindsem은 회원가입과 로그인이 없고, 이름·연락처·주민번호 같은 개인정보를 받지 않습니다.
-            계산에 넣은 숫자는 이 기기에서만 쓰이고 서버에 저장하지 않습니다.
+            계산에 넣은 숫자는 이 기기에서만 쓰이고 서버에 저장하지 않습니다. 화면 색감만 이
+            브라우저에 기억합니다. 세율 안내를 맞추려고 법제처 현행 법령을 이 브라우저에서 조회할 수
+            있습니다.
           </p>
         </section>
         <section className="space-y-3">
