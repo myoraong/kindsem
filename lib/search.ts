@@ -1,4 +1,14 @@
 import { CALCULATORS, type CalcItem, type LifeGroup } from "./catalog.ts"
+import type { HomeSection } from "./home-section.ts"
+
+const REALTY_GROUPS = new Set<LifeGroup>(["rent", "buy", "loan"])
+
+export function itemInHomeSection(item: CalcItem, section: HomeSection) {
+  if (section === "all") return true
+  if (section === "today") return item.group === "today"
+  if (section === "work") return item.group === "work"
+  return REALTY_GROUPS.has(item.group)
+}
 
 const GROUP_LABEL: Record<LifeGroup, string> = {
   today: "생활",
@@ -49,7 +59,7 @@ export function groupLabel(group: LifeGroup) {
   return GROUP_LABEL[group]
 }
 
-export function searchCalculators(query: string): CalcItem[] {
+export function searchCalculators(query: string, section: HomeSection = "all"): CalcItem[] {
   const tokens = query
     .trim()
     .split(/\s+/)
@@ -58,6 +68,7 @@ export function searchCalculators(query: string): CalcItem[] {
   if (tokens.length === 0) return []
 
   return CALCULATORS.filter((item) => {
+    if (!itemInHomeSection(item, section)) return false
     const hay = compact(
       [item.title, item.blurb, item.when, item.slug, groupLabel(item.group), ...(ALIASES[item.slug] ?? [])].join(
         " ",

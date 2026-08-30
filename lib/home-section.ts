@@ -1,11 +1,11 @@
-export const HOME_SECTIONS = ["today", "work", "realty"] as const
+export const HOME_SECTIONS = ["all", "today", "work", "realty"] as const
 
 export type HomeSection = (typeof HOME_SECTIONS)[number]
 
 export function parseHomeSection(hash: string): HomeSection {
   const id = hash.startsWith("#") ? hash.slice(1) : hash
-  if (id === "work" || id === "realty" || id === "today") return id
-  return "today"
+  if (id === "all" || id === "today" || id === "work" || id === "realty") return id
+  return "all"
 }
 
 export function isHomePath(pathname: string) {

@@ -12,6 +12,7 @@ import { useHomeSection } from "@/lib/use-home-section"
 import { cn } from "@/lib/utils"
 
 const JUMP = [
+  { id: "all", label: "전체" },
   { id: "today", label: "생활" },
   { id: "work", label: "급여" },
   { id: "realty", label: "부동산" },
@@ -21,7 +22,7 @@ export function HomeBrowse() {
   const router = useRouter()
   const section = useHomeSection()
   const [query, setQuery] = useState("")
-  const results = useMemo(() => searchCalculators(query), [query])
+  const results = useMemo(() => searchCalculators(query, section), [query, section])
   const searching = query.trim().length > 0
   const todayGroup = GROUPS.find((group) => group.id === "today")
   const workGroup = GROUPS.find((group) => group.id === "work")
@@ -65,8 +66,29 @@ export function HomeBrowse() {
         </div>
       </form>
 
+      <nav
+        aria-label="계산 분류"
+        className="sticky top-[4.25rem] z-20 -mx-4 mt-6 flex flex-wrap gap-2 bg-background/90 px-4 py-3 backdrop-blur-md"
+      >
+        {JUMP.map((item) => (
+          <a
+            key={item.id}
+            href={`#${item.id}`}
+            aria-current={item.id === section ? "true" : undefined}
+            className={cn(
+              "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
+              item.id === section
+                ? "bg-card font-medium text-foreground ring-foreground/12"
+                : "bg-accent ring-foreground/8 hover:bg-card",
+            )}
+          >
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
       {searching ? (
-        <section className="mt-6" aria-live="polite">
+        <section className="mt-4" aria-live="polite">
           {results.length ? (
             <>
               <h2 className="mb-3 text-lg font-semibold">검색 {results.length}개</h2>
@@ -86,59 +108,36 @@ export function HomeBrowse() {
           )}
         </section>
       ) : (
-        <>
-          <nav
-            aria-label="분류로 이동"
-            className="sticky top-[4.25rem] z-20 -mx-4 mt-6 flex gap-2 overflow-x-auto bg-background/90 px-4 py-3 backdrop-blur-md"
-          >
-            {JUMP.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                aria-current={item.id === section ? "true" : undefined}
-                className={cn(
-                  "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
-                  item.id === section
-                    ? "bg-accent font-medium text-foreground ring-foreground/12"
-                    : "bg-card ring-foreground/8 hover:bg-accent",
-                )}
-              >
-                {item.label}
-              </a>
-            ))}
-          </nav>
+        <div className="mt-4 space-y-8">
+          {(section === "all" || section === "today") && todayGroup ? (
+            <section id="today" className="scroll-mt-28">
+              <h2 className="mb-3 text-lg font-semibold">{todayGroup.title}</h2>
+              <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
+                {CALCULATORS.filter((item) => item.group === "today").map((item) => (
+                  <CalcDirRow key={item.slug} item={item} />
+                ))}
+              </div>
+            </section>
+          ) : null}
 
-          <div className="mt-4">
-            {section === "today" && todayGroup ? (
-              <section id="today" className="scroll-mt-28">
-                <h2 className="mb-3 text-lg font-semibold">{todayGroup.title}</h2>
-                <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
-                  {CALCULATORS.filter((item) => item.group === "today").map((item) => (
-                    <CalcDirRow key={item.slug} item={item} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
+          {(section === "all" || section === "work") && workGroup ? (
+            <section id="work" className="scroll-mt-28">
+              <h2 className="mb-3 text-lg font-semibold">{workGroup.title}</h2>
+              <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
+                {CALCULATORS.filter((item) => item.group === "work").map((item) => (
+                  <CalcDirRow key={item.slug} item={item} />
+                ))}
+              </div>
+            </section>
+          ) : null}
 
-            {section === "work" && workGroup ? (
-              <section id="work" className="scroll-mt-28">
-                <h2 className="mb-3 text-lg font-semibold">{workGroup.title}</h2>
-                <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
-                  {CALCULATORS.filter((item) => item.group === "work").map((item) => (
-                    <CalcDirRow key={item.slug} item={item} />
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {section === "realty" ? (
-              <section id="realty" className="scroll-mt-28">
-                <h2 className="mb-3 text-lg font-semibold">부동산</h2>
-                <RealtyCatalog />
-              </section>
-            ) : null}
-          </div>
-        </>
+          {section === "all" || section === "realty" ? (
+            <section id="realty" className="scroll-mt-28">
+              <h2 className="mb-3 text-lg font-semibold">부동산</h2>
+              <RealtyCatalog />
+            </section>
+          ) : null}
+        </div>
       )}
     </>
   )

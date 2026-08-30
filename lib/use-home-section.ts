@@ -37,5 +37,5 @@ function subscribe(onStoreChange: () => void) {
 }
 
 export function useHomeSection(): HomeSection {
-  return useSyncExternalStore(subscribe, () => parseHomeSection(window.location.hash), () => "today")
+  return useSyncExternalStore(subscribe, () => parseHomeSection(window.location.hash), () => "all")
 }

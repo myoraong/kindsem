@@ -1,3 +1,5 @@
+"use client"
+
 import Link from "next/link"
 import { Sena } from "@/components/sena"
 
@@ -20,8 +22,15 @@ export function BrandMark() {
 export function BrandLink() {
   return (
     <Link
-      href="/"
+      href="/#all"
       className="rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      onClick={(event) => {
+        const path = window.location.pathname
+        if (path !== "/" && path !== "") return
+        event.preventDefault()
+        if (window.location.hash !== "#all") window.location.hash = "all"
+        window.scrollTo({ top: 0 })
+      }}
     >
       <BrandMark />
     </Link>

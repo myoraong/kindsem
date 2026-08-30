@@ -23,3 +23,25 @@ test("여러 단어는 모두 맞아야 한다", () => {
   const rows = searchCalculators("양도 법인")
   assert.equal(rows[0]?.slug, "corporate-gains")
 })
+
+test("생활 탭에서는 생활만 찾는다", () => {
+  assert.equal(searchCalculators("자동차", "today")[0]?.slug, "vehicle-tax")
+  assert.deepEqual(searchCalculators("주휴수당", "today"), [])
+  assert.deepEqual(searchCalculators("복비", "today"), [])
+})
+
+test("급여 탭에서는 급여만 찾는다", () => {
+  assert.equal(searchCalculators("주휴수당", "work")[0]?.slug, "weekly-holiday")
+  assert.deepEqual(searchCalculators("복비", "work"), [])
+})
+
+test("부동산 탭에서는 부동산만 찾는다", () => {
+  assert.equal(searchCalculators("복비", "realty")[0]?.slug, "brokerage")
+  assert.deepEqual(searchCalculators("주휴수당", "realty"), [])
+})
+
+test("전체에서는 생활·급여·부동산을 모두 찾는다", () => {
+  assert.equal(searchCalculators("자동차", "all")[0]?.slug, "vehicle-tax")
+  assert.equal(searchCalculators("주휴수당", "all")[0]?.slug, "weekly-holiday")
+  assert.equal(searchCalculators("복비", "all")[0]?.slug, "brokerage")
+})
