@@ -54,7 +54,7 @@ export function AdSenseInPage({
       className={cn(
         "overflow-hidden rounded-2xl bg-muted/50 p-3 ring-1 ring-dashed ring-foreground/12",
         compact
-          ? "hidden min-h-[100px] w-full max-w-[300px] shrink-0 md:block"
+          ? "hidden w-[300px] min-h-[100px] shrink-0 self-start md:block"
           : "mt-6 min-h-[140px] w-full",
         className,
       )}
