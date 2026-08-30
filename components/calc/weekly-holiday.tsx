@@ -9,7 +9,7 @@ import { Hint } from "@/components/calc/hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon } from "@/lib/format"
+import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcWeeklyHoliday, monthlyContractHours } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
@@ -63,6 +63,15 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
                   ? `주휴 ${result.holidayHours}시간`
                   : "개근하지 않은 주"
                 : "주 15시간 미만 · 제18조"
+              : undefined
+          }
+          copyLine={
+            result
+              ? kakaoCopyLine(
+                  "주휴수당",
+                  formatWon(result.holidayPay),
+                  result.eligible ? `주휴 ${result.holidayHours}시간` : "제18조",
+                )
               : undefined
           }
           rows={

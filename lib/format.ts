@@ -60,3 +60,10 @@ export function wonToManwon(won: number): number {
 export function copyText(value: string) {
   return navigator.clipboard.writeText(value)
 }
+
+/** 카카오 한 줄. 예: 실수령 3,210,000원 · 주휴 포함 */
+export function kakaoCopyLine(label: string, amountText: string, note?: string) {
+  const core = `${label} ${amountText}`.trim()
+  const extra = note?.trim()
+  return extra ? `${core} · ${extra}` : core
+}

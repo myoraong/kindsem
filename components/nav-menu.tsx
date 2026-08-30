@@ -3,6 +3,7 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import Link from "next/link"
+import { interceptHomeSectionClick } from "@/lib/home-section-snap"
 import { cn } from "@/lib/utils"
 
 type Item = { slug: string; title: string; blurb: string }
@@ -99,7 +100,7 @@ export function NavMenu({
               setOpen(false)
             }}
           >
-            <ul className="max-h-[min(20rem,calc(100dvh-5.75rem))] space-y-0.5 overflow-y-auto overscroll-contain">
+            <ul className="max-h-[min(20rem,calc(100dvh-var(--site-header-h)-1.5rem))] space-y-0.5 overflow-y-auto overscroll-contain">
               {items.map((item) => (
                 <li key={item.slug}>
                   <Link
@@ -130,18 +131,20 @@ export function NavMenu({
     >
       <Link
         href={href}
+        scroll={false}
         aria-expanded={open}
         aria-controls={openId}
         aria-current={active ? "page" : undefined}
         className={cn(
-          "inline-flex h-[4.25rem] items-center border-b-2 px-2 text-sm whitespace-nowrap transition-colors sm:px-2.5",
+          "inline-flex h-[var(--site-header-h)] items-center border-b-2 px-2 text-sm whitespace-nowrap transition-colors sm:px-2.5",
           active || open
             ? "border-primary font-medium text-foreground"
             : "border-transparent text-muted-foreground hover:text-foreground"
         )}
-        onClick={() => {
+        onClick={(event) => {
           setOpen(false)
           onNavigate?.()
+          interceptHomeSectionClick(href, event)
         }}
         onFocus={openMenu}
       >

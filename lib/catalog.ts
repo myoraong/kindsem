@@ -12,15 +12,15 @@ export type CalcItem = {
 export const CATALOG_HEADINGS = {
   today: {
     title: "생활",
-    blurb: "더치페이, 자동차 취득세, 일상에서 쓰는 계산.",
+    blurb: "더치페이, 자동차 취득세, 해외직구 관세. 일상에서 쓰는 계산.",
   },
   work: {
     title: "급여",
-    blurb: "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.",
+    blurb: "실수령, 주휴·연장·연차·퇴직금, 육아휴직. 근로기준법·고용보험.",
   },
   realty: {
     title: "부동산",
-    blurb: "취득·보유·양도, 전월세, 대출 한도. 법령·고시.",
+    blurb: "취득·보유·양도, 전세·월세 비교, 대출 한도. 법령·고시.",
   },
 } as const
 
@@ -77,6 +77,13 @@ export const CALCULATORS: CalcItem[] = [
     group: "today",
   },
   {
+    slug: "import-duty",
+    title: "해외직구 관세·부가세",
+    blurb: "목록통관·소액면세 기준과, 넣은 관세의 부가세 10%.",
+    when: "해외 쇼핑몰 결제 전에",
+    group: "today",
+  },
+  {
     slug: "take-home",
     title: "실수령",
     blurb: "연봉을 넣으면 4대보험과 세금이 줄줄이 빠집니다.",
@@ -91,6 +98,13 @@ export const CALCULATORS: CalcItem[] = [
     group: "work",
   },
   {
+    slug: "overtime-pay",
+    title: "연장·야간·휴일 수당",
+    blurb: "통상시급에 제56조 가산. 연장 1.5, 야간 0.5, 휴일 1.5·2.0.",
+    when: "연장·야근·휴일 근무 정산",
+    group: "work",
+  },
+  {
     slug: "annual-leave",
     title: "연차 일수·수당",
     blurb: "제60조 일수와 미사용 통상임금.",
@@ -102,6 +116,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "퇴직금",
     blurb: "3개월 평균임금 30일분 × 근속연수.",
     when: "퇴사일 정하기 전에",
+    group: "work",
+  },
+  {
+    slug: "parental-leave",
+    title: "육아휴직 급여",
+    blurb: "고용보험 시행령 상한·하한·지급률.",
+    when: "육아휴직 기간을 정할 때",
     group: "work",
   },
   {
@@ -158,6 +179,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "전월세 전환율",
     blurb: "기준금리+2%p 상한으로 전세↔월세.",
     when: "보증금을 월세로 나눌 때",
+    group: "rent",
+  },
+  {
+    slug: "jeonse-vs-rent",
+    title: "전세 vs 월세",
+    blurb: "법정 전환 상한으로 월 부담을 비교.",
+    when: "전세와 월세 중 고를 때",
     group: "rent",
   },
   {

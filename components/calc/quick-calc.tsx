@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
-import { Copy, Delete, Trash2, X } from "lucide-react"
+import { Delete, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 import { CalcShell } from "@/components/calc/calc-shell"
 import type { CalcItem } from "@/lib/catalog"
@@ -329,6 +329,8 @@ export function QuickCalc({ item }: { item: CalcItem }) {
   const opClass = "bg-secondary text-foreground hover:bg-muted"
   const memClass =
     "h-9 rounded-lg text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+  const ghostTextBtn =
+    "inline-flex h-8 shrink-0 items-center rounded-md px-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
 
   return (
     <CalcShell
@@ -354,11 +356,14 @@ export function QuickCalc({ item }: { item: CalcItem }) {
               <button
                 type="button"
                 disabled={error || currentNumber === null}
-                className="inline-flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
-                aria-label="지금 결과 복사"
+                className={cn(
+                  ghostTextBtn,
+                  "disabled:pointer-events-none disabled:opacity-40"
+                )}
+                aria-label="복사"
                 onClick={() => currentNumber !== null && copyValue(currentNumber)}
               >
-                <Copy className="size-3.5" />
+                복사
               </button>
             </div>
             <p className="mt-1 text-sm text-muted-foreground tabular">{liveLine}</p>
@@ -386,19 +391,19 @@ export function QuickCalc({ item }: { item: CalcItem }) {
                   </button>
                   <button
                     type="button"
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                    aria-label={`${formatResult(row.value)} 복사`}
+                    className={ghostTextBtn}
+                    aria-label="복사"
                     onClick={() => copyValue(row.value)}
                   >
-                    <Copy className="size-3.5" />
+                    복사
                   </button>
                   <button
                     type="button"
-                    className="inline-flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
-                    aria-label="이 기록 지우기"
+                    className={ghostTextBtn}
+                    aria-label="삭제"
                     onClick={() => removeHistory(row.id)}
                   >
-                    <X className="size-3.5" />
+                    삭제
                   </button>
                 </div>
               ))}

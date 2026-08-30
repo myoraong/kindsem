@@ -1,10 +1,9 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { Copy } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { formatKoreanUnit, formatSignedWon, formatWon } from "@/lib/format"
+import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
 import type { QuitHealthResult, TakeHomeResult } from "@/lib/payroll"
 
 function healthWon(row: TakeHomeResult) {
@@ -60,7 +59,7 @@ function Frame({
   async function copy() {
     if (!copyValue) return
     await navigator.clipboard.writeText(copyValue)
-    toast.success("숫자를 복사했어요")
+    toast.success("복사됨")
   }
 
   return (
@@ -72,9 +71,8 @@ function Frame({
           {caption ? <p className="mt-1 text-sm text-muted-foreground">{caption}</p> : null}
           {children}
           {copyValue ? (
-            <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
-              <Copy className="size-4" />
-              결과 복사
+            <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy} aria-label="복사">
+              복사
             </Button>
           ) : null}
         </>
@@ -105,7 +103,7 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
       title="월 실수령"
       headline={formatWon(row.monthlyTakeHome)}
       caption={`연 ${formatWon(row.annualTakeHome)} · ${formatKoreanUnit(row.annualTakeHome)}`}
-      copyValue={String(Math.round(row.monthlyTakeHome))}
+      copyValue={kakaoCopyLine("실수령", formatWon(row.monthlyTakeHome), "4대보험·세금 공제")}
     >
       <div className="mt-5 space-y-0 border-t border-dashed border-border pt-3">
         <Line label="4대보험(월)" value={formatWon(row.insurance.monthly)} />
@@ -193,7 +191,7 @@ export function PayOfferReceipt({
       title="세후 연 차이"
       headline={formatSignedWon(Math.round(annualDelta))}
       caption={`${annualDelta >= 0 ? "제안이" : "지금 직장이"} 세후로 더 남습니다 · 월 ${formatSignedWon(Math.round(monthlyDelta))}`}
-      copyValue={String(Math.round(annualDelta))}
+      copyValue={kakaoCopyLine("세후 연 차이", formatSignedWon(Math.round(annualDelta)))}
     >
       <div className="mt-5 border-t border-dashed border-border pt-3">
         <div className="grid grid-cols-[minmax(5.5rem,0.95fr)_1fr_1fr] gap-2 text-xs text-muted-foreground">

@@ -5,14 +5,21 @@ import { Sena } from "@/components/sena"
 
 export function BrandMark() {
   return (
-    <span className="flex items-center gap-2.5">
-      <span className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/10">
-        <Sena variant="face" className="size-9" priority />
+    <span className="flex items-center gap-2 sm:gap-2.5">
+      <span className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-card ring-1 ring-primary/50 sm:size-9">
+        <Sena variant="face" className="size-[2.15rem] object-contain sm:size-10" priority />
       </span>
-      <span className="flex min-w-0 flex-col leading-none">
-        <span className="text-sm font-semibold tracking-tight">Kindsem</span>
-        <span className="mt-1 hidden text-[11px] font-medium tracking-wide text-muted-foreground sm:block">
-          친절한 생활 계산
+      <span className="flex min-w-0 flex-col justify-center leading-none">
+        <span className="flex items-baseline gap-1.5">
+          <span className="text-[15px] font-semibold tracking-[-0.045em] [font-variant-numeric:tabular-nums]">
+            Kindsem
+          </span>
+          <span className="hidden text-[11px] font-medium tracking-tight text-muted-foreground sm:inline">
+            카인드셈
+          </span>
+        </span>
+        <span className="mt-1 hidden text-[10px] font-medium tracking-[0.06em] text-muted-foreground sm:block">
+          생활 계산기
         </span>
       </span>
     </span>
@@ -23,12 +30,15 @@ export function BrandLink() {
   return (
     <Link
       href="/#all"
-      className="rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+      aria-label="Kindsem 카인드셈 생활 계산기"
+      className="shrink-0 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       onClick={(event) => {
         const path = window.location.pathname
         if (path !== "/" && path !== "") return
         event.preventDefault()
-        if (window.location.hash !== "#all") window.location.hash = "all"
+        if (window.location.hash) {
+          history.pushState(null, "", `${path}${window.location.search}`)
+        }
         window.scrollTo({ top: 0 })
       }}
     >

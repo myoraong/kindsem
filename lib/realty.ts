@@ -28,7 +28,7 @@ export const REALTY_CATEGORIES: RealtyCategory[] = [
   {
     id: "invest",
     title: "임대 투자",
-    slugs: ["yield", "rent-convert"],
+    slugs: ["yield", "rent-convert", "jeonse-vs-rent"],
   },
   {
     id: "loan",

@@ -74,6 +74,7 @@
   --chart-4: oklch(0.5 0.04 200);
   --chart-5: oklch(0.42 0.03 145);
   --radius: 1rem;
+  --site-header-h: 3.75rem;
   --sidebar: oklch(0.975 0.012 82);
   --sidebar-foreground: oklch(0.32 0.024 55);
   --sidebar-primary: oklch(0.51 0.055 145);
@@ -124,6 +125,9 @@
   }
   html {
     @apply font-sans;
+  }
+  .home-section-snap {
+    scroll-margin-top: calc(var(--site-header-h) + 4.75rem);
   }
   body {
     @apply bg-background text-foreground;

@@ -1,10 +1,12 @@
 "use client"
 
-import { useState, type ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { RelatedCalcs } from "@/components/calc/related-calcs"
 import { Sena } from "@/components/sena"
 import type { CalcItem } from "@/lib/catalog"
+import { rememberRecentCalc } from "@/lib/recent-calcs"
 import { categoryForSlug } from "@/lib/realty"
 import { isTodaySlug } from "@/lib/today"
 import { isWorkSlug } from "@/lib/work"
@@ -25,6 +27,11 @@ export function CalcShell({
   guide?: ReactNode
 }) {
   const [tab, setTab] = useState<"calc" | "guide">("calc")
+
+  useEffect(() => {
+    rememberRecentCalc(item.slug, window.localStorage)
+  }, [item.slug])
+
   const realty = categoryForSlug(item.slug)
   const work = isWorkSlug(item.slug)
   const today = isTodaySlug(item.slug)
@@ -96,6 +103,7 @@ export function CalcShell({
           {result}
         </div>
       )}
+      <RelatedCalcs slug={item.slug} />
       {faq}
       <PolicyStamp />
     </div>

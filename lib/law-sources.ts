@@ -110,4 +110,22 @@ export const LAW_SOURCES = {
     effective: "현행",
     note: "비영업 경형 승용 취득세 75만 원 한도 감면. 2027.12.31.까지.",
   },
+  laborOvertime: {
+    title: "근로기준법 제56조",
+    href: "https://www.law.go.kr/법령/근로기준법",
+    effective: "현행",
+    note: "연장 50% 가산, 야간(22:00–06:00) 50% 가산, 휴일 8시간 이내 50%·초과 100% 가산.",
+  },
+  parentalLeave: {
+    title: "고용보험법 시행령 제95조·제95조의3",
+    href: "https://www.law.go.kr/법령/고용보험법 시행령",
+    effective: "2026-07-01",
+    note: "일반 1~3개월 100% 상한 250만, 4~6개월 200만, 7개월부터 80% 160만. 하한 70만.",
+  },
+  importDuty: {
+    title: "관세법 제94조, 특송물품 수입통관 사무처리에 관한 고시, 부가가치세법 제20조·제30조",
+    href: "https://www.law.go.kr/법령/관세법",
+    effective: "현행",
+    note: "목록통관 미화 150달러(미국발 200달러). 수입신고 소액면세 150달러. 부가세 10%는 관세가 정해진 뒤.",
+  },
 } as const

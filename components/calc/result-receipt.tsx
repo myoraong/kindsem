@@ -1,9 +1,8 @@
 "use client"
 
-import { Copy } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
-import { formatKoreanUnit, formatWon } from "@/lib/format"
+import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
 
 export type ReceiptRow = {
   label: string
@@ -18,6 +17,9 @@ export function ResultReceipt({
   rows,
   empty,
   kind = "won",
+  copyLine,
+  copyNote,
+  lawLine,
 }: {
   title: string
   amount: number | null
@@ -25,18 +27,11 @@ export function ResultReceipt({
   rows: ReceiptRow[]
   empty: string
   kind?: "won" | "percent" | "months" | "days"
+  copyLine?: string
+  copyNote?: string
+  lawLine?: string
 }) {
   const hasResult = amount !== null
-
-  async function copy() {
-    if (amount === null) return
-    const text =
-      kind === "percent" || kind === "months" || kind === "days"
-        ? amount.toFixed(kind === "percent" ? 2 : 1)
-        : String(Math.round(amount))
-    await navigator.clipboard.writeText(text)
-    toast.success("숫자를 복사했어요")
-  }
 
   const headline =
     amount === null
@@ -48,6 +43,15 @@ export function ResultReceipt({
           : kind === "days"
             ? `${amount.toFixed(amount % 1 === 0 ? 0 : 1)}일`
             : formatWon(Math.round(amount))
+
+  async function copy() {
+    if (amount === null) return
+    const line =
+      copyLine ??
+      kakaoCopyLine(title, headline, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
+    await navigator.clipboard.writeText(line)
+    toast.success("복사됨")
+  }
 
   return (
     <aside className="paper-rule rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20">
@@ -77,9 +81,11 @@ export function ResultReceipt({
               </div>
             ))}
           </div>
-          <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
-            <Copy className="size-4" />
-            결과 복사
+          {lawLine ? (
+            <p className="mt-4 text-xs leading-5 text-muted-foreground">{lawLine}</p>
+          ) : null}
+          <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy} aria-label="복사">
+            복사
           </Button>
         </>
       ) : (

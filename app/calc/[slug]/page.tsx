@@ -7,11 +7,15 @@ import { CertPayback } from "@/components/calc/cert-payback"
 import { ClosingCost } from "@/components/calc/closing-cost"
 import { DsrCalc } from "@/components/calc/dsr-calc"
 import { DutchPay } from "@/components/calc/dutch-pay"
+import { ImportDuty } from "@/components/calc/import-duty"
 import { JeonseLoan } from "@/components/calc/jeonse-loan"
+import { JeonseVsRent } from "@/components/calc/jeonse-vs-rent"
 import { LtvCalc } from "@/components/calc/ltv-calc"
 import { MortgageCalc } from "@/components/calc/mortgage-calc"
 import { MovingCost } from "@/components/calc/moving-cost"
 import { OfferCompareCalc } from "@/components/calc/offer-compare-calc"
+import { OvertimePay } from "@/components/calc/overtime-pay"
+import { ParentalLeave } from "@/components/calc/parental-leave"
 import { QuickCalc } from "@/components/calc/quick-calc"
 import { RentConvert } from "@/components/calc/rent-convert"
 import { SaleVat } from "@/components/calc/sale-vat"
@@ -71,14 +75,20 @@ export default async function CalcPage({
       return <SaleVat item={item} />
     case "vehicle-tax":
       return <VehicleTax item={item} />
+    case "import-duty":
+      return <ImportDuty item={item} />
     case "take-home":
       return <TakeHomeCalc item={item} />
     case "weekly-holiday":
       return <WeeklyHoliday item={item} />
+    case "overtime-pay":
+      return <OvertimePay item={item} />
     case "annual-leave":
       return <AnnualLeave item={item} />
     case "severance":
       return <Severance item={item} />
+    case "parental-leave":
+      return <ParentalLeave item={item} />
     case "offer-compare":
       return <OfferCompareCalc item={item} />
     case "side-job-tax":
@@ -95,6 +105,8 @@ export default async function CalcPage({
       return <JeonseLoan item={item} />
     case "rent-convert":
       return <RentConvert item={item} />
+    case "jeonse-vs-rent":
+      return <JeonseVsRent item={item} />
     case "acquisition":
       return <AcquisitionCalc item={item} />
     case "capital-gains":

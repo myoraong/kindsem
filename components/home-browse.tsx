@@ -1,13 +1,21 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useLayoutEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { CalcDirRow } from "@/components/calc-card"
+import { RecentCalcs } from "@/components/recent-calcs"
 import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
 import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
 import { searchCalculators } from "@/lib/search"
+import { homeChipClass } from "@/lib/home-section"
+import {
+  HOME_SECTION_SCROLL_MARGIN_CLASS,
+  goHomeSection,
+  homeSectionToSnap,
+  snapHomeSection,
+} from "@/lib/home-section-snap"
 import { useHomeSection } from "@/lib/use-home-section"
 import { cn } from "@/lib/utils"
 
@@ -35,6 +43,17 @@ export function HomeBrowse() {
   const [query, setQuery] = useState("")
   const results = useMemo(() => searchCalculators(query, section), [query, section])
   const searching = query.trim().length > 0
+  const sectionClass = cn(
+    HOME_SECTION_SCROLL_MARGIN_CLASS,
+    section !== "all" && "min-h-[calc(100dvh-var(--site-header-h)-4.75rem)]",
+  )
+
+  useLayoutEffect(() => {
+    if (searching) return
+    const next = homeSectionToSnap(window.location.hash)
+    if (!next || next !== section) return
+    snapHomeSection(next)
+  }, [section, searching])
 
   return (
     <>
@@ -75,9 +94,12 @@ export function HomeBrowse() {
         </div>
       </form>
 
+      {!searching ? <RecentCalcs /> : null}
+
       <nav
+        data-home-jump
         aria-label="계산 분류"
-        className="sticky top-[4.25rem] z-20 -mx-4 mt-6 flex flex-wrap gap-2 bg-background/90 px-4 py-3 backdrop-blur-md"
+        className="sticky top-[var(--site-header-h)] z-20 -mx-4 mt-6 flex flex-wrap gap-2 bg-background/90 px-4 pt-4 pb-3 backdrop-blur-md"
       >
         {JUMP.map((item) => (
           <a
@@ -86,10 +108,12 @@ export function HomeBrowse() {
             aria-current={item.id === section ? "true" : undefined}
             className={cn(
               "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
-              item.id === section
-                ? "bg-card font-medium text-foreground ring-foreground/12"
-                : "bg-accent ring-foreground/8 hover:bg-card",
+              homeChipClass(item.id, section),
             )}
+            onClick={(event) => {
+              event.preventDefault()
+              goHomeSection(item.id)
+            }}
           >
             {item.label}
           </a>
@@ -119,7 +143,7 @@ export function HomeBrowse() {
       ) : (
         <div className="mt-4 space-y-8">
           {section === "all" || section === "today" ? (
-            <section id="today" className="scroll-mt-28">
+            <section id="today" className={sectionClass}>
               <CatalogSectionHeading {...CATALOG_HEADINGS.today} />
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {CALCULATORS.filter((item) => item.group === "today").map((item) => (
@@ -130,7 +154,7 @@ export function HomeBrowse() {
           ) : null}
 
           {section === "all" || section === "work" ? (
-            <section id="work" className="scroll-mt-28">
+            <section id="work" className={sectionClass}>
               <CatalogSectionHeading {...CATALOG_HEADINGS.work} />
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {CALCULATORS.filter((item) => item.group === "work").map((item) => (
@@ -141,7 +165,7 @@ export function HomeBrowse() {
           ) : null}
 
           {section === "all" || section === "realty" ? (
-            <section id="realty" className="scroll-mt-28">
+            <section id="realty" className={sectionClass}>
               <CatalogSectionHeading {...CATALOG_HEADINGS.realty} />
               <RealtyCatalog />
             </section>
