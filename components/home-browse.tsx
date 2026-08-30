@@ -78,8 +78,8 @@ export function HomeBrowse() {
             className={cn(
               "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
               item.id === section
-                ? "bg-accent font-medium text-foreground ring-foreground/8"
-                : "bg-card ring-foreground/12 hover:bg-card",
+                ? "bg-card font-medium text-foreground ring-foreground/12"
+                : "bg-accent ring-foreground/8 hover:bg-card",
             )}
           >
             {item.label}
