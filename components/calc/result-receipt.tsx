@@ -24,13 +24,14 @@ export function ResultReceipt({
   caption?: string
   rows: ReceiptRow[]
   empty: string
-  kind?: "won" | "percent"
+  kind?: "won" | "percent" | "months"
 }) {
   const hasResult = amount !== null
 
   async function copy() {
     if (amount === null) return
-    const text = kind === "percent" ? amount.toFixed(2) : String(Math.round(amount))
+    const text =
+      kind === "percent" || kind === "months" ? amount.toFixed(1) : String(Math.round(amount))
     await navigator.clipboard.writeText(text)
     toast.success("숫자를 복사했어요")
   }
@@ -40,7 +41,9 @@ export function ResultReceipt({
       ? ""
       : kind === "percent"
         ? `${amount.toFixed(2)}%`
-        : formatWon(Math.round(amount))
+        : kind === "months"
+          ? `${amount.toFixed(1)}개월`
+          : formatWon(Math.round(amount))
 
   return (
     <aside className="paper-rule rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20">
@@ -51,7 +54,12 @@ export function ResultReceipt({
             {headline}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {caption ?? (kind === "won" ? formatKoreanUnit(amount) : "연 기준 단순 수익률")}
+            {caption ??
+              (kind === "won"
+                ? formatKoreanUnit(amount)
+                : kind === "months"
+                  ? "세후 상승 기준"
+                  : "연 기준 단순 수익률")}
           </p>
           <div className="mt-5 space-y-2.5 border-t border-dashed border-border pt-4">
             {rows.map((row) => (

@@ -1,4 +1,4 @@
-export type LifeGroup = "today" | "rent" | "buy"
+export type LifeGroup = "today" | "work" | "rent" | "buy" | "loan"
 
 export type CalcItem = {
   slug: string
@@ -11,13 +11,18 @@ export type CalcItem = {
 export const GROUPS: { id: LifeGroup; title: string; subtitle: string }[] = [
   {
     id: "today",
-    title: "오늘 쓰는",
+    title: "생활",
     subtitle: "밥값, 할인, 부가세처럼 지금 바로 쓰는 계산",
+  },
+  {
+    id: "work",
+    title: "급여",
+    subtitle: "실수령, 이직 제안, 알바 세금을 한 화면에서",
   },
   {
     id: "rent",
     title: "빌릴 때",
-    subtitle: "전월세 계약 전에 복비와 초기 목돈만 확인",
+    subtitle: "전월세 복비·이사 총액·대출 이자를 한곳에서",
   },
   {
     id: "buy",
@@ -49,6 +54,41 @@ export const CALCULATORS: CalcItem[] = [
     group: "today",
   },
   {
+    slug: "take-home",
+    title: "실수령",
+    blurb: "연봉을 넣으면 4대보험과 세금이 줄줄이 빠집니다.",
+    when: "월급 명세서를 보기 전에",
+    group: "work",
+  },
+  {
+    slug: "offer-compare",
+    title: "연봉 vs 이직 제안",
+    blurb: "세후 비교에 감면·퇴직금·퇴사 후 건보까지.",
+    when: "이직 제안을 받았을 때",
+    group: "work",
+  },
+  {
+    slug: "side-job-tax",
+    title: "알바 3.3% vs 종소세",
+    blurb: "원천 3.3%와 종소세를 한 장에서 비교합니다.",
+    when: "알바·배달·프리랜서 정산",
+    group: "work",
+  },
+  {
+    slug: "benefit-net",
+    title: "지원금",
+    blurb: "실업급여·내일배움이 실수령에 얼마나 붙는지.",
+    when: "퇴직·훈련 지원금을 받을 때",
+    group: "work",
+  },
+  {
+    slug: "cert-payback",
+    title: "자격",
+    blurb: "자격증 비용이 연봉 상승으로 몇 달에 회수되는지.",
+    when: "자격증 수강 전에",
+    group: "work",
+  },
+  {
     slug: "brokerage",
     title: "중개수수료",
     blurb: "매매·전세·월세 법정 상한을 바로 확인.",
@@ -57,9 +97,9 @@ export const CALCULATORS: CalcItem[] = [
   },
   {
     slug: "moving",
-    title: "자취 초기비용",
-    blurb: "보증금, 복비, 이사비까지 첫 달 목돈.",
-    when: "원룸·오피스텔 계약 준비",
+    title: "이사 총액",
+    blurb: "복비, 이삿짐, 보증금, 대출이자를 한 화면에서.",
+    when: "전월세 계약 전 당일 현금",
     group: "rent",
   },
   {
@@ -72,16 +112,79 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "acquisition",
     title: "취득세",
-    blurb: "1주택·중과·생애최초를 짧게 추정.",
+    blurb: "1주택·중과·생애최초 법정 세율.",
     when: "매수 전 취득세·지방교육세",
+    group: "buy",
+  },
+  {
+    slug: "capital-gains",
+    title: "양도세",
+    blurb: "1주택 비과세, 장특공, 다주택 중과를 짧게.",
+    when: "주택을 팔기 전",
+    group: "buy",
+  },
+  {
+    slug: "corporate-gains",
+    title: "법인 양도세",
+    blurb: "법인이 부동산을 팔 때 법인세와 추가과세.",
+    when: "법인 명의 매각",
+    group: "buy",
+  },
+  {
+    slug: "holding-tax",
+    title: "보유세",
+    blurb: "재산세와 종부세를 한 장으로.",
+    when: "공시가격이 나온 뒤",
+    group: "buy",
+  },
+  {
+    slug: "license-tax",
+    title: "등록면허세",
+    blurb: "상속·증여 등기 때 내는 등록세.",
+    when: "무상 이전 등기",
+    group: "buy",
+  },
+  {
+    slug: "gift-tax",
+    title: "증여세",
+    blurb: "관계별 공제와 10~50% 누진.",
+    when: "집을 무상으로 줄 때",
+    group: "buy",
+  },
+  {
+    slug: "inheritance",
+    title: "상속세",
+    blurb: "일괄공제·배우자공제 최소 한도.",
+    when: "상속 재산 가늠",
+    group: "buy",
+  },
+  {
+    slug: "encumbered-gift",
+    title: "부담부증여",
+    blurb: "채무를 넘기면 증여세와 양도세를 같이.",
+    when: "전세·대출을 안고 증여",
     group: "buy",
   },
   {
     slug: "closing-cost",
     title: "살 때 총비용",
-    blurb: "취득세, 복비, 법무사, 인지세를 한 장으로.",
+    blurb: "취득세, 복비 상한, 인지세를 한 장으로.",
     when: "잔금 전 필요 현금 확인",
     group: "buy",
+  },
+  {
+    slug: "ltv",
+    title: "LTV",
+    blurb: "규제지역·생애최초 한도와 희망 대출이 되는지.",
+    when: "주택구입 주담대 한도 가늠",
+    group: "loan",
+  },
+  {
+    slug: "dsr",
+    title: "DSR",
+    blurb: "은행 40%·비은행 50% 한도.",
+    when: "소득 대비 원리금 한도",
+    group: "loan",
   },
   {
     slug: "mortgage",

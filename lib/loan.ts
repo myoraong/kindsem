@@ -1,4 +1,4 @@
-import { DSR_POLICY } from "@/lib/policy.generated"
+import { DSR_POLICY } from "./policy.generated.ts"
 
 export type Repayment = "equal-payment" | "equal-principal" | "interest-only"
 
@@ -18,6 +18,28 @@ export function equalPayment(principal: number, annualPercent: number, months: n
   const monthly = (principal * r * (1 + r) ** months) / ((1 + r) ** months - 1)
   const totalPay = monthly * months
   return { monthly, totalInterest: totalPay - principal, totalPay }
+}
+
+/** 원리금균등 첫 12개월(또는 남은 기간) 이자. 월액은 equalPayment을 그대로 씁니다. */
+export function equalPaymentFirstYearInterest(
+  principal: number,
+  annualPercent: number,
+  months: number,
+) {
+  if (months <= 0 || principal <= 0) return 0
+  const { monthly } = equalPayment(principal, annualPercent, months)
+  const r = monthlyRate(annualPercent)
+  if (r === 0) return 0
+  let remaining = principal
+  let interest = 0
+  const n = Math.min(12, months)
+  for (let i = 0; i < n; i++) {
+    const iPart = remaining * r
+    interest += iPart
+    remaining -= monthly - iPart
+    if (remaining < 0) remaining = 0
+  }
+  return interest
 }
 
 export function equalPrincipal(principal: number, annualPercent: number, months: number) {

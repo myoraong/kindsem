@@ -112,11 +112,3 @@ export function stampDuty(price: number, isHousingDeed: boolean): number {
   }
   return STAMP.bands[STAMP.bands.length - 1].duty
 }
-
-export function judicialEstimate(price: number): number {
-  if (price < 300_000_000) return 300_000
-  if (price < 600_000_000) return 500_000
-  if (price < 900_000_000) return 800_000
-  if (price < 1_500_000_000) return 1_100_000
-  return 1_500_000
-}

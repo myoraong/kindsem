@@ -1,40 +1,103 @@
+"use client"
+
+import { useState, type ReactNode } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { Sena } from "@/components/sena"
 import type { CalcItem } from "@/lib/catalog"
+import { categoryForSlug } from "@/lib/realty"
+import { isTodaySlug } from "@/lib/today"
+import { isWorkSlug } from "@/lib/work"
+import { PolicyStamp } from "@/components/policy-stamp"
+import { cn } from "@/lib/utils"
 
 export function CalcShell({
   item,
   children,
   result,
+  faq,
+  guide,
 }: {
   item: CalcItem
-  children: React.ReactNode
-  result: React.ReactNode
+  children: ReactNode
+  result: ReactNode
+  faq?: ReactNode
+  guide?: ReactNode
 }) {
+  const [tab, setTab] = useState<"calc" | "guide">("calc")
+  const realty = categoryForSlug(item.slug)
+  const work = isWorkSlug(item.slug)
+  const today = isTodaySlug(item.slug)
+  const backHref = realty ? "/realty" : work ? "/#work" : today ? "/#today" : "/"
+  const backLabel = realty ? "부동산" : work ? "급여" : today ? "생활" : "계산 모음"
+
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 md:py-10">
       <Link
-        href="/"
+        href={backHref}
         className="mb-5 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
-        계산 모음
+        {backLabel}
       </Link>
-      <div className="mb-6 flex items-start justify-between gap-4">
+      <div className="mb-4 flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm text-primary">{item.when}</p>
+          <p className="text-sm text-primary">
+            {realty
+              ? `${realty.title} · ${item.when}`
+              : work
+                ? `급여 · ${item.when}`
+                : today
+                  ? `생활 · ${item.when}`
+                  : item.when}
+          </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">{item.title}</h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">{item.blurb}</p>
         </div>
         <Sena className="hidden w-12 shrink-0 sm:block md:w-14" />
       </div>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
-        <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
-          {children}
+      {guide ? (
+        <div className="mb-5 flex gap-2">
+          <button
+            type="button"
+            onClick={() => setTab("calc")}
+            className={cn(
+              "h-9 rounded-full px-4 text-sm",
+              tab === "calc"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            )}
+          >
+            계산기
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("guide")}
+            className={cn(
+              "h-9 rounded-full px-4 text-sm",
+              tab === "guide"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            )}
+          >
+            안내·세율
+          </button>
+        </div>
+      ) : null}
+      {tab === "guide" && guide ? (
+        <section className="rounded-2xl bg-card p-5 text-sm leading-7 text-muted-foreground ring-1 ring-foreground/8 md:p-6">
+          {guide}
         </section>
-        {result}
-      </div>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
+          <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
+            {children}
+          </section>
+          {result}
+        </div>
+      )}
+      {faq}
+      <PolicyStamp />
     </div>
   )
 }

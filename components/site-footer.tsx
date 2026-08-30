@@ -1,14 +1,30 @@
-import { MASCOT } from "@/lib/brand"
+import Link from "next/link"
+import { CONTACT_EMAIL } from "@/lib/site"
 
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border/70">
-      <div className="mx-auto flex max-w-5xl flex-col gap-1 px-4 py-8 text-sm text-muted-foreground">
+      <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-8 text-sm text-muted-foreground">
+        <div>
+          <p className="font-semibold text-foreground">Kindsem 카인드셈</p>
+          <p className="mt-1 text-xs">친절한 생활 계산</p>
+        </div>
         <p>
-          Kindsem(카인드셈)은 어려운 세금을 친절하게 풀어, 실생활에 필요한 금액만 보여 줍니다. 마스코트{" "}
-          {MASCOT.name}가 같이 세어 줍니다.
+          <span className="text-muted-foreground/80">이메일</span>{" "}
+          <a
+            href={`mailto:${CONTACT_EMAIL}`}
+            className="text-foreground underline-offset-2 hover:underline"
+          >
+            {CONTACT_EMAIL}
+          </a>
         </p>
-        <p>세금·대출은 추정치입니다. 실제 신고·계약 금액은 세무사, 은행, 공인중개사와 확인해 주세요.</p>
+        <p>세금·대출 세율·상한은 현행 법령·고시입니다. 빠진 공제·사실관계가 있으면 결과가 달라집니다. 신고·대출 심사는 세무사·은행과 하세요.</p>
+        <Link href="/privacy" className="w-fit underline underline-offset-2 hover:text-foreground">
+          개인정보 안내
+        </Link>
+        <p className="border-t border-border/70 pt-4 text-xs">
+          Copyright © 2026 Kindsem 카인드셈 All rights reserved.
+        </p>
       </div>
     </footer>
   )

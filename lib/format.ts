@@ -14,6 +14,12 @@ export function formatWon(value: number, fractionDigits = 0): string {
   }).format(value)}원`
 }
 
+export function formatSignedWon(value: number, fractionDigits = 0): string {
+  const rounded = Number(value.toFixed(fractionDigits))
+  if (rounded > 0) return `+${formatWon(rounded, fractionDigits)}`
+  return formatWon(rounded, fractionDigits)
+}
+
 export function formatPlain(value: number, fractionDigits = 0): string {
   if (!Number.isFinite(value)) return "—"
   return new Intl.NumberFormat("ko-KR", {

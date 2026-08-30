@@ -1,4 +1,4 @@
-import { BROKERAGE, BROKERAGE_LEASE, BROKERAGE_SALE, VAT_RATE } from "@/lib/policy.generated"
+import { BROKERAGE, BROKERAGE_LEASE, BROKERAGE_SALE, VAT_RATE } from "./policy.generated.ts"
 
 export type DealType = "sale" | "jeonse" | "wolse"
 export type PropertyType = "house" | "officetel" | "presale" | "other"

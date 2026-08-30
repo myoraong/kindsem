@@ -6,7 +6,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { calcAcquisition, judicialEstimate, stampDuty, type HomeCount } from "@/lib/acquisition"
+import { calcAcquisition, stampDuty, type HomeCount } from "@/lib/acquisition"
 import { calcBrokerage } from "@/lib/brokerage"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatWon, manwonToWon } from "@/lib/format"
@@ -38,10 +38,9 @@ export function ClosingCost({ item }: { item: CalcItem }) {
       price: p,
       includeVat: true,
     })
-    const judicial = judicialEstimate(p)
     const stamp = stampDuty(p, true)
-    const total = tax.total + fee.total + judicial + stamp
-    return { tax, fee: fee.total, judicial, stamp, total }
+    const total = tax.total + fee.total + stamp
+    return { tax, fee: fee.total, stamp, total }
   }, [price, homes, adjusted, over85, first, shrinking])
 
   return (
@@ -57,7 +56,6 @@ export function ClosingCost({ item }: { item: CalcItem }) {
               ? [
                   { label: "취득세 합계", value: formatWon(result.tax.total) },
                   { label: "중개보수(상한+부가세)", value: formatWon(result.fee) },
-                  { label: "법무사 보수(추정)", value: formatWon(result.judicial) },
                   { label: "인지세", value: formatWon(result.stamp) },
                 ]
               : []
@@ -100,7 +98,8 @@ export function ClosingCost({ item }: { item: CalcItem }) {
           </>
         ) : null}
         <p className="text-sm leading-6 text-muted-foreground">
-          국민주택채권 할인료, 이사비, 화재보험은 빠져 있습니다. 법무사 보수는 시세 추정입니다.
+          국민주택채권 할인료, 이사비, 화재보험, 법무사 보수는 빠져 있습니다. 법무사 금액은 법령
+          상한이 아니라 합계에 넣지 않습니다.
         </p>
         <LawNote
           lines={[

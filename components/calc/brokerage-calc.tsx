@@ -9,6 +9,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calcBrokerage, type DealType, type PropertyType } from "@/lib/brokerage"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
+import { VAT_RATE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
 import { LawNote } from "@/components/calc/law-note"
 
@@ -109,7 +110,7 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
           <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
         ) : null}
         <CheckRow id="vat" checked={vat} onChange={setVat}>
-          부가세 10% 포함
+          부가세 {formatPercent(VAT_RATE * 100, 0)} 포함
         </CheckRow>
         <p className="text-sm leading-6 text-muted-foreground">
           법정 상한이며 실제 지급액은 이 안에서 협의합니다. 월세 거래금액은 보증금 + 월세 × 100이고,

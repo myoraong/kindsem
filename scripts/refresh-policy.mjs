@@ -560,22 +560,12 @@ export async function refreshPolicy() {
     unregulated: ltvParsed.unregulated ?? prev.ltv?.unregulated ?? 0.7,
     regulated: ltvParsed.regulated ?? prev.ltv?.regulated ?? 0.4,
     firstTime: ltvParsed.firstTime ?? prev.ltv?.firstTime ?? 0.8,
-    firstTimeMetro: prev.ltv?.firstTimeMetro ?? 0.7,
     firstTimeCap: ltvParsed.firstTimeCap ?? prev.ltv?.firstTimeCap ?? 600_000_000,
     extraBanned: true,
-    metroCaps: reviveInf(prev.ltv?.metroCaps, "upTo").length
-      ? reviveInf(prev.ltv?.metroCaps, "upTo")
-      : [
-          { upTo: 1_500_000_000, cap: 600_000_000 },
-          { upTo: 2_500_000_000, cap: 400_000_000 },
-          { upTo: Number.POSITIVE_INFINITY, cap: 200_000_000 },
-        ],
   }
   const dsr = {
     bank: ltvParsed.dsrBank ?? prev.dsr?.bank ?? 0.4,
     nonbank: prev.dsr?.nonbank ?? 0.5,
-    stressMetro: prev.dsr?.stressMetro ?? 3,
-    stressProvince: prev.dsr?.stressProvince ?? 0.75,
   }
 
   const json = {
@@ -615,10 +605,7 @@ export async function refreshPolicy() {
     },
     license,
     corpExtraLand: corpExtra,
-    ltv: {
-      ...ltv,
-      metroCaps: jsonBands(ltv.metroCaps),
-    },
+    ltv,
     dsr,
   }
 
@@ -707,12 +694,8 @@ export const LTV_POLICY = {
   unregulated: ${ltv.unregulated},
   regulated: ${ltv.regulated},
   firstTime: ${ltv.firstTime},
-  firstTimeMetro: ${ltv.firstTimeMetro},
   firstTimeCap: ${ltv.firstTimeCap},
   extraBanned: ${ltv.extraBanned},
-  metroCaps: [
-${tsBands(ltv.metroCaps, ["upTo", "cap"])},
-  ],
 } as const
 
 export const DSR_POLICY = ${JSON.stringify(dsr, null, 2)} as const

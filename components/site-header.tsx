@@ -1,29 +1,21 @@
 "use client"
 
-import Link from "next/link"
 import { Moon, Sun } from "lucide-react"
 import { BrandLink } from "@/components/brand-mark"
-import { GROUPS } from "@/lib/catalog"
+import { RealtyMenu } from "@/components/realty-menu"
+import { TodayMenu } from "@/components/today-menu"
+import { WorkMenu } from "@/components/work-menu"
 import { toggleTheme } from "@/lib/theme"
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur-md">
-      <div className="mx-auto flex h-[4.25rem] max-w-5xl items-center gap-3 px-4">
+      <div className="mx-auto flex h-[4.25rem] max-w-5xl items-center gap-1 px-4 sm:gap-3">
         <BrandLink />
-        <nav
-          aria-label="계산 분류"
-          className="ml-auto flex min-w-0 items-center gap-0.5 overflow-x-auto text-sm [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {GROUPS.map((group) => (
-            <Link
-              key={group.id}
-              href={`/#${group.id}`}
-              className="shrink-0 rounded-lg px-2.5 py-1.5 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              {group.title}
-            </Link>
-          ))}
+        <nav aria-label="계산 분류" className="ml-auto flex min-w-0 items-center gap-0 text-sm sm:gap-0.5">
+          <TodayMenu />
+          <WorkMenu />
+          <RealtyMenu />
         </nav>
         <button
           type="button"

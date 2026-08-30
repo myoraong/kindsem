@@ -248,19 +248,11 @@ export const LTV_POLICY = {
   unregulated: 0.7,
   regulated: 0.5,
   firstTime: 0.8,
-  firstTimeMetro: 0.7,
   firstTimeCap: 600000000,
   extraBanned: true,
-  metroCaps: [
-  { upTo: 1500000000, cap: 600000000 },
-  { upTo: 2500000000, cap: 400000000 },
-  { upTo: Number.POSITIVE_INFINITY, cap: 200000000 },
-  ],
 } as const
 
 export const DSR_POLICY = {
   "bank": 0.4,
-  "nonbank": 0.5,
-  "stressMetro": 3,
-  "stressProvince": 0.75
+  "nonbank": 0.5
 } as const

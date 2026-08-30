@@ -1,6 +1,6 @@
 # Kindsem · 카인드셈
 
-친절한 생활 계산 사이트입니다. Kind(친절)와 셈(계산)을 붙인 이름으로, 세법 백과사전 대신 살 때·빌릴 때·오늘 필요한 숫자만 따뜻하게 보여 줍니다.
+친절한 생활 계산 사이트입니다. Kind(친절)와 셈(계산)을 붙인 이름으로, 세법 백과사전 대신 생활·급여·부동산에 필요한 숫자만 따뜻하게 보여 줍니다.
 
 공개 주소는 [https://kindsem.com](https://kindsem.com) 입니다. GitHub Pages로 정적 사이트를 올립니다.
 
@@ -10,20 +10,26 @@
 
 ## 계산기
 
-**오늘 쓰는** 바로 계산, 더치페이, 할인·부가세
+**생활** 바로 계산, 더치페이, 할인·부가세
 
-**빌릴 때** 중개수수료, 자취 초기비용, 전세대출 이자
+**급여** 실수령, 연봉 vs 이직 제안, 알바 3.3% vs 종소세, 지원금, 자격
+
+**빌릴 때** 중개수수료, 이사 총액, 전세대출 이자
 
 **살 때** 취득세, 살 때 총비용, 주택담보대출, 임대수익률
 
-중개수수료·취득세·인지세는 법제처 현행 법령을 조회해 반영했습니다. 세액은 추정치입니다.
+중개수수료·취득세·인지세는 법제처 현행 법령을 조회해 반영했습니다. 세율·상한은 법령·고시입니다.
 
 ## 숫자 자동 갱신
 
 채팅으로 24시간 법령을 지켜볼 수는 없어서, 법제처·금융위 현행본에서 계산에 쓰는 숫자를 읽어 넣습니다.
 
 - `npm run refresh-policy` / `npm run build` 때마다 소득·법인·상속증여 세율, 증여공제, 중개보수 별표, 인지세, 취득세 중과, 부가세, 재산세 구간, 종부세 공제, LTV·은행 DSR을 다시 받습니다.
-- GitHub Actions가 매일 09시·21시(한국 시간, UTC 0시·12시)에 같은 작업을 돌리고, 숫자가 바뀌면 커밋한 뒤 kindsem.com에 바로 올립니다.
+- GitHub Actions가 매일 09시·21시(한국 시간, UTC 0시·12시)에 같은 작업을 돌리고, 숫자가 바뀌면 커밋한 뒤 kindsem.com에 바로 올립니다. 따로 물어보지 않습니다.
+- 법령 표 모양이 바뀌어 읽기가 실패하면 이 에이전트가 파서를 고친 뒤 다시 받습니다. 타이머는 돌 때마다 다시 걸어 만료되지 않게 합니다.
+- 계산기 하단에 마지막 조회일이 보이고, 주요 법령 시행일이 달라지면 알려 줍니다.
+
+별표에 없는 수도권 주담대 절대한도·스트레스 DSR 가산·법무사 시세는 계산에 넣지 않습니다. 빠진 공제·사실관계가 있으면 결과가 달라집니다.
 
 ## 로컬에서 실행
 
@@ -44,4 +50,4 @@ npm run build
 
 ## kindsem.com 배포
 
-`main`에 푸시하면 GitHub Actions가 `out/`을 만들어 GitHub Pages에 올립니다. 저장소 Settings → Pages의 Source는 **GitHub Actions**, Custom domain은 `kindsem.com` 입니다. Cloudflare DNS는 GitHub Pages 주소로, Proxy는 DNS only입니다.
+공개 사이트는 [github.com/myoraong/kindsem](https://github.com/myoraong/kindsem) 입니다. Origin `main` 히스토리를 GitHub에 덮어쓰지 않고, `npm run sync-live` 가 사이트 파일을 라이브 클론에 복사한 뒤 푸시합니다. GitHub Actions가 `out/`을 만들어 GitHub Pages에 올립니다. 세율 자동 갱신이 숫자를 바꾸면 같은 경로로 kindsem.com에 바로 반영됩니다. 저장소 Settings → Pages의 Source는 **GitHub Actions**, Custom domain은 `kindsem.com` 입니다. Cloudflare DNS는 GitHub Pages 주소로, Proxy는 DNS only입니다.

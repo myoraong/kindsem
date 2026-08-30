@@ -1,5 +1,3 @@
-import { LAW_CHECKED_ON } from "@/lib/law-sources"
-
 export function LawNote({
   lines,
 }: {
@@ -7,7 +5,6 @@ export function LawNote({
 }) {
   return (
     <div className="mt-6 space-y-2 border-t border-dashed border-border pt-4 text-xs leading-5 text-muted-foreground">
-      <p>법령은 법제처에서 {LAW_CHECKED_ON} 조회한 현행 기준입니다. 실제 세액은 사실관계에 따라 달라질 수 있습니다.</p>
       <ul className="space-y-1">
         {lines.map((line) => (
           <li key={line.href}>
