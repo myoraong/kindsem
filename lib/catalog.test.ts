@@ -14,6 +14,9 @@ test("홈 섹션 설명은 사실만 적고 슬로건 말을 쓰지 않는다", 
     assert.ok(section.blurb.length > 0)
     assert.doesNotMatch(section.blurb, forbidden)
   }
+  assert.equal(CATALOG_HEADINGS.today.blurb, "더치페이, 자동차 취득세, 일상에서 쓰는 계산.")
+  assert.equal(CATALOG_HEADINGS.work.blurb, "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.")
+  assert.equal(CATALOG_HEADINGS.realty.blurb, "취득·보유·양도, 전월세, 대출 한도. 법령·고시.")
 })
 
 test("미리보기 계산기가 카탈로그에 있다", () => {

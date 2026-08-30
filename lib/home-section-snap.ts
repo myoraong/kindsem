@@ -9,7 +9,7 @@ export const HOME_SECTION_SNAP_GAP_PX = 12
  */
 export const HOME_SECTION_SCROLL_MARGIN_CLASS = "home-section-snap"
 
-const HEADER_FALLBACK_PX = 60
+const HEADER_FALLBACK_PX = 52
 const CHIPS_FALLBACK_PX = 64
 
 export function homeSectionSnapTargetId(section: HomeSection): string {

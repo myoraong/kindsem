@@ -12,15 +12,15 @@ export type CalcItem = {
 export const CATALOG_HEADINGS = {
   today: {
     title: "생활",
-    blurb: "더치페이, 자동차 취득세, 해외직구 관세. 일상에서 쓰는 계산.",
+    blurb: "더치페이, 자동차 취득세, 일상에서 쓰는 계산.",
   },
   work: {
     title: "급여",
-    blurb: "실수령, 주휴·연장·연차·퇴직금, 육아휴직. 근로기준법·고용보험.",
+    blurb: "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.",
   },
   realty: {
     title: "부동산",
-    blurb: "취득·보유·양도, 전세·월세 비교, 대출 한도. 법령·고시.",
+    blurb: "취득·보유·양도, 전월세, 대출 한도. 법령·고시.",
   },
 } as const
 

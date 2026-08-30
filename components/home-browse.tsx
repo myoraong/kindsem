@@ -29,7 +29,7 @@ const JUMP = [
 function CatalogSectionHeading({ title, blurb }: { title: string; blurb: string }) {
   return (
     <header className="mb-3.5 min-w-0">
-      <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">{title}</h2>
+      <h2 className="text-2xl font-semibold tracking-tight sm:text-[1.75rem]">{title}</h2>
       <p className="mt-1 max-w-2xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
         {blurb}
       </p>
