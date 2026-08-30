@@ -8,6 +8,8 @@ import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
 import { CALCULATORS, GROUPS } from "@/lib/catalog"
 import { searchCalculators } from "@/lib/search"
+import { useHomeSection } from "@/lib/use-home-section"
+import { cn } from "@/lib/utils"
 
 const JUMP = [
   { id: "today", label: "생활" },
@@ -17,9 +19,12 @@ const JUMP = [
 
 export function HomeBrowse() {
   const router = useRouter()
+  const section = useHomeSection()
   const [query, setQuery] = useState("")
   const results = useMemo(() => searchCalculators(query), [query])
   const searching = query.trim().length > 0
+  const todayGroup = GROUPS.find((group) => group.id === "today")
+  const workGroup = GROUPS.find((group) => group.id === "work")
 
   return (
     <>
@@ -90,29 +95,48 @@ export function HomeBrowse() {
               <a
                 key={item.id}
                 href={`#${item.id}`}
-                className="inline-flex h-9 shrink-0 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
+                aria-current={item.id === section ? "true" : undefined}
+                className={cn(
+                  "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
+                  item.id === section
+                    ? "bg-accent font-medium text-foreground ring-foreground/12"
+                    : "bg-card ring-foreground/8 hover:bg-accent",
+                )}
               >
                 {item.label}
               </a>
             ))}
           </nav>
 
-          <div className="mt-4 space-y-8">
-            {GROUPS.filter((group) => group.id === "today" || group.id === "work").map((group) => (
-              <section key={group.id} id={group.id} className="scroll-mt-28">
-                <h2 className="mb-3 text-lg font-semibold">{group.title}</h2>
+          <div className="mt-4">
+            {section === "today" && todayGroup ? (
+              <section id="today" className="scroll-mt-28">
+                <h2 className="mb-3 text-lg font-semibold">{todayGroup.title}</h2>
                 <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
-                  {CALCULATORS.filter((item) => item.group === group.id).map((item) => (
+                  {CALCULATORS.filter((item) => item.group === "today").map((item) => (
                     <CalcDirRow key={item.slug} item={item} />
                   ))}
                 </div>
               </section>
-            ))}
+            ) : null}
 
-            <section id="realty" className="scroll-mt-28">
-              <h2 className="mb-3 text-lg font-semibold">부동산</h2>
-              <RealtyCatalog />
-            </section>
+            {section === "work" && workGroup ? (
+              <section id="work" className="scroll-mt-28">
+                <h2 className="mb-3 text-lg font-semibold">{workGroup.title}</h2>
+                <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
+                  {CALCULATORS.filter((item) => item.group === "work").map((item) => (
+                    <CalcDirRow key={item.slug} item={item} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {section === "realty" ? (
+              <section id="realty" className="scroll-mt-28">
+                <h2 className="mb-3 text-lg font-semibold">부동산</h2>
+                <RealtyCatalog />
+              </section>
+            ) : null}
           </div>
         </>
       )}

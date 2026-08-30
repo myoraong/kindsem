@@ -132,6 +132,7 @@ export function NavMenu({
         href={href}
         aria-expanded={open}
         aria-controls={openId}
+        aria-current={active ? "page" : undefined}
         className={cn(
           "inline-flex h-[4.25rem] items-center border-b-2 px-2 text-sm whitespace-nowrap transition-colors sm:px-2.5",
           active || open
