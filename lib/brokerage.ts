@@ -1,34 +1,19 @@
-/** 공인중개사법 시행규칙 별표 1·2 · 제20조 (법제처 2026-08-28 시행분) */
+import { BROKERAGE, BROKERAGE_LEASE, BROKERAGE_SALE, VAT_RATE } from "@/lib/policy.generated"
+
 export type DealType = "sale" | "jeonse" | "wolse"
 export type PropertyType = "house" | "officetel" | "presale" | "other"
 
 type Band = { max: number; rate: number; cap: number | null }
 
-const HOUSE_SALE: Band[] = [
-  { max: 50_000_000, rate: 0.006, cap: 250_000 },
-  { max: 200_000_000, rate: 0.005, cap: 800_000 },
-  { max: 900_000_000, rate: 0.004, cap: null },
-  { max: 1_200_000_000, rate: 0.005, cap: null },
-  { max: 1_500_000_000, rate: 0.006, cap: null },
-  { max: Infinity, rate: 0.007, cap: null },
-]
-
-const HOUSE_LEASE: Band[] = [
-  { max: 50_000_000, rate: 0.005, cap: 200_000 },
-  { max: 100_000_000, rate: 0.004, cap: 300_000 },
-  { max: 600_000_000, rate: 0.003, cap: null },
-  { max: 1_200_000_000, rate: 0.004, cap: null },
-  { max: 1_500_000_000, rate: 0.005, cap: null },
-  { max: Infinity, rate: 0.006, cap: null },
-]
-
 export function monthlyDealAmount(deposit: number, monthly: number): number {
-  const first = deposit + monthly * 100
-  if (first < 50_000_000) return deposit + monthly * 70
+  const first = deposit + monthly * BROKERAGE.monthlyHighMultiple
+  if (first < BROKERAGE.monthlyLowThreshold) {
+    return deposit + monthly * BROKERAGE.monthlyLowMultiple
+  }
   return first
 }
 
-function pickBand(amount: number, table: Band[]): Band {
+function pickBand(amount: number, table: readonly Band[]): Band {
   return table.find((band) => amount < band.max) ?? table[table.length - 1]
 }
 
@@ -64,17 +49,19 @@ export function calcBrokerage(input: {
   let rule: string
 
   if (input.property === "officetel") {
-    rate = isLease ? 0.004 : 0.005
+    rate = isLease ? BROKERAGE.officetelLease : BROKERAGE.officetelSale
     cap = null
     fee = amount * rate
-    rule = isLease ? "주거용 오피스텔 임대 상한 0.4%" : "주거용 오피스텔 매매 상한 0.5%"
+    rule = isLease
+      ? `주거용 오피스텔 임대 상한 ${(BROKERAGE.officetelLease * 100).toFixed(1)}%`
+      : `주거용 오피스텔 매매 상한 ${(BROKERAGE.officetelSale * 100).toFixed(1)}%`
   } else if (input.property === "other") {
-    rate = 0.009
+    rate = BROKERAGE.other
     cap = null
     fee = amount * rate
-    rule = "상가·토지 등 기타 부동산 상한 0.9%"
+    rule = `상가·토지 등 기타 부동산 상한 ${(BROKERAGE.other * 100).toFixed(1)}%`
   } else {
-    const table = isLease ? HOUSE_LEASE : HOUSE_SALE
+    const table = isLease ? BROKERAGE_LEASE : BROKERAGE_SALE
     const applied = applyBand(amount, pickBand(amount, table))
     fee = applied.fee
     rate = applied.rate
@@ -82,7 +69,7 @@ export function calcBrokerage(input: {
     rule = isLease ? "주택 임대차 상한요율" : "주택 매매 상한요율"
   }
 
-  const vat = input.includeVat ? fee * 0.1 : 0
+  const vat = input.includeVat ? fee * VAT_RATE : 0
   const total = fee + vat
 
   return {

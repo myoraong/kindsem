@@ -1,0 +1,749 @@
+#!/usr/bin/env node
+/**
+ * 법제처 현행 법령에서 세율 표를 읽어 lib/policy.generated.ts 와 public/policy.json 을 갱신합니다.
+ */
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { dirname, join } from "node:path"
+import { fileURLToPath } from "node:url"
+import {
+  appendixByTitle,
+  extractSliceRates,
+  parseBrokerageHouse,
+  parseBrokerageOfficetel,
+  parseHousingExempt,
+  parseLtvFromBanking,
+  parsePerMilleOrPercent,
+  parseStampBands,
+  parseVatRate,
+  parseWonAfter,
+} from "./policy-fields.mjs"
+
+const root = join(dirname(fileURLToPath(import.meta.url)), "..")
+const OC = process.env.LAW_OC || "test"
+
+const LAWS = [
+  { key: "income", query: "소득세법", id: "001565", article: "55", title: "세율" },
+  { key: "gift", query: "상속세 및 증여세법", id: "001561", article: "26", title: "상속세 세율" },
+  { key: "corp", query: "법인세법", id: "001563", article: "55", title: "세율" },
+  { key: "local", query: "지방세법", id: "001649" },
+  { key: "holding", query: "종합부동산세법", id: "009873" },
+  { key: "brokerage", query: "공인중개사법 시행규칙", id: "007292" },
+  { key: "firstHome", query: "지방세특례제한법", id: "011178" },
+  { key: "stamp", query: "인지세법", id: "001568" },
+  { key: "rural", query: "농어촌특별세법", id: "001569" },
+  { key: "vat", query: "부가가치세법", id: "001571" },
+  { key: "holdingDecree", query: "종합부동산세법 시행령", id: "009968" },
+]
+
+export async function getJson(url) {
+  const res = await fetch(url, { headers: { "User-Agent": "kindsem-policy-refresh" } })
+  if (!res.ok) throw new Error(`${res.status} ${url}`)
+  return res.json()
+}
+
+export function parseKoreanWon(raw) {
+  const s = String(raw).replace(/,/g, "").replace(/원/g, "").replace(/\s/g, "")
+  if (!s) return null
+  if (/^\d+$/.test(s)) return Number(s)
+  let rest = s
+  let total = 0
+  const cheonEok = rest.match(/(\d+)천억/)
+  if (cheonEok) {
+    total += Number(cheonEok[1]) * 100_000_000_000
+    rest = rest.replace(cheonEok[0], "")
+  }
+  const eok = rest.match(/(\d+)억/)
+  if (eok) {
+    total += Number(eok[1]) * 100_000_000
+    rest = rest.replace(eok[0], "")
+  }
+  const cheonMan = rest.match(/(\d+)천만/)
+  if (cheonMan) {
+    total += Number(cheonMan[1]) * 10_000_000
+    rest = rest.replace(cheonMan[0], "")
+  }
+  const man = rest.match(/(\d+)만/)
+  if (man) {
+    total += Number(man[1]) * 10_000
+    rest = rest.replace(man[0], "")
+  }
+  return total || null
+}
+
+function stripTags(html) {
+  return String(html)
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/\s+/g, " ")
+}
+
+function rateFrom(cell) {
+  const percent = cell.match(/(\d+)\s*퍼센트/)
+  if (percent) return Number(percent[1]) / 100
+  const bun = cell.match(/100분의\s*(\d+)/)
+  if (bun) return Number(bun[1]) / 100
+  return null
+}
+
+function interceptFrom(cell) {
+  const match = cell.match(/^([0-9,][^+(]{0,24}원)\s*\+/)
+  return match ? parseKoreanWon(match[1]) : null
+}
+
+function firstGrid(text) {
+  const start = text.indexOf("┌")
+  const end = text.indexOf("└")
+  if (start >= 0 && end > start) return text.slice(start, end + 1)
+  return text
+}
+
+export function extractProgressive(text) {
+  return extractProgressiveCells(firstGrid(text))
+}
+
+function extractProgressiveCells(text) {
+  const t = stripTags(text)
+  const cells = t
+    .split("│")
+    .map((cell) => cell.trim())
+    .filter((cell) => cell && !cell.includes("──"))
+  const rows = []
+  let i = 0
+  while (i < cells.length) {
+    const cell = cells[i]
+    const next = cells[i + 1] ?? ""
+    if (cell.endsWith("이하") && rateFrom(next) !== null && !next.includes("+")) {
+      const upTo = parseKoreanWon(cell.replace(/이하/g, ""))
+      const rate = rateFrom(next)
+      if (upTo && rate) rows.push({ upTo, rate, deduction: 0 })
+      i += 2
+      continue
+    }
+    if (cell.endsWith("초과") && interceptFrom(next) !== null && rateFrom(next) !== null) {
+      const floor = parseKoreanWon(cell.replace(/초과/g, ""))
+      const intercept = interceptFrom(next)
+      const rate = rateFrom(next)
+      const upper = cells[i + 2] ?? ""
+      if (upper.endsWith("이하")) {
+        const upTo = parseKoreanWon(upper.replace(/이하/g, ""))
+        if (upTo && floor && intercept !== null && rate) {
+          rows.push({ upTo, rate, deduction: Math.round(floor * rate - intercept) })
+        }
+        i += 3
+        continue
+      }
+      if (floor && intercept !== null && rate) {
+        rows.push({
+          upTo: Number.POSITIVE_INFINITY,
+          rate,
+          deduction: Math.round(floor * rate - intercept),
+        })
+      }
+      i += 2
+      continue
+    }
+    i += 1
+  }
+  return rows
+}
+
+export function parseGiftDeductions(unit) {
+  const ho = unit?.항?.호
+  const list = Array.isArray(ho) ? ho : ho ? [ho] : []
+  const amounts = {}
+  for (const item of list) {
+    const text = String(item.호내용 || "")
+    const afterColon = text.split(":").slice(1).join(":")
+    const amount = parseKoreanWon(afterColon)
+    if (!amount) continue
+    if (text.includes("배우자로부터")) amounts.spouse = amount
+    else if (text.includes("직계존속")) amounts.ascendant = amount
+    else if (text.includes("직계비속")) amounts.descendant = amount
+    else if (text.includes("혈족") || text.includes("인척")) amounts.other = amount
+  }
+  return amounts
+}
+
+function findArticle(units, article, title, branch) {
+  const list = Array.isArray(units) ? units : []
+  return list.find(
+    (unit) =>
+      String(unit.조문번호) === String(article) &&
+      (!title || unit.조문제목 === title) &&
+      (branch == null || String(unit.조문가지번호 ?? "") === String(branch)),
+  )
+}
+
+function articleText(unit) {
+  if (!unit) return ""
+  return JSON.stringify(unit.항 ?? unit.조문내용 ?? unit, null, 0)
+}
+
+function assertProgressiveConsistent(rows, label) {
+  for (let i = 1; i < rows.length; i++) {
+    const prev = rows[i - 1]
+    const cur = rows[i]
+    const at = prev.upTo
+    if (!Number.isFinite(at)) continue
+    const prevTax = at * prev.rate - prev.deduction
+    const curTax = at * cur.rate - cur.deduction
+    if (Math.abs(prevTax - curTax) > 2) {
+      throw new Error(`${label} 누진공제 불일치 (${at}: ${prevTax} vs ${curTax})`)
+    }
+  }
+}
+
+function ymd(value) {
+  const s = String(value || "")
+  if (s.length === 8) return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`
+  return s
+}
+
+function todayStamp() {
+  return new Date().toISOString().slice(0, 10)
+}
+
+function tsLiteral(rows) {
+  return rows
+    .map((row) => {
+      const upTo =
+        row.upTo === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : String(row.upTo)
+      return `  { upTo: ${upTo}, rate: ${row.rate}, deduction: ${row.deduction} }`
+    })
+    .join(",\n")
+}
+
+export async function fetchLawMeta(query, id) {
+  const url = `https://www.law.go.kr/DRF/lawSearch.do?OC=${encodeURIComponent(OC)}&target=law&type=JSON&query=${encodeURIComponent(query)}&display=20`
+  const data = await getJson(url)
+  const laws = data?.LawSearch?.law
+  const list = Array.isArray(laws) ? laws : laws ? [laws] : []
+  const exact = list.find((item) => item.법령명한글 === query) ?? list[0]
+  return {
+    query,
+    id: exact?.법령ID || id,
+    name: exact?.법령명한글,
+    enforced: ymd(exact?.시행일자),
+    promulgated: ymd(exact?.공포일자),
+    revision: exact?.제개정구분명,
+  }
+}
+
+async function fetchLawBody(id) {
+  const url = `https://www.law.go.kr/DRF/lawService.do?OC=${encodeURIComponent(OC)}&target=law&type=JSON&ID=${id}`
+  return getJson(url)
+}
+
+async function fetchAdmMeta(query) {
+  const url = `https://www.law.go.kr/DRF/lawSearch.do?OC=${encodeURIComponent(OC)}&target=admrul&type=JSON&query=${encodeURIComponent(query)}&display=20`
+  const data = await getJson(url)
+  const list = [].concat(data?.AdmRulSearch?.admrul || [])
+  const exact = list.find((item) => item.행정규칙명 === query) ?? list[0]
+  const link = exact?.행정규칙상세링크 || ""
+  const serviceId = (link.match(/ID=(\d+)/) || [])[1] || exact?.행정규칙ID
+  return {
+    query,
+    id: serviceId || exact?.행정규칙ID,
+    name: exact?.행정규칙명,
+    enforced: ymd(exact?.시행일자),
+    promulgated: ymd(exact?.발령일자),
+    revision: exact?.제개정구분명,
+  }
+}
+
+async function fetchAdmBody(id) {
+  const url = `https://www.law.go.kr/DRF/lawService.do?OC=${encodeURIComponent(OC)}&target=admrul&type=JSON&ID=${id}`
+  return getJson(url)
+}
+
+function loadPrevious() {
+  try {
+    return JSON.parse(readFileSync(join(root, "public/policy.json"), "utf8"))
+  } catch {
+    return {}
+  }
+}
+
+function reviveInf(rows, key) {
+  return (rows || []).map((row) => ({
+    ...row,
+    [key]: row[key] == null ? Number.POSITIVE_INFINITY : row[key],
+  }))
+}
+
+function jsonBands(rows) {
+  return (rows || []).map((row) => ({
+    ...row,
+    max: row.max === Number.POSITIVE_INFINITY ? null : row.max,
+    upTo: row.upTo === Number.POSITIVE_INFINITY ? null : row.upTo,
+    cap: row.cap === Number.POSITIVE_INFINITY ? null : row.cap,
+  }))
+}
+
+function tsBands(rows, keys = ["max", "rate", "cap"]) {
+  return (rows || [])
+    .map((row) => {
+      const parts = keys.map((key) => {
+        const value = row[key]
+        if (value === Number.POSITIVE_INFINITY || (value == null && key !== "cap")) {
+          return `${key}: Number.POSITIVE_INFINITY`
+        }
+        if (value == null) return `${key}: null`
+        return `${key}: ${value}`
+      })
+      return `  { ${parts.join(", ")} }`
+    })
+    .join(",\n")
+}
+
+function tsSlice(rows) {
+  return (rows || [])
+    .map((row) => {
+      const cap = row.cap === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : row.cap
+      return `  { cap: ${cap}, rate: ${row.rate} }`
+    })
+    .join(",\n")
+}
+
+export async function refreshPolicy() {
+  const fetchedAt = todayStamp()
+  const sources = {}
+  for (const law of LAWS) {
+    sources[law.key] = await fetchLawMeta(law.query, law.id)
+  }
+
+  const incomeBody = await fetchLawBody(sources.income.id)
+  const giftBody = await fetchLawBody(sources.gift.id)
+  const corpBody = await fetchLawBody(sources.corp.id)
+
+  const incomeUnit = findArticle(incomeBody.법령.조문.조문단위, "55", "세율")
+  const giftUnit = findArticle(giftBody.법령.조문.조문단위, "26", "상속세 세율")
+  const giftDeductionUnit = findArticle(giftBody.법령.조문.조문단위, "53", "증여재산 공제")
+  const corpUnit = findArticle(corpBody.법령.조문.조문단위, "55", "세율")
+
+  const income = extractProgressive(articleText(incomeUnit))
+  const gift = extractProgressive(articleText(giftUnit))
+  const corp = extractProgressive(articleText(corpUnit))
+  const giftDeductions = parseGiftDeductions(giftDeductionUnit)
+
+  if (income.length < 6) throw new Error(`소득세 세율 파싱 실패 (${income.length})`)
+  if (gift.length < 4) throw new Error(`상속·증여 세율 파싱 실패 (${gift.length})`)
+  if (corp.length < 3) throw new Error(`법인세 세율 파싱 실패 (${corp.length})`)
+  assertProgressiveConsistent(income, "소득세")
+  assertProgressiveConsistent(gift, "상속·증여세")
+  assertProgressiveConsistent(corp, "법인세")
+  if (
+    !giftDeductions.spouse ||
+    !giftDeductions.ascendant ||
+    !giftDeductions.descendant ||
+    !giftDeductions.other
+  ) {
+    throw new Error(`증여재산 공제 파싱 실패 ${JSON.stringify(giftDeductions)}`)
+  }
+
+  const prev = loadPrevious()
+  const localBody = await fetchLawBody(sources.local.id)
+  const holdingBody = await fetchLawBody(sources.holding.id)
+  const brokerageBody = await fetchLawBody(sources.brokerage.id)
+  const firstHomeBody = await fetchLawBody(sources.firstHome.id)
+  const stampBody = await fetchLawBody(sources.stamp.id)
+  const vatBody = await fetchLawBody(sources.vat.id)
+  const holdingDecreeBody = await fetchLawBody(sources.holdingDecree.id)
+  const ruralBody = await fetchLawBody(sources.rural.id)
+
+  sources.banking = await fetchAdmMeta("은행업감독규정")
+  const bankingBody = sources.banking.id ? await fetchAdmBody(sources.banking.id) : null
+
+  const vatRate =
+    parseVatRate(articleText(findArticle(vatBody.법령.조문.조문단위, "30", "세율"))) ??
+    prev.vatRate ??
+    0.1
+
+  const houseApp = appendixByTitle(brokerageBody, "주택 중개보수")
+  const officeApp = appendixByTitle(brokerageBody, "오피스텔 중개보수")
+  const houseBands = parseBrokerageHouse(houseApp?.별표내용 || "")
+  const officeRates = parseBrokerageOfficetel(officeApp?.별표내용 || "")
+  const rule20 = findArticle(brokerageBody.법령.조문.조문단위, "20")
+  const rule20Text = articleText(rule20)
+  const otherRate =
+    parsePerMilleOrPercent((rule20Text.match(/제1호 외의 경우[\s\S]{0,80}1천분의\s*\d+/) || [])[0] || "") ??
+    prev.brokerage?.other ??
+    0.009
+  const monthlyHigh = /차임액에\s*100을 곱한/.test(rule20Text) ? 100 : prev.brokerage?.monthlyHighMultiple ?? 100
+  const monthlyLow = /차임액에\s*70을 곱한/.test(rule20Text) ? 70 : prev.brokerage?.monthlyLowMultiple ?? 70
+  const monthlyThreshold =
+    parseWonAfter(rule20Text, "합산한 금액이") ?? prev.brokerage?.monthlyLowThreshold ?? 50_000_000
+  const brokerage = {
+    sale: houseBands.sale.length >= 4 ? houseBands.sale : reviveInf(prev.brokerage?.sale, "max"),
+    lease: houseBands.lease.length >= 4 ? houseBands.lease : reviveInf(prev.brokerage?.lease, "max"),
+    officetelSale: officeRates.sale ?? prev.brokerage?.officetelSale ?? 0.005,
+    officetelLease: officeRates.lease ?? prev.brokerage?.officetelLease ?? 0.004,
+    other: otherRate,
+    monthlyHighMultiple: monthlyHigh,
+    monthlyLowMultiple: monthlyLow,
+    monthlyLowThreshold: monthlyThreshold,
+  }
+  if (!brokerage.sale || brokerage.sale.length < 4) {
+    brokerage.sale = prev.brokerage?.sale ?? [
+      { max: 50_000_000, rate: 0.006, cap: 250_000 },
+      { max: 200_000_000, rate: 0.005, cap: 800_000 },
+      { max: 900_000_000, rate: 0.004, cap: null },
+      { max: 1_200_000_000, rate: 0.005, cap: null },
+      { max: 1_500_000_000, rate: 0.006, cap: null },
+      { max: Number.POSITIVE_INFINITY, rate: 0.007, cap: null },
+    ]
+  }
+  if (!brokerage.lease || brokerage.lease.length < 4) {
+    brokerage.lease = prev.brokerage?.lease ?? [
+      { max: 50_000_000, rate: 0.005, cap: 200_000 },
+      { max: 100_000_000, rate: 0.004, cap: 300_000 },
+      { max: 600_000_000, rate: 0.003, cap: null },
+      { max: 1_200_000_000, rate: 0.004, cap: null },
+      { max: 1_500_000_000, rate: 0.005, cap: null },
+      { max: Number.POSITIVE_INFINITY, rate: 0.006, cap: null },
+    ]
+  }
+
+  const stamp3 = findArticle(stampBody.법령.조문.조문단위, "3", "과세문서 및 세액")
+  const stamp6 = findArticle(stampBody.법령.조문.조문단위, "6", "비과세문서")
+  const stampBands = parseStampBands(articleText(stamp3))
+  const stamp = {
+    housingExempt: parseHousingExempt(articleText(stamp6)) ?? prev.stamp?.housingExempt ?? 100_000_000,
+    bands: stampBands.length >= 4 ? stampBands : prev.stamp?.bands,
+  }
+  if (!stamp.bands || stamp.bands.length < 4) {
+    stamp.bands = prev.stamp?.bands ?? [
+      { upTo: 10_000_000, duty: 0 },
+      { upTo: 30_000_000, duty: 20_000 },
+      { upTo: 50_000_000, duty: 40_000 },
+      { upTo: 100_000_000, duty: 70_000 },
+      { upTo: 1_000_000_000, duty: 150_000 },
+      { upTo: Number.POSITIVE_INFINITY, duty: 350_000 },
+    ]
+  }
+
+  const localUnits = localBody.법령.조문.조문단위
+  const acq11 = findArticle(localUnits, "11", "부동산 취득의 세율")
+  const acq11Text = articleText(acq11)
+  const housingLow = parsePerMilleOrPercent((acq11Text.match(/6억원 이하인 주택[\s\S]{0,40}1천분의\s*\d+/) || [])[0] || "")
+  const housingHigh = parsePerMilleOrPercent((acq11Text.match(/9억원을 초과하는 주택[\s\S]{0,40}1천분의\s*\d+/) || [])[0] || "")
+  const nonFarm = [...acq11Text.matchAll(/농지 외의 것:\s*1천분의\s*(\d+)/g)]
+  const standardNonFarm = nonFarm.length
+    ? Number(nonFarm[nonFarm.length - 1][1]) / 1000
+    : parsePerMilleOrPercent((acq11Text.match(/농지 외의 것:\s*1천분의\s*\d+/) || [])[0] || "")
+  const def6 = findArticle(localUnits, "6", "정의")
+  const heavyBase = parsePerMilleOrPercent((articleText(def6).match(/중과기준세율[\s\S]{0,80}1천분의\s*\d+/) || [])[0] || "")
+  const heavy13 = findArticle(localUnits, "13", "법인의 주택 취득 등 중과", "2")
+  const heavy13Text = articleText(heavy13)
+  const heavy2Mul = Number((heavy13Text.match(/100분의\s*(\d+)을 합한 세율[\s\S]{0,40}1세대 3주택/) || heavy13Text.match(/100분의\s*(200)/) || [])[1] || 200) / 100
+  const heavy3Mul = Number((heavy13Text.match(/100분의\s*(400)/) || [])[1] || 400) / 100
+  const firstHomeUnit = findArticle(firstHomeBody.법령.조문.조문단위, "36", "생애최초 주택 구입에 대한 취득세 감면", "3")
+  const firstHomeText = articleText(firstHomeUnit)
+  const firstHomeLimit = parseWonAfter(firstHomeText, "취득당시가액") ?? 1_200_000_000
+  const shrinkingRelief = parseWonAfter(firstHomeText, "산출세액이") ?? 3_000_000
+  const generalRelief = parseWonAfter(firstHomeText, "제1호 외의 주택") ?? 2_000_000
+  const license28 = findArticle(localUnits, "28", "세율")
+  const licenseText = articleText(license28)
+  const inheritRate = parsePerMilleOrPercent((licenseText.match(/상속으로 인한 소유권 이전[\s\S]{0,40}1천분의\s*\d+/) || [])[0] || "")
+  const giftRate = parsePerMilleOrPercent((licenseText.match(/무상으로 인한 소유권 이전[\s\S]{0,40}1천분의\s*\d+/) || [])[0] || "")
+  const city112 = findArticle(localUnits, "112", "재산세 도시지역분")
+  const cityRate = parsePerMilleOrPercent((articleText(city112).match(/1천분의\s*1\.4/) || [])[0] || "") ?? prev.holding?.cityRate ?? 0.0014
+  const propOne = extractSliceRates(articleText(findArticle(localUnits, "111", "1세대 1주택에 대한 주택 세율 특례", "2")))
+  const propOther = extractSliceRates(articleText(findArticle(localUnits, "111", "세율")))
+  const housingOther = propOther.filter((row, idx, all) => {
+    const firstInf = all.findIndex((item) => item.cap === Number.POSITIVE_INFINITY)
+    return idx >= Math.max(0, all.length - 8)
+  })
+  const otherSlice = propOther.slice(-4)
+  const acquisition = {
+    housingLow: housingLow ?? prev.acquisition?.housingLow ?? 0.01,
+    housingHigh: housingHigh ?? prev.acquisition?.housingHigh ?? 0.03,
+    housingMidFrom: 600_000_000,
+    housingMidTo: 900_000_000,
+    standardNonFarm: standardNonFarm ?? prev.acquisition?.standardNonFarm ?? 0.04,
+    heavyBase: heavyBase ?? prev.acquisition?.heavyBase ?? 0.02,
+    heavy2: (standardNonFarm ?? 0.04) + (heavyBase ?? 0.02) * (heavy2Mul || 2),
+    heavy3: (standardNonFarm ?? 0.04) + (heavyBase ?? 0.02) * (heavy3Mul || 4),
+    firstHomeLimit,
+    firstHomeRelief: generalRelief,
+    shrinkingRelief,
+    educationShare: 0.1,
+    educationHeavyFixed: 0.004,
+    ruralNormal: 0.002,
+    ruralHeavy2: 0.006,
+    ruralHeavy3: 0.01,
+  }
+
+  const income89 = findArticle(incomeBody.법령.조문.조문단위, "89", "비과세 양도소득")
+  const income103 = findArticle(incomeBody.법령.조문.조문단위, "103", "양도소득 기본공제")
+  const income104 = findArticle(incomeBody.법령.조문.조문단위, "104", "양도소득세의 세율")
+  const income95 = findArticle(incomeBody.법령.조문.조문단위, "95", "양도소득금액과 장기보유 특별공제액")
+  const t89 = articleText(income89)
+  const t103 = articleText(income103)
+  const t104 = articleText(income104)
+  const t95 = articleText(income95)
+  const under1 = Number((t104.match(/1년 미만인 것[\s\S]{0,80}주택[\s\S]{0,40}100분의\s*(\d+)/) || [])[1] || 70) / 100
+  const under2 = Number((t104.match(/1년 이상 2년 미만[\s\S]{0,80}주택[\s\S]{0,40}100분의\s*(\d+)/) || [])[1] || 60) / 100
+  const capitalGains = {
+    houseExempt: parseWonAfter(t89, "합계액이") ?? prev.capitalGains?.houseExempt ?? 1_200_000_000,
+    basicDeduction: parseWonAfter(t103, "연") ?? prev.capitalGains?.basicDeduction ?? 2_500_000,
+    under1y: under1,
+    under2y: under2,
+    surcharge2: prev.capitalGains?.surcharge2 ?? 0.2,
+    surcharge3: prev.capitalGains?.surcharge3 ?? 0.3,
+    localIncome: 0.1,
+    specialStart: /100분의 6/.test(t95) ? 0.06 : 0.06,
+    specialStep: 0.02,
+    specialMax: /100분의 30/.test(t95) ? 0.3 : 0.3,
+    specialOneHousePerYear: 0.08,
+    specialOneHouseMax: 0.8,
+  }
+
+  const gift18 = findArticle(giftBody.법령.조문.조문단위, "18", "기초공제")
+  const gift21 = findArticle(giftBody.법령.조문.조문단위, "21", "일괄공제")
+  const gift19 = findArticle(giftBody.법령.조문.조문단위, "19", "배우자 상속공제")
+  const lump = parseWonAfter(articleText(gift21), "5억원") ?? 500_000_000
+  const spouseMin = parseWonAfter(articleText(gift19), "5억원") ?? 500_000_000
+  const inheritance = { lump, spouseMin }
+
+  const holding8 = findArticle(holdingBody.법령.조문.조문단위, "8", "과세표준")
+  const holding8Text = articleText(holding8)
+  const oneHouseDeduction = parseWonAfter(holding8Text, "1세대 1주택자") ?? 1_200_000_000
+  const otherDeduction = parseWonAfter(holding8Text, "해당하지 아니하는 자") ?? 900_000_000
+  const fairMarket =
+    parsePerMilleOrPercent((articleText(findArticle(holdingDecreeBody.법령.조문.조문단위, "2", "공정시장가액비율", "4")).match(/100분의\s*60/) || [])[0] || "") ??
+    0.6
+  const holding = {
+    fairMarket,
+    oneHouseDeduction,
+    otherDeduction,
+    cityRate,
+    educationShare: 0.2,
+    ruralShare: 0.2,
+    jongbuOne: 0.005,
+    jongbuTwo: 0.008,
+    jongbuThree: 0.012,
+    propertyOneHouse: propOne.length >= 3 ? propOne : prev.holding?.propertyOneHouse,
+    propertyOther: otherSlice.length >= 3 ? otherSlice : prev.holding?.propertyOther,
+  }
+  if (!holding.propertyOneHouse || holding.propertyOneHouse.length < 3) {
+    holding.propertyOneHouse = prev.holding?.propertyOneHouse ?? [
+      { cap: 60_000_000, rate: 0.0005 },
+      { cap: 150_000_000, rate: 0.001 },
+      { cap: 300_000_000, rate: 0.002 },
+      { cap: Number.POSITIVE_INFINITY, rate: 0.0035 },
+    ]
+  }
+  if (!holding.propertyOther || holding.propertyOther.length < 3) {
+    holding.propertyOther = prev.holding?.propertyOther ?? [
+      { cap: 60_000_000, rate: 0.001 },
+      { cap: 150_000_000, rate: 0.0015 },
+      { cap: 300_000_000, rate: 0.0025 },
+      { cap: Number.POSITIVE_INFINITY, rate: 0.004 },
+    ]
+  }
+
+  const license = {
+    inherit: inheritRate ?? prev.license?.inherit ?? 0.008,
+    gift: giftRate ?? prev.license?.gift ?? 0.015,
+    educationShare: 0.2,
+  }
+
+  const corpExtraUnit = findArticle(corpBody.법령.조문.조문단위, "55", "토지등 양도소득에 대한 과세특례", "2")
+  const corpExtra =
+    parsePerMilleOrPercent((articleText(corpExtraUnit).match(/비사업용[\s\S]{0,80}100분의\s*\d+/) || articleText(corpExtraUnit).match(/100분의\s*10/) || [])[0] || "") ??
+    prev.corpExtraLand ??
+    0.1
+
+  const ltvParsed = parseLtvFromBanking(appendixByTitle(bankingBody, "주택 관련 담보대출")?.별표내용 || "")
+  const ltv = {
+    unregulated: ltvParsed.unregulated ?? prev.ltv?.unregulated ?? 0.7,
+    regulated: ltvParsed.regulated ?? prev.ltv?.regulated ?? 0.4,
+    firstTime: ltvParsed.firstTime ?? prev.ltv?.firstTime ?? 0.8,
+    firstTimeMetro: prev.ltv?.firstTimeMetro ?? 0.7,
+    firstTimeCap: ltvParsed.firstTimeCap ?? prev.ltv?.firstTimeCap ?? 600_000_000,
+    extraBanned: true,
+    metroCaps: reviveInf(prev.ltv?.metroCaps, "upTo").length
+      ? reviveInf(prev.ltv?.metroCaps, "upTo")
+      : [
+          { upTo: 1_500_000_000, cap: 600_000_000 },
+          { upTo: 2_500_000_000, cap: 400_000_000 },
+          { upTo: Number.POSITIVE_INFINITY, cap: 200_000_000 },
+        ],
+  }
+  const dsr = {
+    bank: ltvParsed.dsrBank ?? prev.dsr?.bank ?? 0.4,
+    nonbank: prev.dsr?.nonbank ?? 0.5,
+    stressMetro: prev.dsr?.stressMetro ?? 3,
+    stressProvince: prev.dsr?.stressProvince ?? 0.75,
+  }
+
+  const json = {
+    fetchedAt,
+    source: "법제처 국가법령정보 공동활용",
+    sources,
+    income: income.map(({ upTo, rate, deduction }) => ({
+      upTo: upTo === Number.POSITIVE_INFINITY ? null : upTo,
+      rate,
+      deduction,
+    })),
+    gift: gift.map(({ upTo, rate, deduction }) => ({
+      upTo: upTo === Number.POSITIVE_INFINITY ? null : upTo,
+      rate,
+      deduction,
+    })),
+    corp: corp.map(({ upTo, rate, deduction }) => ({
+      upTo: upTo === Number.POSITIVE_INFINITY ? null : upTo,
+      rate,
+      deduction,
+    })),
+    giftDeductions,
+    vatRate,
+    brokerage: {
+      ...brokerage,
+      sale: jsonBands(brokerage.sale),
+      lease: jsonBands(brokerage.lease),
+    },
+    stamp: { ...stamp, bands: jsonBands(stamp.bands) },
+    acquisition,
+    capitalGains,
+    inheritance,
+    holding: {
+      ...holding,
+      propertyOneHouse: jsonBands(holding.propertyOneHouse),
+      propertyOther: jsonBands(holding.propertyOther),
+    },
+    license,
+    corpExtraLand: corpExtra,
+    ltv: {
+      ...ltv,
+      metroCaps: jsonBands(ltv.metroCaps),
+    },
+    dsr,
+  }
+
+  mkdirSync(join(root, "public"), { recursive: true })
+  writeFileSync(join(root, "public/policy.json"), `${JSON.stringify(json, null, 2)}\n`)
+
+  const ts = `/* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
+export const POLICY_FETCHED_AT = ${JSON.stringify(fetchedAt)}
+
+export const POLICY_SOURCES = ${JSON.stringify(sources, null, 2)} as const
+
+export const INCOME_BRACKETS = [
+${tsLiteral(income)},
+] as const
+
+export const GIFT_BRACKETS = [
+${tsLiteral(gift)},
+] as const
+
+export const CORP_BRACKETS = [
+${tsLiteral(corp)},
+] as const
+
+export const GIFT_DEDUCTIONS = {
+  spouse: ${giftDeductions.spouse},
+  ascendant: ${giftDeductions.ascendant},
+  descendant: ${giftDeductions.descendant},
+  other: ${giftDeductions.other},
+} as const
+
+export const VAT_RATE = ${vatRate}
+
+export const BROKERAGE_SALE = [
+${tsBands(brokerage.sale)},
+] as const
+
+export const BROKERAGE_LEASE = [
+${tsBands(brokerage.lease)},
+] as const
+
+export const BROKERAGE = {
+  officetelSale: ${brokerage.officetelSale},
+  officetelLease: ${brokerage.officetelLease},
+  other: ${brokerage.other},
+  monthlyHighMultiple: ${brokerage.monthlyHighMultiple},
+  monthlyLowMultiple: ${brokerage.monthlyLowMultiple},
+  monthlyLowThreshold: ${brokerage.monthlyLowThreshold},
+} as const
+
+export const STAMP = {
+  housingExempt: ${stamp.housingExempt},
+  bands: [
+${tsBands(stamp.bands, ["upTo", "duty"])},
+  ],
+} as const
+
+export const ACQUISITION = ${JSON.stringify(acquisition, null, 2)} as const
+
+export const CAPITAL_GAINS = ${JSON.stringify(capitalGains, null, 2)} as const
+
+export const INHERITANCE = ${JSON.stringify(inheritance, null, 2)} as const
+
+export const HOLDING = {
+  fairMarket: ${holding.fairMarket},
+  oneHouseDeduction: ${holding.oneHouseDeduction},
+  otherDeduction: ${holding.otherDeduction},
+  cityRate: ${holding.cityRate},
+  educationShare: ${holding.educationShare},
+  ruralShare: ${holding.ruralShare},
+  jongbuOne: ${holding.jongbuOne},
+  jongbuTwo: ${holding.jongbuTwo},
+  jongbuThree: ${holding.jongbuThree},
+  propertyOneHouse: [
+${tsSlice(holding.propertyOneHouse)},
+  ],
+  propertyOther: [
+${tsSlice(holding.propertyOther)},
+  ],
+} as const
+
+export const LICENSE = ${JSON.stringify(license, null, 2)} as const
+
+export const CORP_EXTRA_LAND = ${corpExtra}
+
+export const LTV_POLICY = {
+  unregulated: ${ltv.unregulated},
+  regulated: ${ltv.regulated},
+  firstTime: ${ltv.firstTime},
+  firstTimeMetro: ${ltv.firstTimeMetro},
+  firstTimeCap: ${ltv.firstTimeCap},
+  extraBanned: ${ltv.extraBanned},
+  metroCaps: [
+${tsBands(ltv.metroCaps, ["upTo", "cap"])},
+  ],
+} as const
+
+export const DSR_POLICY = ${JSON.stringify(dsr, null, 2)} as const
+`
+  writeFileSync(join(root, "lib/policy.generated.ts"), ts)
+  console.log(`정책 갱신 ${fetchedAt}`)
+  console.log("소득세", income.map((r) => `${r.rate * 100}%/${r.deduction}`).join(" · "))
+  console.log("상증세", gift.map((r) => `${r.rate * 100}%/${r.deduction}`).join(" · "))
+  console.log("법인세", corp.map((r) => `${r.rate * 100}%/${r.deduction}`).join(" · "))
+  console.log("부가세", vatRate, "중개 매매", brokerage.sale.map((r) => r.rate).join("/"))
+  console.log("LTV", ltv.unregulated, ltv.regulated, "DSR", dsr.bank)
+  console.log(
+    "증여공제",
+    `배우자 ${giftDeductions.spouse} · 존속 ${giftDeductions.ascendant} · 비속 ${giftDeductions.descendant} · 기타 ${giftDeductions.other}`,
+  )
+  return json
+}
+
+function isDirectRun() {
+  const entry = process.argv[1]
+  if (!entry) return false
+  return fileURLToPath(import.meta.url) === entry
+}
+
+if (isDirectRun()) {
+  refreshPolicy().catch((error) => {
+    console.error(error)
+    if (existsSync(join(root, "lib/policy.generated.ts"))) {
+      console.error("이전 세율 파일을 그대로 씁니다.")
+      process.exit(0)
+    }
+    process.exit(1)
+  })
+}

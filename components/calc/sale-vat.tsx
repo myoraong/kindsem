@@ -5,7 +5,8 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon } from "@/lib/format"
+import { formatPercent, formatWon } from "@/lib/format"
+import { VAT_RATE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
 
 export function SaleVat({ item }: { item: CalcItem }) {
@@ -31,16 +32,16 @@ export function SaleVat({ item }: { item: CalcItem }) {
       }
     }
     if (vatMode === "add") {
-      const vat = p * 0.1
+      const vat = p * VAT_RATE
       return {
         amount: p + vat,
         rows: [
           { label: "공급가액", value: formatWon(p) },
-          { label: "부가세 10%", value: formatWon(vat) },
+          { label: `부가세 ${formatPercent(VAT_RATE * 100, 0)}`, value: formatWon(vat) },
         ],
       }
     }
-    const supply = p / 1.1
+    const supply = p / (1 + VAT_RATE)
     const vat = p - supply
     return {
       amount: supply,
@@ -89,7 +90,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
             onChange={setVatMode}
             options={[
               { value: "split", label: "포함 금액 → 공급가" },
-              { value: "add", label: "공급가 + 10%" },
+              { value: "add", label: `공급가 + ${formatPercent(VAT_RATE * 100, 0)}` },
             ]}
           />
         )}

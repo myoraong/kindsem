@@ -1,3 +1,5 @@
+import { DSR_POLICY } from "@/lib/policy.generated"
+
 export type Repayment = "equal-payment" | "equal-principal" | "interest-only"
 
 export function monthlyRate(annualPercent: number): number {
@@ -42,7 +44,7 @@ export function interestOnly(principal: number, annualPercent: number, months: n
   return { monthly, totalInterest, totalPay: principal + totalInterest }
 }
 
-export function dsrLimit(annualIncome: number, existingAnnual: number, ratio = 0.4) {
+export function dsrLimit(annualIncome: number, existingAnnual: number, ratio = DSR_POLICY.bank) {
   const cap = annualIncome * ratio
   const remain = Math.max(0, cap - existingAnnual)
   return { cap, remain, monthlyRemain: remain / 12 }
