@@ -58,7 +58,7 @@ export function CalcShell({
         {backLabel}
       </Link>
       <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-primary">
             {realty
               ? `${realty.title} · ${item.when}`
@@ -76,7 +76,9 @@ export function CalcShell({
             </p>
           ) : null}
         </div>
-        <Sena className="hidden w-12 shrink-0 sm:block md:w-14" />
+        {/* 데스크톱 제목 옆 작은 칸. 모바일은 접어 입력칸이 위에 오게 합니다. */}
+        <AdSenseInPage size="compact" />
+        <Sena className="hidden w-12 shrink-0 sm:block md:hidden" />
       </div>
       {guide ? (
         <div className="mb-5 flex gap-2">
