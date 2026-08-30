@@ -27,7 +27,7 @@ const ALIASES: Record<string, string[]> = {
   jeonse: ["전세대출", "전세이자"],
   "rent-convert": ["전월세", "전환율", "반전세", "월세전환"],
   acquisition: ["주택취득세", "집취득세", "살때세금"],
-  "capital-gains": ["양도", "양도소득세"],
+  "capital-gains": ["양도", "양도소득세", "장특공", "장기보유"],
   "corporate-gains": ["법인양도", "법인세"],
   "holding-tax": ["재산세", "종부세", "보유"],
   "license-tax": ["등록세", "등록면허"],

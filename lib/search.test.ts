@@ -17,6 +17,7 @@ test("별칭으로 복비·DSR을 찾는다", () => {
   assert.equal(searchCalculators("복비")[0]?.slug, "brokerage")
   assert.equal(searchCalculators("dsr")[0]?.slug, "dsr")
   assert.equal(searchCalculators("자동차")[0]?.slug, "vehicle-tax")
+  assert.equal(searchCalculators("장특공")[0]?.slug, "capital-gains")
 })
 
 test("여러 단어는 모두 맞아야 한다", () => {
