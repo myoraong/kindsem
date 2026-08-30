@@ -29,14 +29,14 @@ export function vehicleEducationRate(acqRate: number) {
  * 비영업 승용: cc×시시당 세액, 차령 3년부터 기분세액 5%씩(12년 50%).
  * 그 밖의 승용(전기 등 배기량 없음) 비영업 10만 원. 지방교육세는 자동차세액의 30%.
  */
-export const CAR_TAX_PRIVATE: { maxCc: number; perCc: number }[] = CAR_TAX.private
-export const CAR_TAX_COMMERCIAL: { maxCc: number; perCc: number }[] = CAR_TAX.commercial
+export const CAR_TAX_PRIVATE = CAR_TAX.private
+export const CAR_TAX_COMMERCIAL = CAR_TAX.commercial
 export const CAR_TAX_EV_PRIVATE = CAR_TAX.evPrivate
 export const CAR_TAX_EDUCATION = CAR_TAX.education
 
 export type CarTaxKind = "private" | "commercial" | "ev"
 
-function perCcRate(cc: number, table: { maxCc: number; perCc: number }[]) {
+function perCcRate(cc: number, table: readonly { maxCc: number; perCc: number }[]) {
   const row = table.find((item) => cc <= item.maxCc)
   return row?.perCc ?? 0
 }
