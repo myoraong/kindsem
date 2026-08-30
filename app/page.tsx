@@ -1,3 +1,4 @@
+import { AdSenseInPage } from "@/components/adsense-inpage"
 import { HomeBrowse } from "@/components/home-browse"
 import { JsonLd } from "@/components/json-ld"
 import { Sena } from "@/components/sena"
@@ -25,6 +26,7 @@ export default function HomePage() {
       </section>
 
       <HomeBrowse />
+      <AdSenseInPage />
     </div>
   )
 }

@@ -32,6 +32,20 @@ export function adsenseScriptSrc(clientId: string | null): string | null {
   return `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`
 }
 
+/** Head snippet과 같은 client. env가 있으면 그걸 쓰고, 없으면 게시자 상수를 씁니다. */
+export function resolveAdsenseClientId(
+  envClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
+): string | null {
+  return adsenseClientIdFromEnv(envClient) ?? adsenseClientIdFromEnv(ADSENSE_CLIENT)
+}
+
+/** 개인정보·문의 페이지에는 인페이지 광고 칸을 두지 않습니다. */
+export function shouldRenderAdOnPath(pathname: string | null | undefined): boolean {
+  const raw = (pathname ?? "/").split("?")[0].split("#")[0]
+  const path = raw.replace(/\/+$/, "") || "/"
+  return path !== "/privacy" && path !== "/contact"
+}
+
 export function existingAdsTxtPublisherId(text: string): string | null {
   for (const line of text.split(/\r?\n/)) {
     const trimmed = line.trim()

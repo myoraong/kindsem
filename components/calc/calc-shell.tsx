@@ -12,6 +12,7 @@ import { backLinkFor, homeSectionForGroup, readBackSection } from "@/lib/home-ba
 import { categoryForSlug } from "@/lib/realty"
 import { isTodaySlug } from "@/lib/today"
 import { isWorkSlug } from "@/lib/work"
+import { AdSenseInPage } from "@/components/adsense-inpage"
 import { PolicyStamp } from "@/components/policy-stamp"
 import { cn } from "@/lib/utils"
 
@@ -118,6 +119,7 @@ export function CalcShell({
         </div>
       )}
       <RelatedCalcs slug={item.slug} />
+      <AdSenseInPage />
       {faq}
       <PolicyStamp />
     </div>

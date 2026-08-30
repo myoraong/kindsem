@@ -3,11 +3,14 @@ import test from "node:test"
 import {
   ADS_TXT_COMMENT,
   ADSENSE_ADS_TXT_CERT,
+  ADSENSE_CLIENT,
   adsenseClientIdFromEnv,
   adsenseScriptSrc,
   existingAdsTxtPublisherId,
   parseAdsensePublisherId,
   renderAdsTxt,
+  resolveAdsenseClientId,
+  shouldRenderAdOnPath,
 } from "./adsense.ts"
 
 test("게시자 ID는 pub- 숫자만 뽑고 가짜 값은 만들지 않는다", () => {
@@ -29,6 +32,20 @@ test("광고 스크립트 client는 NEXT_PUBLIC_ADSENSE_CLIENT가 있을 때만 
     "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1234567890123456",
   )
   assert.equal(adsenseScriptSrc(null), null)
+  assert.equal(resolveAdsenseClientId(""), ADSENSE_CLIENT)
+  assert.equal(resolveAdsenseClientId(undefined), ADSENSE_CLIENT)
+  assert.equal(resolveAdsenseClientId("ca-pub-1234567890123456"), "ca-pub-1234567890123456")
+})
+
+test("인페이지 광고는 개인정보·문의 경로에는 넣지 않는다", () => {
+  assert.equal(shouldRenderAdOnPath("/"), true)
+  assert.equal(shouldRenderAdOnPath("/calc/severance"), true)
+  assert.equal(shouldRenderAdOnPath("/calc/severance/"), true)
+  assert.equal(shouldRenderAdOnPath("/realty"), true)
+  assert.equal(shouldRenderAdOnPath("/privacy"), false)
+  assert.equal(shouldRenderAdOnPath("/privacy/"), false)
+  assert.equal(shouldRenderAdOnPath("/contact"), false)
+  assert.equal(shouldRenderAdOnPath("/contact/"), false)
 })
 
 test("ads.txt는 env가 없으면 주석만 넣고 google.com 줄을 넣지 않는다", () => {
