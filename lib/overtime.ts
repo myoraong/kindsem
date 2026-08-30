@@ -1,16 +1,17 @@
 /** 근로기준법 제56조. 추정 시세는 넣지 않습니다. */
 
 import { monthlyContractHours } from "./labor.ts"
+import { OVERTIME_STATUTE } from "./policy.generated.ts"
 
 /** 연장근로 가산 포함 지급률. 통상임금 + 100분의 50. */
-export const OVERTIME_RATE = 1.5
+export const OVERTIME_RATE = 1 + OVERTIME_STATUTE.overtimePremium
 /** 야간근로(22:00–06:00) 가산만. 통상임금의 100분의 50. */
-export const NIGHT_PREMIUM_RATE = 0.5
+export const NIGHT_PREMIUM_RATE = OVERTIME_STATUTE.nightPremium
 /** 휴일근로 8시간 이내. 통상임금 + 100분의 50. */
-export const HOLIDAY_RATE = 1.5
+export const HOLIDAY_RATE = 1 + OVERTIME_STATUTE.holidayPremium
 /** 휴일근로 8시간 초과. 통상임금 + 100분의 100. */
-export const HOLIDAY_OVER_RATE = 2
-export const HOLIDAY_SPLIT_HOURS = 8
+export const HOLIDAY_OVER_RATE = 1 + OVERTIME_STATUTE.holidayOverPremium
+export const HOLIDAY_SPLIT_HOURS = OVERTIME_STATUTE.holidaySplitHours
 
 export function ordinaryHourlyFromMonthly(monthlyOrdinary: number, weeklyHours: number) {
   const hours = monthlyContractHours(weeklyHours)

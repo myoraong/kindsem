@@ -16,6 +16,31 @@ import {
   parseStampBands,
   parseVatRate,
   parseWonAfter,
+  parseRentCredit,
+  parseCarTax,
+  parseCarTaxEducation,
+  parseLaborHours,
+  parsePensionBase,
+  parsePensionEmployeeRate,
+  parseHealthWorkplaceRate,
+  parseLongTermCareRate,
+  parseEmploymentUnempRate,
+  parseHealthCapNotice,
+  parseVehicleAcquisition,
+  parseVehicleEducation,
+  parseCompactRelief,
+  parseOvertime,
+  parseInterestNationalRate,
+  parseLocalWithholdingShare,
+  parseBizWithholding,
+  parseMealExempt,
+  parseYouthRelief,
+  parseBasicPersonDeduction,
+  parseEarnedDeductionCap,
+  parseSeveranceDays,
+  parseDeMinimisUsd,
+  parseListClearance,
+  parseParentalLeave,
 } from "./policy-fields.mjs"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
@@ -33,6 +58,20 @@ const LAWS = [
   { key: "rural", query: "농어촌특별세법", id: "001569" },
   { key: "vat", query: "부가가치세법", id: "001571" },
   { key: "holdingDecree", query: "종합부동산세법 시행령", id: "009968" },
+  { key: "specialTax", query: "조세특례제한법", id: "001584" },
+  { key: "laborStd", query: "근로기준법", id: "001872" },
+  { key: "minWageDecree", query: "최저임금법 시행령", id: "005247" },
+  { key: "pension", query: "국민연금법", id: "001781" },
+  { key: "nhisDecree", query: "국민건강보험법 시행령", id: "002813" },
+  { key: "ltcDecree", query: "노인장기요양보험법 시행령", id: "010526" },
+  {
+    key: "eiPremiumDecree",
+    query: "고용보험 및 산업재해보상보험의 보험료징수 등에 관한 법률 시행령",
+    id: "009842",
+  },
+  { key: "eiLeaveDecree", query: "고용보험법 시행령", id: "002249" },
+  { key: "customsRule", query: "관세법 시행규칙", id: "006392" },
+  { key: "severanceLaw", query: "근로자퇴직급여 보장법", id: "009883" },
 ]
 
 export async function getJson(url) {
@@ -166,17 +205,26 @@ export function parseGiftDeductions(unit) {
 
 function findArticle(units, article, title, branch) {
   const list = Array.isArray(units) ? units : []
-  return list.find(
-    (unit) =>
-      String(unit.조문번호) === String(article) &&
-      (!title || unit.조문제목 === title) &&
-      (branch == null || String(unit.조문가지번호 ?? "") === String(branch)),
-  )
+  return list.find((unit) => {
+    if (String(unit.조문번호) !== String(article)) return false
+    if (!unit.조문제목) return false
+    if (title && unit.조문제목 !== title) return false
+    if (branch == null) return !unit.조문가지번호
+    return String(unit.조문가지번호 ?? "") === String(branch)
+  })
 }
 
 function articleText(unit) {
   if (!unit) return ""
   return JSON.stringify(unit.항 ?? unit.조문내용 ?? unit, null, 0)
+}
+
+function admText(body) {
+  const svc = body?.AdmRulService || {}
+  const content = svc.조문내용
+  if (Array.isArray(content)) return content.join("\n")
+  if (typeof content === "string") return content
+  return JSON.stringify(svc)
 }
 
 function assertProgressiveConsistent(rows, label) {
@@ -305,6 +353,39 @@ function tsSlice(rows) {
     .join(",\n")
 }
 
+function reviveParental(parsed, prev) {
+  if (parsed?.floor && parsed.general?.length >= 3 && parsed.single?.length >= 3) return parsed
+  const fallback = prev?.parentalLeave
+  if (!fallback) return null
+  const revive = (rows) =>
+    (rows || []).map((row) => ({
+      ...row,
+      toMonth: row.toMonth == null ? Number.POSITIVE_INFINITY : row.toMonth,
+    }))
+  return {
+    ...fallback,
+    general: revive(fallback.general),
+    single: revive(fallback.single),
+  }
+}
+
+function tsParental(p) {
+  const band = (row) => {
+    const to = row.toMonth === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : row.toMonth
+    return `    { fromMonth: ${row.fromMonth}, toMonth: ${to}, rate: ${row.rate}, cap: ${row.cap} }`
+  }
+  return `{
+  floor: ${p.floor},
+  general: [
+${p.general.map(band).join(",\n")},
+  ],
+  single: [
+${p.single.map(band).join(",\n")},
+  ],
+  bothCapsFirst6: [${p.bothCapsFirst6.join(", ")}],
+}`
+}
+
 export async function refreshPolicy() {
   const fetchedAt = todayStamp()
   const sources = {}
@@ -350,9 +431,24 @@ export async function refreshPolicy() {
   const vatBody = await fetchLawBody(sources.vat.id)
   const holdingDecreeBody = await fetchLawBody(sources.holdingDecree.id)
   const ruralBody = await fetchLawBody(sources.rural.id)
+  const specialBody = await fetchLawBody(sources.specialTax.id)
+  const laborBody = await fetchLawBody(sources.laborStd.id)
+  const pensionBody = await fetchLawBody(sources.pension.id)
+  const nhisDecreeBody = await fetchLawBody(sources.nhisDecree.id)
+  const ltcDecreeBody = await fetchLawBody(sources.ltcDecree.id)
+  const eiDecreeBody = await fetchLawBody(sources.eiPremiumDecree.id)
+  const eiLeaveBody = await fetchLawBody(sources.eiLeaveDecree.id)
+  const customsRuleBody = await fetchLawBody(sources.customsRule.id)
+  const severanceBody = await fetchLawBody(sources.severanceLaw.id)
 
   sources.banking = await fetchAdmMeta("은행업감독규정")
   const bankingBody = sources.banking.id ? await fetchAdmBody(sources.banking.id) : null
+  sources.pensionBase = await fetchAdmMeta("국민연금 기준소득월액 하한액과 상한액")
+  const pensionNoticeBody = sources.pensionBase.id ? await fetchAdmBody(sources.pensionBase.id) : null
+  sources.healthCap = await fetchAdmMeta("월별 건강보험료액의 상한과 하한에 관한 고시")
+  const healthCapBody = sources.healthCap.id ? await fetchAdmBody(sources.healthCap.id) : null
+  sources.expressNotice = await fetchAdmMeta("특송물품 수입통관 사무처리에 관한 고시")
+  const expressBody = sources.expressNotice.id ? await fetchAdmBody(sources.expressNotice.id) : null
 
   const vatRate =
     parseVatRate(articleText(findArticle(vatBody.법령.조문.조문단위, "30", "세율"))) ??
@@ -568,6 +664,225 @@ export async function refreshPolicy() {
     nonbank: prev.dsr?.nonbank ?? 0.5,
   }
 
+  const year = Number(fetchedAt.slice(0, 4))
+  const rentParsed = parseRentCredit(
+    articleText(findArticle(specialBody.법령.조문.조문단위, "95", "월세액에 대한 세액공제", "2")),
+  )
+  const rentCredit = {
+    salaryCap: rentParsed?.salaryCap ?? prev.rentCredit?.salaryCap ?? 80_000_000,
+    salaryHighRate: rentParsed?.salaryHighRate ?? prev.rentCredit?.salaryHighRate ?? 55_000_000,
+    incomeCap: rentParsed?.incomeCap ?? prev.rentCredit?.incomeCap ?? 70_000_000,
+    incomeHighRate: rentParsed?.incomeHighRate ?? prev.rentCredit?.incomeHighRate ?? 45_000_000,
+    rentCap: rentParsed?.rentCap ?? prev.rentCredit?.rentCap ?? 10_000_000,
+    rate: rentParsed?.rate ?? prev.rentCredit?.rate ?? 0.15,
+    rateLow: rentParsed?.rateLow ?? prev.rentCredit?.rateLow ?? 0.17,
+  }
+
+  const carParsed = parseCarTax(articleText(findArticle(localUnits, "127", "과세표준과 세율")))
+  const carEdu = parseCarTaxEducation(articleText(findArticle(localUnits, "151")))
+  const carTax = {
+    private: carParsed?.private ?? prev.carTax?.private ?? [
+      { maxCc: 1000, perCc: 80 },
+      { maxCc: 1600, perCc: 140 },
+      { maxCc: Number.POSITIVE_INFINITY, perCc: 200 },
+    ],
+    commercial: carParsed?.commercial ?? prev.carTax?.commercial ?? [
+      { maxCc: 1000, perCc: 18 },
+      { maxCc: 1600, perCc: 18 },
+      { maxCc: 2000, perCc: 19 },
+      { maxCc: 2500, perCc: 19 },
+      { maxCc: Number.POSITIVE_INFINITY, perCc: 24 },
+    ],
+    evPrivate: carParsed?.evPrivate ?? prev.carTax?.evPrivate ?? 100_000,
+    education: carEdu ?? prev.carTax?.education ?? 0.3,
+  }
+
+  const laborParsed = parseLaborHours(
+    articleText(findArticle(laborBody.법령.조문.조문단위, "18", "단시간근로자의 근로조건")),
+    articleText(findArticle(laborBody.법령.조문.조문단위, "50", "근로시간")),
+    articleText(findArticle(laborBody.법령.조문.조문단위, "60", "연차 유급휴가")),
+  )
+  const severanceDays =
+    parseSeveranceDays(articleText(findArticle(severanceBody.법령.조문.조문단위, "8"))) ??
+    prev.laborStatute?.severanceDays ??
+    30
+  const laborStatute = {
+    weeklyFullHours: laborParsed?.weeklyFullHours ?? prev.laborStatute?.weeklyFullHours ?? 40,
+    dailyHours: laborParsed?.dailyHours ?? prev.laborStatute?.dailyHours ?? 8,
+    shortHourThreshold: laborParsed?.shortHourThreshold ?? prev.laborStatute?.shortHourThreshold ?? 15,
+    annualLeaveBase: laborParsed?.annualLeaveBase ?? prev.laborStatute?.annualLeaveBase ?? 15,
+    annualLeaveCap: laborParsed?.annualLeaveCap ?? prev.laborStatute?.annualLeaveCap ?? 25,
+    severanceDays,
+  }
+
+  const pensionBase = parsePensionBase(admText(pensionNoticeBody))
+  const pensionRate = parsePensionEmployeeRate(
+    `${JSON.stringify(pensionBody.법령?.부칙 || "")}\n${articleText(findArticle(pensionBody.법령.조문.조문단위, "88", "연금보험료의 부과ㆍ징수 등"))}`,
+    year,
+  )
+  const healthTotal = parseHealthWorkplaceRate(
+    articleText(findArticle(nhisDecreeBody.법령.조문.조문단위, "44", "보험료율 및 재산보험료부과점수당 금액")),
+  )
+  const ltcIncome = parseLongTermCareRate(
+    articleText(findArticle(ltcDecreeBody.법령.조문.조문단위, "4", "장기요양보험료율")),
+  )
+  const unempTotal = parseEmploymentUnempRate(
+    articleText(findArticle(eiDecreeBody.법령.조문.조문단위, "12", "고용보험료율")),
+  )
+  const healthCapParsed = parseHealthCapNotice(admText(healthCapBody))
+  const healthEmployeeRate = healthTotal != null ? healthTotal / 2 : prev.payrollInsurance?.healthEmployeeRate ?? 0.03595
+  const payrollInsurance = {
+    year,
+    pensionEmployeeRate: pensionRate ?? prev.payrollInsurance?.pensionEmployeeRate ?? 0.0475,
+    pensionFloor: pensionBase?.floor ?? prev.payrollInsurance?.pensionFloor ?? 410_000,
+    pensionCeil: pensionBase?.ceil ?? prev.payrollInsurance?.pensionCeil ?? 6_590_000,
+    healthEmployeeRate,
+    longTermCareOfHealth:
+      ltcIncome != null && healthTotal
+        ? Number((ltcIncome / healthTotal).toFixed(4))
+        : prev.payrollInsurance?.longTermCareOfHealth ?? 0.1314,
+    employmentEmployeeRate: unempTotal != null ? unempTotal / 2 : prev.payrollInsurance?.employmentEmployeeRate ?? 0.009,
+    healthEmployeeCap: healthCapParsed ? healthCapParsed.totalCap / 2 : prev.payrollInsurance?.healthEmployeeCap ?? 4_591_740,
+    healthFloor: healthCapParsed?.floor ?? prev.payrollInsurance?.healthFloor ?? 20_160,
+  }
+
+  const vehicleRates = parseVehicleAcquisition(articleText(findArticle(localUnits, "12")))
+  const vehicleEdu = parseVehicleEducation(articleText(findArticle(localUnits, "151")))
+  const compactParsed = parseCompactRelief(
+    articleText(findArticle(firstHomeBody.법령.조문.조문단위, "67")),
+  )
+  const vehicleAcquisition = {
+    passenger: vehicleRates?.passenger ?? prev.vehicleAcquisition?.passenger ?? 0.07,
+    compact: vehicleRates?.compact ?? prev.vehicleAcquisition?.compact ?? 0.04,
+    otherPrivate: vehicleRates?.otherPrivate ?? prev.vehicleAcquisition?.otherPrivate ?? 0.05,
+    commercial: vehicleRates?.commercial ?? prev.vehicleAcquisition?.commercial ?? 0.04,
+    educationOffset: vehicleEdu?.offset ?? prev.vehicleAcquisition?.educationOffset ?? 0.02,
+    educationShare: vehicleEdu?.share ?? prev.vehicleAcquisition?.educationShare ?? 0.2,
+    compactRelief: compactParsed?.relief ?? prev.vehicleAcquisition?.compactRelief ?? 750_000,
+    compactUntil: compactParsed?.until ?? prev.vehicleAcquisition?.compactUntil ?? "2027-12-31",
+  }
+
+  const overtimeParsed = parseOvertime(
+    articleText(findArticle(laborBody.법령.조문.조문단위, "56")),
+  )
+  const overtimeStatute = {
+    overtimePremium: overtimeParsed?.overtimePremium ?? prev.overtimeStatute?.overtimePremium ?? 0.5,
+    holidayPremium: overtimeParsed?.holidayPremium ?? prev.overtimeStatute?.holidayPremium ?? 0.5,
+    holidayOverPremium: overtimeParsed?.holidayOverPremium ?? prev.overtimeStatute?.holidayOverPremium ?? 1,
+    nightPremium: overtimeParsed?.nightPremium ?? prev.overtimeStatute?.nightPremium ?? 0.5,
+    holidaySplitHours: overtimeParsed?.holidaySplitHours ?? prev.overtimeStatute?.holidaySplitHours ?? 8,
+  }
+
+  const interestNational =
+    parseInterestNationalRate(articleText(findArticle(incomeBody.법령.조문.조문단위, "129"))) ??
+    prev.interestTax?.national ??
+    0.14
+  const localShare =
+    parseLocalWithholdingShare(
+      articleText(findArticle(localUnits, "103", "특별징수의무", "13")),
+    ) ??
+    prev.interestTax?.localShare ??
+    0.1
+  const interestTax = {
+    national: interestNational,
+    localShare,
+    withholding: Number((interestNational * (1 + localShare)).toFixed(3)),
+  }
+
+  const youthParsed = parseYouthRelief(
+    articleText(findArticle(specialBody.법령.조문.조문단위, "30")),
+  )
+  const mealExempt =
+    parseMealExempt(articleText(findArticle(incomeBody.법령.조문.조문단위, "12"))) ??
+    prev.payrollDeductions?.mealExemptMonthly ??
+    200_000
+  const basicPerson =
+    parseBasicPersonDeduction(articleText(findArticle(incomeBody.법령.조문.조문단위, "50"))) ??
+    prev.payrollDeductions?.basicPersonDeduction ??
+    1_500_000
+  const earnedCap =
+    parseEarnedDeductionCap(articleText(findArticle(incomeBody.법령.조문.조문단위, "47"))) ??
+    prev.payrollDeductions?.earnedDeductionCap ??
+    20_000_000
+  const bizNational =
+    parseBizWithholding(articleText(findArticle(incomeBody.법령.조문.조문단위, "129"))) ??
+    prev.payrollDeductions?.bizWithholdingNational ??
+    0.03
+  const payrollDeductions = {
+    youthReliefRate: youthParsed?.rate ?? prev.payrollDeductions?.youthReliefRate ?? 0.9,
+    youthReliefCap: youthParsed?.cap ?? prev.payrollDeductions?.youthReliefCap ?? 2_000_000,
+    mealExemptMonthly: mealExempt,
+    basicPersonDeduction: basicPerson,
+    localIncomeRate: localShare,
+    bizWithholdingNational: bizNational,
+    bizWithholdingLocal: Number((bizNational * localShare).toFixed(3)),
+    earnedDeductionCap: earnedCap,
+  }
+
+  const parentalParsed = parseParentalLeave(
+    articleText(findArticle(eiLeaveBody.법령.조문.조문단위, "95")),
+    articleText(findArticle(eiLeaveBody.법령.조문.조문단위, "95", null, "3")),
+  )
+  const parentalLeave = reviveParental(parentalParsed, prev) ?? {
+    floor: 700_000,
+    general: [
+      { fromMonth: 1, toMonth: 3, rate: 1, cap: 2_500_000 },
+      { fromMonth: 4, toMonth: 6, rate: 1, cap: 2_000_000 },
+      { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1_600_000 },
+    ],
+    single: [
+      { fromMonth: 1, toMonth: 3, rate: 1, cap: 3_000_000 },
+      { fromMonth: 4, toMonth: 6, rate: 1, cap: 2_000_000 },
+      { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1_600_000 },
+    ],
+    bothCapsFirst6: [2_500_000, 2_500_000, 3_000_000, 3_500_000, 4_000_000, 4_500_000],
+  }
+
+  const deMinimisUsd =
+    parseDeMinimisUsd(articleText(findArticle(customsRuleBody.법령.조문.조문단위, "45"))) ??
+    prev.importClearance?.deMinimisUsd ??
+    150
+  const listParsed = parseListClearance(admText(expressBody))
+  const importClearance = {
+    listUsd: listParsed?.listUsd ?? prev.importClearance?.listUsd ?? 150,
+    listUsUsd: listParsed?.listUsUsd ?? prev.importClearance?.listUsUsd ?? 200,
+    deMinimisUsd,
+  }
+
+  if (process.env.POLICY_STRICT === "1") {
+    if (!rentParsed?.salaryCap) throw new Error("월세 세액공제 파싱 실패")
+    if (!carParsed?.private) throw new Error("자동차세 파싱 실패")
+    if (!laborParsed?.weeklyFullHours) throw new Error("근로기준법 시간·연차 파싱 실패")
+    if (!pensionBase?.ceil || pensionRate == null) throw new Error("국민연금 고시·요율 파싱 실패")
+    if (healthTotal == null || ltcIncome == null || unempTotal == null || !healthCapParsed) {
+      throw new Error("4대보험 요율·상한 파싱 실패")
+    }
+    if (!vehicleRates?.passenger || vehicleEdu?.offset == null || !compactParsed?.relief) {
+      throw new Error("자동차 취득세·교육세·경형 감면 파싱 실패")
+    }
+    if (!overtimeParsed?.overtimePremium) throw new Error("연장·야간·휴일 수당 파싱 실패")
+    if (parseInterestNationalRate(articleText(findArticle(incomeBody.법령.조문.조문단위, "129"))) == null) {
+      throw new Error("이자소득 원천징수 세율 파싱 실패")
+    }
+    if (
+      parseLocalWithholdingShare(articleText(findArticle(localUnits, "103", "특별징수의무", "13"))) ==
+      null
+    ) {
+      throw new Error("지방소득세 특별징수 비율 파싱 실패")
+    }
+    if (!youthParsed?.rate || mealExempt == null || basicPerson == null || earnedCap == null) {
+      throw new Error("급여 공제·청년감면·식사대 파싱 실패")
+    }
+    if (parseBizWithholding(articleText(findArticle(incomeBody.법령.조문.조문단위, "129"))) == null) {
+      throw new Error("사업소득 원천징수 세율 파싱 실패")
+    }
+    if (parseSeveranceDays(articleText(findArticle(severanceBody.법령.조문.조문단위, "8"))) == null) {
+      throw new Error("퇴직금 일수 파싱 실패")
+    }
+    if (!parentalParsed?.floor) throw new Error("육아휴직 급여 파싱 실패")
+    if (!listParsed?.listUsd || deMinimisUsd == null) throw new Error("목록통관·소액면세 파싱 실패")
+  }
+
   const json = {
     fetchedAt,
     source: "법제처 국가법령정보 공동활용",
@@ -607,6 +922,36 @@ export async function refreshPolicy() {
     corpExtraLand: corpExtra,
     ltv,
     dsr,
+    rentCredit,
+    carTax: {
+      ...carTax,
+      private: carTax.private.map((row) => ({
+        maxCc: row.maxCc === Number.POSITIVE_INFINITY ? null : row.maxCc,
+        perCc: row.perCc,
+      })),
+      commercial: carTax.commercial.map((row) => ({
+        maxCc: row.maxCc === Number.POSITIVE_INFINITY ? null : row.maxCc,
+        perCc: row.perCc,
+      })),
+    },
+    laborStatute,
+    payrollInsurance,
+    vehicleAcquisition,
+    overtimeStatute,
+    interestTax,
+    payrollDeductions,
+    parentalLeave: {
+      ...parentalLeave,
+      general: parentalLeave.general.map((row) => ({
+        ...row,
+        toMonth: row.toMonth === Number.POSITIVE_INFINITY ? null : row.toMonth,
+      })),
+      single: parentalLeave.single.map((row) => ({
+        ...row,
+        toMonth: row.toMonth === Number.POSITIVE_INFINITY ? null : row.toMonth,
+      })),
+    },
+    importClearance,
   }
 
   mkdirSync(join(root, "public"), { recursive: true })
@@ -699,6 +1044,45 @@ export const LTV_POLICY = {
 } as const
 
 export const DSR_POLICY = ${JSON.stringify(dsr, null, 2)} as const
+
+export const RENT_CREDIT = ${JSON.stringify(rentCredit, null, 2)} as const
+
+export const CAR_TAX = {
+  private: [
+${carTax.private
+  .map((row) => {
+    const max = row.maxCc === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : row.maxCc
+    return `    { maxCc: ${max}, perCc: ${row.perCc} }`
+  })
+  .join(",\n")},
+  ],
+  commercial: [
+${carTax.commercial
+  .map((row) => {
+    const max = row.maxCc === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : row.maxCc
+    return `    { maxCc: ${max}, perCc: ${row.perCc} }`
+  })
+  .join(",\n")},
+  ],
+  evPrivate: ${carTax.evPrivate},
+  education: ${carTax.education},
+} as const
+
+export const LABOR_STATUTE = ${JSON.stringify(laborStatute, null, 2)} as const
+
+export const PAYROLL_INSURANCE = ${JSON.stringify(payrollInsurance, null, 2)} as const
+
+export const VEHICLE_ACQUISITION = ${JSON.stringify(vehicleAcquisition, null, 2)} as const
+
+export const OVERTIME_STATUTE = ${JSON.stringify(overtimeStatute, null, 2)} as const
+
+export const INTEREST_TAX = ${JSON.stringify(interestTax, null, 2)} as const
+
+export const PAYROLL_DEDUCTIONS = ${JSON.stringify(payrollDeductions, null, 2)} as const
+
+export const PARENTAL_LEAVE = ${tsParental(parentalLeave)} as const
+
+export const IMPORT_CLEARANCE = ${JSON.stringify(importClearance, null, 2)} as const
 `
   writeFileSync(join(root, "lib/policy.generated.ts"), ts)
   console.log(`정책 갱신 ${fetchedAt}`)
@@ -711,6 +1095,46 @@ export const DSR_POLICY = ${JSON.stringify(dsr, null, 2)} as const
     "증여공제",
     `배우자 ${giftDeductions.spouse} · 존속 ${giftDeductions.ascendant} · 비속 ${giftDeductions.descendant} · 기타 ${giftDeductions.other}`,
   )
+  console.log(
+    "4대보험",
+    `연금 ${payrollInsurance.pensionEmployeeRate} ${payrollInsurance.pensionCeil} · 건보 ${payrollInsurance.healthEmployeeRate} 상한 ${payrollInsurance.healthEmployeeCap}`,
+  )
+  console.log("월세공제", rentCredit.rate, rentCredit.rateLow, "자동차세", carTax.private.map((r) => r.perCc).join("/"))
+  console.log("근로", laborStatute.weeklyFullHours, "시간 · 연차", laborStatute.annualLeaveBase, laborStatute.annualLeaveCap, "퇴직", laborStatute.severanceDays)
+  console.log(
+    "자동차취득",
+    vehicleAcquisition.passenger,
+    vehicleAcquisition.compact,
+    "교육",
+    vehicleAcquisition.educationOffset,
+    vehicleAcquisition.educationShare,
+    "경형",
+    vehicleAcquisition.compactRelief,
+    vehicleAcquisition.compactUntil,
+  )
+  console.log(
+    "연장",
+    overtimeStatute.overtimePremium,
+    overtimeStatute.holidayPremium,
+    overtimeStatute.holidayOverPremium,
+    overtimeStatute.nightPremium,
+    overtimeStatute.holidaySplitHours,
+  )
+  console.log("이자", interestTax.national, interestTax.localShare, interestTax.withholding)
+  console.log(
+    "급여공제",
+    "식사",
+    payrollDeductions.mealExemptMonthly,
+    "청년",
+    payrollDeductions.youthReliefRate,
+    payrollDeductions.youthReliefCap,
+    "기본",
+    payrollDeductions.basicPersonDeduction,
+    "근로공제",
+    payrollDeductions.earnedDeductionCap,
+  )
+  console.log("육아", parentalLeave.floor, parentalLeave.general.map((r) => r.cap).join("/"), "맞돌봄", parentalLeave.bothCapsFirst6.join("/"))
+  console.log("직구", importClearance.listUsd, importClearance.listUsUsd, importClearance.deMinimisUsd)
   return json
 }
 

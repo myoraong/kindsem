@@ -15,8 +15,13 @@ test("제목으로 찾는다", () => {
 
 test("별칭으로 복비·DSR을 찾는다", () => {
   assert.equal(searchCalculators("복비")[0]?.slug, "brokerage")
+  assert.equal(searchCalculators("복비얼마")[0]?.slug, "brokerage")
   assert.equal(searchCalculators("dsr")[0]?.slug, "dsr")
-  assert.equal(searchCalculators("자동차")[0]?.slug, "vehicle-tax")
+  assert.equal(searchCalculators("자동차세")[0]?.slug, "car-tax")
+  assert.equal(searchCalculators("자동차취득세")[0]?.slug, "vehicle-tax")
+  assert.equal(searchCalculators("실수령액")[0]?.slug, "take-home")
+  assert.equal(searchCalculators("넷페이")[0]?.slug, "take-home")
+  assert.equal(searchCalculators("주휴일수당")[0]?.slug, "weekly-holiday")
   assert.equal(searchCalculators("연장수당")[0]?.slug, "overtime-pay")
   assert.equal(searchCalculators("해외직구")[0]?.slug, "import-duty")
   assert.equal(searchCalculators("육아휴직")[0]?.slug, "parental-leave")
@@ -29,7 +34,8 @@ test("여러 단어는 모두 맞아야 한다", () => {
 })
 
 test("생활 탭에서는 생활만 찾는다", () => {
-  assert.equal(searchCalculators("자동차", "today")[0]?.slug, "vehicle-tax")
+  assert.equal(searchCalculators("자동차세", "today")[0]?.slug, "car-tax")
+  assert.equal(searchCalculators("자동차취득세", "today")[0]?.slug, "vehicle-tax")
   assert.deepEqual(searchCalculators("주휴수당", "today"), [])
   assert.deepEqual(searchCalculators("복비", "today"), [])
 })
@@ -45,7 +51,7 @@ test("부동산 탭에서는 부동산만 찾는다", () => {
 })
 
 test("전체에서는 생활·급여·부동산을 모두 찾는다", () => {
-  assert.equal(searchCalculators("자동차", "all")[0]?.slug, "vehicle-tax")
+  assert.equal(searchCalculators("자동차세", "all")[0]?.slug, "car-tax")
   assert.equal(searchCalculators("주휴수당", "all")[0]?.slug, "weekly-holiday")
   assert.equal(searchCalculators("복비", "all")[0]?.slug, "brokerage")
 })

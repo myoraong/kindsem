@@ -1,6 +1,6 @@
 "use client"
 
-import { useLayoutEffect, useMemo, useState } from "react"
+import { useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { CalcDirRow } from "@/components/calc-card"
@@ -11,6 +11,7 @@ import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
 import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
 import { searchCalculators } from "@/lib/search"
+import { rememberBackSection } from "@/lib/home-back"
 import { homeChipClass } from "@/lib/home-section"
 import {
   HOME_SECTION_SCROLL_MARGIN_CLASS,
@@ -94,6 +95,10 @@ export function HomeBrowse() {
     snapHomeSection(next)
   }, [section, searching])
 
+  useEffect(() => {
+    rememberBackSection(section)
+  }, [section])
+
   return (
     <>
       <form
@@ -136,8 +141,8 @@ export function HomeBrowse() {
       {!searching ? (
         <div className="mt-6 grid md:grid-cols-[minmax(0,1fr)_23.5rem] md:items-stretch md:gap-x-6">
           <div className="flex min-w-0 flex-col gap-5">
-            <PopularCalcs />
-            <RecentCalcs />
+            <PopularCalcs from={section} />
+            <RecentCalcs from={section} />
             <CategoryJump section={section} flush />
             <div className="md:hidden">
               <HomeQuickCalc folded />
@@ -158,7 +163,7 @@ export function HomeBrowse() {
               <h2 className="mb-3 text-lg font-semibold">검색 {results.length}개</h2>
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {results.map((item) => (
-                  <CalcDirRow key={item.slug} item={item} />
+                  <CalcDirRow key={item.slug} item={item} from={section} />
                 ))}
               </div>
             </>
@@ -170,7 +175,7 @@ export function HomeBrowse() {
                   주휴, 복비, 양도세처럼 이름이나 상황을 짧게 넣어 보세요.
                 </p>
               </div>
-              <PopularCalcs />
+              <PopularCalcs from={section} />
             </div>
           )}
         </section>
@@ -181,7 +186,7 @@ export function HomeBrowse() {
               <CatalogSectionHeading {...CATALOG_HEADINGS.today} />
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {CALCULATORS.filter((item) => item.group === "today").map((item) => (
-                  <CalcDirRow key={item.slug} item={item} />
+                  <CalcDirRow key={item.slug} item={item} from={section} />
                 ))}
               </div>
             </section>
@@ -192,7 +197,7 @@ export function HomeBrowse() {
               <CatalogSectionHeading {...CATALOG_HEADINGS.work} />
               <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
                 {CALCULATORS.filter((item) => item.group === "work").map((item) => (
-                  <CalcDirRow key={item.slug} item={item} />
+                  <CalcDirRow key={item.slug} item={item} from={section} />
                 ))}
               </div>
             </section>
@@ -201,7 +206,7 @@ export function HomeBrowse() {
           {section === "all" || section === "realty" ? (
             <section id="realty" className={sectionClass}>
               <CatalogSectionHeading {...CATALOG_HEADINGS.realty} />
-              <RealtyCatalog />
+              <RealtyCatalog from={section} />
             </section>
           ) : null}
         </div>

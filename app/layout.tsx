@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Geist_Mono } from "next/font/google"
 import { Providers } from "@/components/providers"
+import { AdSenseScript } from "@/components/adsense-script"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { MASCOT } from "@/lib/brand"
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="ko" className={`${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <AdSenseScript />
       </head>
       <body className="flex min-h-full flex-col font-sans">
         <Providers>

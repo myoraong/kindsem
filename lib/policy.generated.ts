@@ -90,12 +90,116 @@ export const POLICY_SOURCES = {
     "promulgated": "2026-02-27",
     "revision": "일부개정"
   },
+  "specialTax": {
+    "query": "조세특례제한법",
+    "id": "001584",
+    "name": "조세특례제한법",
+    "enforced": "2026-07-01",
+    "promulgated": "2025-12-23",
+    "revision": "일부개정"
+  },
+  "laborStd": {
+    "query": "근로기준법",
+    "id": "001872",
+    "name": "근로기준법",
+    "enforced": "2026-08-20",
+    "promulgated": "2026-02-19",
+    "revision": "타법개정"
+  },
+  "minWageDecree": {
+    "query": "최저임금법 시행령",
+    "id": "005247",
+    "name": "최저임금법 시행령",
+    "enforced": "2019-01-01",
+    "promulgated": "2018-12-31",
+    "revision": "일부개정"
+  },
+  "pension": {
+    "query": "국민연금법",
+    "id": "001781",
+    "name": "국민연금법",
+    "enforced": "2026-06-17",
+    "promulgated": "2025-12-16",
+    "revision": "일부개정"
+  },
+  "nhisDecree": {
+    "query": "국민건강보험법 시행령",
+    "id": "002813",
+    "name": "국민건강보험법 시행령",
+    "enforced": "2026-02-19",
+    "promulgated": "2026-02-19",
+    "revision": "일부개정"
+  },
+  "ltcDecree": {
+    "query": "노인장기요양보험법 시행령",
+    "id": "010526",
+    "name": "노인장기요양보험법 시행령",
+    "enforced": "2026-05-12",
+    "promulgated": "2026-05-12",
+    "revision": "일부개정"
+  },
+  "eiPremiumDecree": {
+    "query": "고용보험 및 산업재해보상보험의 보험료징수 등에 관한 법률 시행령",
+    "id": "009842",
+    "name": "고용보험 및 산업재해보상보험의 보험료징수 등에 관한 법률 시행령",
+    "enforced": "2025-12-23",
+    "promulgated": "2025-12-23",
+    "revision": "일부개정"
+  },
+  "eiLeaveDecree": {
+    "query": "고용보험법 시행령",
+    "id": "002249",
+    "name": "고용보험법 시행령",
+    "enforced": "2026-07-01",
+    "promulgated": "2026-06-30",
+    "revision": "일부개정"
+  },
+  "customsRule": {
+    "query": "관세법 시행규칙",
+    "id": "006392",
+    "name": "관세법 시행규칙",
+    "enforced": "2026-07-31",
+    "promulgated": "2026-07-31",
+    "revision": "일부개정"
+  },
+  "severanceLaw": {
+    "query": "근로자퇴직급여 보장법",
+    "id": "009883",
+    "name": "근로자퇴직급여 보장법",
+    "enforced": "2026-07-01",
+    "promulgated": "2026-03-17",
+    "revision": "일부개정"
+  },
   "banking": {
     "query": "은행업감독규정",
     "id": "2100000276094",
     "name": "은행업감독규정",
     "enforced": "2026-04-01",
     "promulgated": "2026-03-18",
+    "revision": "일부개정"
+  },
+  "pensionBase": {
+    "query": "국민연금 기준소득월액 하한액과 상한액",
+    "id": "2100000274228",
+    "name": "국민연금 기준소득월액 하한액과 상한액",
+    "enforced": "2026-07-01",
+    "promulgated": "2026-02-02",
+    "revision": "일부개정"
+  },
+  "healthCap": {
+    "query": "월별 건강보험료액의 상한과 하한에 관한 고시",
+    "id": "2100000270472",
+    "name": "월별 건강보험료액의 상한과 하한에 관한 고시",
+    "enforced": "2026-01-01",
+    "promulgated": "2025-12-24",
+    "revision": "일부개정"
+  },
+  "expressNotice": {
+    "query": "특송물품 수입통관 사무처리에 관한 고시",
+    "id": "2100000269938",
+    "name": "특송물품 수입통관 사무처리에 관한 고시",
+    "enforced": "2025-12-22",
+    "promulgated": "2025-12-22",
     "revision": "일부개정"
   }
 } as const
@@ -255,4 +359,109 @@ export const LTV_POLICY = {
 export const DSR_POLICY = {
   "bank": 0.4,
   "nonbank": 0.5
+} as const
+
+export const RENT_CREDIT = {
+  "salaryCap": 80000000,
+  "salaryHighRate": 55000000,
+  "incomeCap": 70000000,
+  "incomeHighRate": 45000000,
+  "rentCap": 10000000,
+  "rate": 0.15,
+  "rateLow": 0.17
+} as const
+
+export const CAR_TAX = {
+  private: [
+    { maxCc: 1000, perCc: 80 },
+    { maxCc: 1600, perCc: 140 },
+    { maxCc: Number.POSITIVE_INFINITY, perCc: 200 },
+  ],
+  commercial: [
+    { maxCc: 1000, perCc: 18 },
+    { maxCc: 1600, perCc: 18 },
+    { maxCc: 2000, perCc: 19 },
+    { maxCc: 2500, perCc: 19 },
+    { maxCc: Number.POSITIVE_INFINITY, perCc: 24 },
+  ],
+  evPrivate: 100000,
+  education: 0.3,
+} as const
+
+export const LABOR_STATUTE = {
+  "weeklyFullHours": 40,
+  "dailyHours": 8,
+  "shortHourThreshold": 15,
+  "annualLeaveBase": 15,
+  "annualLeaveCap": 25,
+  "severanceDays": 30
+} as const
+
+export const PAYROLL_INSURANCE = {
+  "year": 2026,
+  "pensionEmployeeRate": 0.0475,
+  "pensionFloor": 410000,
+  "pensionCeil": 6590000,
+  "healthEmployeeRate": 0.03595,
+  "longTermCareOfHealth": 0.1314,
+  "employmentEmployeeRate": 0.009,
+  "healthEmployeeCap": 4591740,
+  "healthFloor": 20160
+} as const
+
+export const VEHICLE_ACQUISITION = {
+  "passenger": 0.07,
+  "compact": 0.04,
+  "otherPrivate": 0.05,
+  "commercial": 0.04,
+  "educationOffset": 0.02,
+  "educationShare": 0.2,
+  "compactRelief": 750000,
+  "compactUntil": "2027-12-31"
+} as const
+
+export const OVERTIME_STATUTE = {
+  "overtimePremium": 0.5,
+  "holidayPremium": 0.5,
+  "holidayOverPremium": 1,
+  "nightPremium": 0.5,
+  "holidaySplitHours": 8
+} as const
+
+export const INTEREST_TAX = {
+  "national": 0.14,
+  "localShare": 0.1,
+  "withholding": 0.154
+} as const
+
+export const PAYROLL_DEDUCTIONS = {
+  "youthReliefRate": 0.9,
+  "youthReliefCap": 2000000,
+  "mealExemptMonthly": 200000,
+  "basicPersonDeduction": 1500000,
+  "localIncomeRate": 0.1,
+  "bizWithholdingNational": 0.03,
+  "bizWithholdingLocal": 0.003,
+  "earnedDeductionCap": 20000000
+} as const
+
+export const PARENTAL_LEAVE = {
+  floor: 700000,
+  general: [
+    { fromMonth: 1, toMonth: 3, rate: 1, cap: 2500000 },
+    { fromMonth: 4, toMonth: 6, rate: 1, cap: 2000000 },
+    { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1600000 },
+  ],
+  single: [
+    { fromMonth: 1, toMonth: 3, rate: 1, cap: 3000000 },
+    { fromMonth: 4, toMonth: 6, rate: 1, cap: 2000000 },
+    { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1600000 },
+  ],
+  bothCapsFirst6: [2500000, 2500000, 3000000, 3500000, 4000000, 4500000],
+} as const
+
+export const IMPORT_CLEARANCE = {
+  "listUsd": 150,
+  "listUsUsd": 200,
+  "deMinimisUsd": 150
 } as const

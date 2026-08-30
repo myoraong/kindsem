@@ -38,7 +38,7 @@ export const REALTY_CATEGORIES: RealtyCategory[] = [
   {
     id: "youth",
     title: "청년 주거",
-    slugs: ["moving"],
+    slugs: ["moving", "rent-credit"],
   },
 ]
 

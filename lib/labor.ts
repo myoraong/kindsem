@@ -1,11 +1,13 @@
+import { LABOR_STATUTE } from "./policy.generated.ts"
+
 /** 근로기준법·근로자퇴직급여 보장법. 추정 시세는 넣지 않습니다. */
 
-export const WEEKLY_FULL_HOURS = 40
-export const WEEKLY_HOLIDAY_HOURS_FULL = 8
-export const SHORT_HOUR_THRESHOLD = 15
-export const ANNUAL_LEAVE_BASE = 15
-export const ANNUAL_LEAVE_CAP = 25
-export const SEVERANCE_DAYS = 30
+export const WEEKLY_FULL_HOURS = LABOR_STATUTE.weeklyFullHours
+export const WEEKLY_HOLIDAY_HOURS_FULL = LABOR_STATUTE.dailyHours
+export const SHORT_HOUR_THRESHOLD = LABOR_STATUTE.shortHourThreshold
+export const ANNUAL_LEAVE_BASE = LABOR_STATUTE.annualLeaveBase
+export const ANNUAL_LEAVE_CAP = LABOR_STATUTE.annualLeaveCap
+export const SEVERANCE_DAYS = LABOR_STATUTE.severanceDays
 
 /** 최저임금법 시행령 제5조 월 환산 기준시간. (주소정 + 유급주휴) × 365/7 ÷ 12 */
 export const MONTH_HOURS_FACTOR = 365 / 7 / 12
@@ -35,6 +37,24 @@ export function calcWeeklyHoliday(input: {
     holidayPay,
     weeklyTotal: workPay + holidayPay,
     monthlyHours: monthlyContractHours(input.weeklyHours),
+  }
+}
+
+/** 시급제 알바 월급. 월 환산은 최저임금법 시행령 제5조 시간과 같습니다. */
+export function calcPartTimeMonth(input: {
+  hourlyWage: number
+  weeklyHours: number
+  attended: boolean
+}) {
+  const weekly = calcWeeklyHoliday(input)
+  if (!weekly) return null
+  const monthWork = Math.round(input.hourlyWage * input.weeklyHours * MONTH_HOURS_FACTOR)
+  const monthHoliday = Math.round(input.hourlyWage * weekly.holidayHours * MONTH_HOURS_FACTOR)
+  return {
+    ...weekly,
+    monthWork,
+    monthHoliday,
+    monthTotal: monthWork + monthHoliday,
   }
 }
 

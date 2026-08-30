@@ -19,9 +19,14 @@ export function SiteFooter() {
           </a>
         </p>
         <p className="text-xs">세금·대출 세율·상한은 현행 법령·고시입니다. 빠진 공제·사실관계가 있으면 결과가 달라집니다. 신고·대출 심사는 세무사·은행과 하세요.</p>
-        <Link href="/privacy" className="w-fit underline underline-offset-2 hover:text-foreground">
-          개인정보 안내
-        </Link>
+        <nav aria-label="안내" className="flex flex-wrap gap-x-4 gap-y-1">
+          <Link href="/privacy" className="w-fit underline underline-offset-2 hover:text-foreground">
+            개인정보 안내
+          </Link>
+          <Link href="/contact" className="w-fit underline underline-offset-2 hover:text-foreground">
+            문의
+          </Link>
+        </nav>
         <p className="border-t border-border/70 pt-4 text-xs">
           Copyright © 2026 Kindsem 카인드셈 All rights reserved.
         </p>

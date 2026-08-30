@@ -3,11 +3,11 @@
  * HS별 관세율은 넣지 않습니다. 관세는 사용자가 넣은 금액·세율만 씁니다.
  */
 
-import { VAT_RATE } from "./policy.generated.ts"
+import { IMPORT_CLEARANCE, VAT_RATE } from "./policy.generated.ts"
 
-export const LIST_CLEARANCE_USD = 150
-export const LIST_CLEARANCE_US_USD = 200
-export const DE_MINIMIS_USD = 150
+export const LIST_CLEARANCE_USD = IMPORT_CLEARANCE.listUsd
+export const LIST_CLEARANCE_US_USD = IMPORT_CLEARANCE.listUsUsd
+export const DE_MINIMIS_USD = IMPORT_CLEARANCE.deMinimisUsd
 
 export type ImportOrigin = "other" | "us"
 

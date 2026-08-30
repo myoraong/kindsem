@@ -7,6 +7,7 @@ import { RelatedCalcs } from "@/components/calc/related-calcs"
 import { Sena } from "@/components/sena"
 import type { CalcItem } from "@/lib/catalog"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
+import { backLinkFor, homeSectionForGroup, readBackSection } from "@/lib/home-back"
 import { categoryForSlug } from "@/lib/realty"
 import { isTodaySlug } from "@/lib/today"
 import { isWorkSlug } from "@/lib/work"
@@ -27,16 +28,22 @@ export function CalcShell({
   guide?: ReactNode
 }) {
   const [tab, setTab] = useState<"calc" | "guide">("calc")
+  const fallbackSection = homeSectionForGroup(item.group)
+  const [back, setBack] = useState(backLinkFor(fallbackSection))
 
   useEffect(() => {
     rememberRecentCalc(item.slug, window.localStorage)
   }, [item.slug])
 
+  useEffect(() => {
+    setBack(backLinkFor(readBackSection(fallbackSection)))
+  }, [fallbackSection, item.slug])
+
   const realty = categoryForSlug(item.slug)
   const work = isWorkSlug(item.slug)
   const today = isTodaySlug(item.slug)
-  const backHref = "/#all"
-  const backLabel = "전체"
+  const backHref = back.href
+  const backLabel = back.label
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-6 md:py-10">

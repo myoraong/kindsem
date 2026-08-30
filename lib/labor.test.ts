@@ -2,8 +2,10 @@ import assert from "node:assert/strict"
 import test from "node:test"
 import {
   calcAnnualLeave,
+  calcPartTimeMonth,
   calcSeverance,
   calcWeeklyHoliday,
+  MONTH_HOURS_FACTOR,
   monthlyContractHours,
   statutoryLeaveDays,
 } from "./labor.ts"
@@ -77,6 +79,15 @@ test("퇴직금은 평균임금×30×근속연수, 1년 미만은 의무 없음"
   const short = calcSeverance({ wage3m: 9_000_000, days3m: 90, serviceDays: 180 })
   assert.ok(short)
   assert.equal(short.eligible, false)
+})
+
+test("시급 1만·주 20시간이면 월 근로+주휴는 시행령 환산 시간과 같다", () => {
+  const result = calcPartTimeMonth({ hourlyWage: 10_000, weeklyHours: 20, attended: true })
+  assert.ok(result)
+  assert.equal(result.holidayHours, 4)
+  assert.equal(result.monthWork, Math.round(10_000 * 20 * MONTH_HOURS_FACTOR))
+  assert.equal(result.monthHoliday, Math.round(10_000 * 4 * MONTH_HOURS_FACTOR))
+  assert.equal(result.monthTotal, result.monthWork + result.monthHoliday)
 })
 
 test("평균임금보다 통상임금이 크면 통상임금을 쓴다", () => {

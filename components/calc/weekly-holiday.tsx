@@ -61,7 +61,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
               ? result.eligible
                 ? attended
                   ? `주휴 ${result.holidayHours}시간`
-                  : "개근하지 않은 주"
+                  : "주휴수당 없음"
                 : "주 15시간 미만 · 제18조"
               : undefined
           }
@@ -117,7 +117,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           onChange={setWeeklyHours}
         />
         <CheckRow id="attended" checked={attended} onChange={setAttended}>
-          이번 주 소정근로일 개근
+          주휴수당 포함
         </CheckRow>
         <Hint>
           월급제는 최저임금법 시행령 제5조 월 환산 시간으로 시급을 나눕니다. 주휴수당이 이미 월급에

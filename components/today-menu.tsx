@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation"
 import { NavMenu } from "@/components/nav-menu"
+import { rememberBackSection } from "@/lib/home-back"
 import { isHomePath } from "@/lib/home-section"
 import { isTodaySlug, todayItems } from "@/lib/today"
 import { useHomeSection } from "@/lib/use-home-section"
@@ -13,5 +14,14 @@ export function TodayMenu() {
   const onToday =
     (parts[0] === "calc" && isTodaySlug(parts[1] ?? "")) || (isHomePath(pathname) && section === "today")
 
-  return <NavMenu href="/#today" label="생활" active={onToday} items={todayItems()} align="left" />
+  return (
+    <NavMenu
+      href="/#today"
+      label="생활"
+      active={onToday}
+      items={todayItems()}
+      align="left"
+      onNavigate={() => rememberBackSection("today")}
+    />
+  )
 }

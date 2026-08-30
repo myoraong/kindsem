@@ -206,3 +206,308 @@ export function parseVatRate(text) {
   const m = String(text).match(/세율은\s*(\d+)\s*퍼센트/)
   return m ? Number(m[1]) / 100 : null
 }
+
+/** 5천500만원, 410천원처럼 법령·고시 표기. */
+export function parseLawWon(raw) {
+  const s = String(raw).replace(/,/g, "").replace(/\s/g, "")
+  const core = s.replace(/원.*/g, "").replace(/원/g, "")
+  if (!core) return null
+  if (/^\d+$/.test(core)) return Number(core)
+  const mix = core.match(/^(\d+)천(\d+)만$/)
+  if (mix) return (Number(mix[1]) * 1000 + Number(mix[2])) * 10_000
+  const cheon = core.match(/^(\d+(?:\.\d+)?)천$/)
+  if (cheon) return Math.round(Number(cheon[1]) * 1000)
+  return parseKoreanWon(s.includes("원") ? s : `${core}원`)
+}
+
+export function parseRentCredit(text) {
+  const t = stripTags(text).replace(/,/g, "")
+  const salaryCap = t.match(/총급여액이\s*([0-9천백만억]+원)\s*이하인 근로소득이 있는 근로자\(해당 과세기간에 종합소득과세표준을 계산할 때 합산하는 종합소득금액이/)
+  const incomeCap = t.match(
+    /근로소득이 있는 근로자\(해당 과세기간에 종합소득과세표준을 계산할 때 합산하는 종합소득금액이\s*([0-9천백만억]+원)을 초과하는 사람은 제외한다\)가 대통령령/,
+  )
+  const rate = t.match(/그 금액의 100분의\s*(\d+)/)
+  const high = t.match(
+    /총급여액이\s*([0-9천백만억]+원)\s*이하인 근로소득이 있는 근로자\(해당 과세기간에 종합소득과세표준을 계산할 때 합산하는 종합소득금액이\s*([0-9천백만억]+원)을 초과하는 사람은 제외한다\)의 경우에는 100분의\s*(\d+)/,
+  )
+  const rentCap = t.match(/월세액이\s*([0-9천백만억]+원)을 초과하는 경우/)
+  if (!salaryCap || !incomeCap || !rate || !high || !rentCap) return null
+  return {
+    salaryCap: parseLawWon(salaryCap[1]),
+    incomeCap: parseLawWon(incomeCap[1]),
+    rate: Number(rate[1]) / 100,
+    salaryHighRate: parseLawWon(high[1]),
+    incomeHighRate: parseLawWon(high[2]),
+    rateLow: Number(high[3]) / 100,
+    rentCap: parseLawWon(rentCap[1]),
+  }
+}
+
+export function parseCarTax(text) {
+  const t = stripTags(text).replace(/,/g, "")
+  const p80 = t.match(/1000시시 이하[\s│|]*18원[\s\S]{0,40}1000시시 이하[\s│|]*(\d+)원/)
+  const p140 = t.match(/1600시시 이하[\s│|]*18원[\s\S]{0,40}1600시시 이하[\s│|]*(\d+)원/)
+  const p200 = t.match(/1600시시 초과[\s│|]*(\d+)원/)
+  const c18a = t.match(/1000시시 이하[\s│|]*(\d+)원[\s\S]{0,40}1000시시 이하/)
+  const c18b = t.match(/1600시시 이하[\s│|]*(\d+)원[\s\S]{0,40}1600시시 이하/)
+  const c19a = t.match(/2000시시 이하[\s│|]*(\d+)원/)
+  const c19b = t.match(/2500시시 이하[\s│|]*(\d+)원/)
+  const c24 = t.match(/2500시시 초과[\s│|]*(\d+)원/)
+  const ev = t.match(/그 밖의 승용자동차[\s\S]{0,80}?(\d+)원[\s│|]+(\d+)원/)
+  if (!p80 || !p140 || !p200 || !c18a || !c18b || !c19a || !c19b || !c24 || !ev) return null
+  return {
+    private: [
+      { maxCc: 1000, perCc: Number(p80[1]) },
+      { maxCc: 1600, perCc: Number(p140[1]) },
+      { maxCc: Number.POSITIVE_INFINITY, perCc: Number(p200[1]) },
+    ],
+    commercial: [
+      { maxCc: 1000, perCc: Number(c18a[1]) },
+      { maxCc: 1600, perCc: Number(c18b[1]) },
+      { maxCc: 2000, perCc: Number(c19a[1]) },
+      { maxCc: 2500, perCc: Number(c19b[1]) },
+      { maxCc: Number.POSITIVE_INFINITY, perCc: Number(c24[1]) },
+    ],
+    evPrivate: Number(ev[2]),
+  }
+}
+
+export function parseCarTaxEducation(text) {
+  const m = String(text).match(/자동차세액의 100분의\s*(\d+)/)
+  return m ? Number(m[1]) / 100 : null
+}
+
+export function parseLaborHours(text18, text50, text60) {
+  const t18 = stripTags(text18)
+  const t50 = stripTags(text50)
+  const t60 = stripTags(text60)
+  const shortHour = t18.match(/소정근로시간이\s*(\d+)시간 미만/)
+  const weekly = t50.match(/1주 간의 근로시간은[\s\S]{0,40}?(\d+)시간을 초과/)
+  const daily = t50.match(/1일의 근로시간은[\s\S]{0,40}?(\d+)시간을 초과/)
+  const leaveBase = t60.match(/(\d+)일의 유급휴가/)
+  const leaveCap = t60.match(/총 휴가 일수는\s*(\d+)일을 한도로/)
+  if (!shortHour || !weekly || !daily || !leaveBase || !leaveCap) return null
+  return {
+    weeklyFullHours: Number(weekly[1]),
+    dailyHours: Number(daily[1]),
+    shortHourThreshold: Number(shortHour[1]),
+    annualLeaveBase: Number(leaveBase[1]),
+    annualLeaveCap: Number(leaveCap[1]),
+  }
+}
+
+export function parsePensionBase(text) {
+  const t = stripTags(text).replace(/,/g, "")
+  const floor = t.match(/하한액\s*[:：]\s*([0-9.]+천원|\d+원|\d+천원)/)
+  const ceil = t.match(/상한액\s*[:：]\s*([0-9.]+천원|\d+원|\d+천원)/)
+  if (!floor || !ceil) return null
+  return { floor: parseLawWon(floor[1]), ceil: parseLawWon(ceil[1]) }
+}
+
+export function parsePensionEmployeeRate(buchikText, year) {
+  const t = stripTags(buchikText)
+  const special = t.match(new RegExp(`${year}년은 1만분의\\s*(\\d+)`))
+  if (special) return Number(special[1]) / 10_000
+  const main = t.match(/기준소득월액의 1천분의\s*(\d+)/)
+  return main ? Number(main[1]) / 1000 : null
+}
+
+export function parseHealthWorkplaceRate(text) {
+  const m = stripTags(text).match(/직장가입자의 보험료율[\s\S]{0,40}1만분의\s*(\d+)/)
+  return m ? Number(m[1]) / 10_000 : null
+}
+
+export function parseLongTermCareRate(text) {
+  const m = stripTags(text).match(/장기요양보험료율은 100만분의\s*([\d,]+)/)
+  return m ? Number(m[1].replace(/,/g, "")) / 1_000_000 : null
+}
+
+export function parseEmploymentUnempRate(text) {
+  const m = stripTags(text).match(/실업급여의 보험료율:\s*1천분의\s*(\d+)/)
+  return m ? Number(m[1]) / 1000 : null
+}
+
+export function parseHealthCapNotice(text) {
+  const t = stripTags(text).replace(/,/g, "")
+  const cap = t.match(/제2조[\s\S]*?보수월액보험료\s*[:：]\s*(\d+)원/)
+  const floor = t.match(/제3조[\s\S]*?보수월액보험료\s*[:：]\s*(\d+)원/)
+  if (!cap || !floor) return null
+  return { totalCap: Number(cap[1]), floor: Number(floor[1]) }
+}
+
+export function parseVehicleAcquisition(text) {
+  const t = stripTags(text)
+  const passenger = t.match(/비영업용 승용자동차:\s*1천분의\s*(\d+(?:\.\d+)?)/)
+  const compact = t.match(/경자동차[\s\S]{0,40}?1천분의\s*(\d+(?:\.\d+)?)/)
+  const otherSection = t.includes("그 밖의 자동차") ? t.slice(t.indexOf("그 밖의 자동차")) : t
+  const otherPrivate = otherSection.match(/비영업용:\s*1천분의\s*(\d+(?:\.\d+)?)/)
+  const commercial = otherSection.match(/(?<![비])영업용:\s*1천분의\s*(\d+(?:\.\d+)?)/)
+  if (!passenger || !compact || !otherPrivate || !commercial) return null
+  return {
+    passenger: Number(passenger[1]) / 1000,
+    compact: Number(compact[1]) / 1000,
+    otherPrivate: Number(otherPrivate[1]) / 1000,
+    commercial: Number(commercial[1]) / 1000,
+  }
+}
+
+export function parseVehicleEducation(text) {
+  const t = stripTags(text)
+  const offset = t.match(/1천분의\s*(\d+)을 뺀 세율/)
+  const share = t.match(/산출한 금액\)의 100분의\s*(\d+)/) || t.match(/산출한 금액의 100분의\s*(\d+)/)
+  if (!offset || !share) return null
+  return { offset: Number(offset[1]) / 1000, share: Number(share[1]) / 100 }
+}
+
+export function parseCompactRelief(text) {
+  const t = stripTags(text)
+  const amount = t.match(/취득세액이\s*(\d+)만원 이하인 경우[:：]?\s*취득세를 면제/)
+  const until = t.match(/(\d{4})년\s*(\d{1,2})월\s*(\d{1,2})일까지[\s\S]{0,24}?감면/)
+  if (!amount || !until) return null
+  return {
+    relief: Number(amount[1]) * 10_000,
+    until: `${until[1]}-${String(until[2]).padStart(2, "0")}-${String(until[3]).padStart(2, "0")}`,
+  }
+}
+
+export function parseOvertime(text) {
+  const t = stripTags(text)
+  const ot = t.match(/연장근로[\s\S]{0,80}?100분의\s*(\d+)/)
+  const hol = t.match(/8시간 이내의 휴일근로:\s*통상임금의 100분의\s*(\d+)/)
+  const holOver = t.match(/8시간을 초과한 휴일근로:\s*통상임금의 100분의\s*(\d+)/)
+  const night = t.match(/야간근로[\s\S]{0,80}?100분의\s*(\d+)/)
+  const split = t.match(/(\d+)시간 이내의 휴일근로/)
+  if (!ot || !hol || !holOver || !night || !split) return null
+  return {
+    overtimePremium: Number(ot[1]) / 100,
+    holidayPremium: Number(hol[1]) / 100,
+    holidayOverPremium: Number(holOver[1]) / 100,
+    nightPremium: Number(night[1]) / 100,
+    holidaySplitHours: Number(split[1]),
+  }
+}
+
+export function parseInterestNationalRate(text) {
+  const m = stripTags(text).match(/그 밖의 이자소득에 대해서는 100분의\s*(\d+)/)
+  return m ? Number(m[1]) / 100 : null
+}
+
+export function parseLocalWithholdingShare(text) {
+  const m = stripTags(text).match(
+    /원천징수하는 소득세[\s\S]{0,160}?100분의\s*(\d+)에 해당하는 금액을 소득세 원천징수와 동시에 개인지방소득세/,
+  )
+  return m ? Number(m[1]) / 100 : null
+}
+
+export function parseBizWithholding(text) {
+  const m = stripTags(text).match(/원천징수대상 사업소득에 대해서는 100분의\s*(\d+)/)
+  return m ? Number(m[1]) / 100 : null
+}
+
+export function parseMealExempt(text) {
+  const m = stripTags(text).match(/월\s*(\d+)만원 이하의 식사대/)
+  return m ? Number(m[1]) * 10_000 : null
+}
+
+export function parseYouthRelief(text) {
+  const t = stripTags(text)
+  const rate = t.match(/청년의 경우에는 100분의\s*(\d+)/)
+  const cap = t.match(/과세기간별로\s*(\d+)만원을 한도/)
+  if (!rate || !cap) return null
+  return { rate: Number(rate[1]) / 100, cap: Number(cap[1]) * 10_000 }
+}
+
+export function parseBasicPersonDeduction(text) {
+  const m = stripTags(text).match(/1명당 연\s*(\d+)만원을 곱하여/)
+  return m ? Number(m[1]) * 10_000 : null
+}
+
+export function parseEarnedDeductionCap(text) {
+  const m = stripTags(text).match(/공제액이\s*([0-9천백만억]+원)을 초과하는 경우에는/)
+  return m ? parseLawWon(m[1]) : null
+}
+
+export function parseSeveranceDays(text) {
+  const m = stripTags(text).match(/1년에 대하여\s*(\d+)일분 이상/)
+  return m ? Number(m[1]) : null
+}
+
+export function parseDeMinimisUsd(text) {
+  const m = stripTags(text).match(/미화\s*(\d+)달러 이하의 물품으로서 자가사용/)
+  return m ? Number(m[1]) : null
+}
+
+export function parseListClearance(text) {
+  const t = stripTags(text)
+  const m = t.match(
+    /미화\s*(\d+)달러\(대한민국과 미합중국[\s\S]{0,80}?미화\s*(\d+)달러\)\s*이하에 해당하는 물품\(이하 "목록통관/,
+  )
+  if (!m) return null
+  return { listUsd: Number(m[1]), listUsUsd: Number(m[2]) }
+}
+
+function parentalBand(text, startRe, withRate) {
+  const slice = text.match(startRe)
+  if (!slice) return null
+  const cap =
+    slice[0].match(/(\d+)만원을 넘는/) ||
+    slice[0].match(/상한액은 월\s*(\d+)만원/) ||
+    slice[0].match(/상한액은\s*(\d+)만원/)
+  const floor = slice[0].match(/(\d+)만원보다 적은/)
+  const rate = withRate ? slice[0].match(/100분의\s*(\d+)/) : null
+  if (!cap) return null
+  return {
+    cap: Number(cap[1]) * 10_000,
+    floor: floor ? Number(floor[1]) * 10_000 : null,
+    rate: withRate ? Number(rate?.[1] || 0) / 100 : 1,
+  }
+}
+
+export function parseParentalLeave(generalText, specialText) {
+  const g = stripTags(generalText)
+  const s = stripTags(specialText)
+  const preambleFloor = g.match(/(\d+)만원보다 적은/)
+  const first = parentalBand(g, /시작일부터 3개월까지[\s\S]{0,280}?만원으로 한/, false)
+  const mid = parentalBand(g, /4개월째부터 6개월째까지[\s\S]{0,280}?만원으로 한/, false)
+  const last = parentalBand(g, /7개월째부터[\s\S]{0,300}?만원으로 한/, true)
+  const singleIdx = s.indexOf("모 또는 부에 해당하는 피보험자")
+  const singleSrc = singleIdx >= 0 ? s.slice(singleIdx) : s
+  const singleFirst = parentalBand(singleSrc, /시작일부터 3개월까지[\s\S]{0,280}?만원으로 한/, false)
+  const singleMid = parentalBand(singleSrc, /4개월째부터 6개월째까지[\s\S]{0,280}?만원으로 한/, false)
+  const singleLast = parentalBand(singleSrc, /7개월째부터[\s\S]{0,300}?만원으로 한/, true)
+  const bothCaps = [
+    s.match(/각각 1개월인 경우[\s\S]{0,80}?월\s*(\d+)만원/),
+    s.match(/각각 2개월인 경우[\s\S]{0,120}?월\s*(\d+)만원/),
+    s.match(/각각 3개월인 경우[\s\S]{0,200}?세 번째 달은 월\s*(\d+)만원/),
+    s.match(/각각 4개월인 경우[\s\S]{0,240}?네 번째 달은 월\s*(\d+)만원/),
+    s.match(/각각 5개월인 경우[\s\S]{0,280}?다섯 번째 달은 월\s*(\d+)만원/),
+    s.match(/각각 6개월인 경우[\s\S]{0,320}?여섯 번째 달은 월\s*(\d+)만원/),
+  ].map((m) => (m ? Number(m[1]) * 10_000 : null))
+  if (
+    !first ||
+    !mid ||
+    !last ||
+    !singleFirst ||
+    !singleMid ||
+    !singleLast ||
+    bothCaps.some((v) => v == null)
+  ) {
+    return null
+  }
+  const floor = first.floor ?? (preambleFloor ? Number(preambleFloor[1]) * 10_000 : null)
+  if (floor == null) return null
+  return {
+    floor,
+    general: [
+      { fromMonth: 1, toMonth: 3, rate: first.rate, cap: first.cap },
+      { fromMonth: 4, toMonth: 6, rate: mid.rate, cap: mid.cap },
+      { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: last.rate, cap: last.cap },
+    ],
+    single: [
+      { fromMonth: 1, toMonth: 3, rate: 1, cap: singleFirst.cap },
+      { fromMonth: 4, toMonth: 6, rate: singleMid.rate, cap: singleMid.cap },
+      { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: singleLast.rate, cap: singleLast.cap },
+    ],
+    bothCapsFirst6: bothCaps,
+  }
+}

@@ -3,30 +3,22 @@
  * 상한·하한·지급률만 넣습니다. 맞돌봄 상한표는 제95조의3제1항 가~바.
  */
 
-export const PARENTAL_FLOOR = 700_000
+import { PARENTAL_LEAVE } from "./policy.generated.ts"
+
+export const PARENTAL_FLOOR = PARENTAL_LEAVE.floor
 
 export type ParentalMode = "general" | "both" | "single"
 
 type Band = { fromMonth: number; toMonth: number; rate: number; cap: number }
 
 /** 제95조 제1항. 7개월째 이후는 종료일까지 같은 지급률·상한. */
-const GENERAL_BANDS: Band[] = [
-  { fromMonth: 1, toMonth: 3, rate: 1, cap: 2_500_000 },
-  { fromMonth: 4, toMonth: 6, rate: 1, cap: 2_000_000 },
-  { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1_600_000 },
-]
+const GENERAL_BANDS: Band[] = PARENTAL_LEAVE.general.map((row) => ({ ...row }))
 
 /** 제95조의3 제3항 한부모. */
-const SINGLE_BANDS: Band[] = [
-  { fromMonth: 1, toMonth: 3, rate: 1, cap: 3_000_000 },
-  { fromMonth: 4, toMonth: 6, rate: 1, cap: 2_000_000 },
-  { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1_600_000 },
-]
+const SINGLE_BANDS: Band[] = PARENTAL_LEAVE.single.map((row) => ({ ...row }))
 
 /** 제95조의3 제1항 제1호. 부모가 각각 n개월일 때 1~6개월 상한. */
-export const BOTH_CAPS_FIRST6 = [
-  2_500_000, 2_500_000, 3_000_000, 3_500_000, 4_000_000, 4_500_000,
-] as const
+export const BOTH_CAPS_FIRST6 = PARENTAL_LEAVE.bothCapsFirst6
 
 function clampPay(amount: number, cap: number) {
   return Math.round(Math.min(cap, Math.max(PARENTAL_FLOOR, amount)))

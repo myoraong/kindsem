@@ -51,7 +51,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "quick",
     title: "바로 계산",
-    blurb: "표준 계산기처럼 두드리고, 기록으로 이어 계산합니다.",
+    blurb: "사칙을 넣으면 식 아래 결과가 나옵니다.",
     when: "사칙연산, 비율, 제곱, 기억하기",
     group: "today",
   },
@@ -77,10 +77,24 @@ export const CALCULATORS: CalcItem[] = [
     group: "today",
   },
   {
+    slug: "car-tax",
+    title: "자동차세",
+    blurb: "비영업 승용 배기량·차령, 전기 정액. 지방교육세 30%.",
+    when: "6월·12월 고지 전에",
+    group: "today",
+  },
+  {
     slug: "import-duty",
     title: "해외직구 관세·부가세",
     blurb: "목록통관·소액면세 기준과, 넣은 관세의 부가세 10%.",
     when: "해외 쇼핑몰 결제 전에",
+    group: "today",
+  },
+  {
+    slug: "deposit",
+    title: "예적금",
+    blurb: "넣은 이율로 단리·월복리. 세후는 이자소득세 15.4%.",
+    when: "예금·적금 만기 가늠",
     group: "today",
   },
   {
@@ -95,6 +109,20 @@ export const CALCULATORS: CalcItem[] = [
     title: "주휴수당",
     blurb: "주 15시간 이상, 개근한 주의 유급 주휴.",
     when: "시급·알바 계약 전에",
+    group: "work",
+  },
+  {
+    slug: "part-time-month",
+    title: "알바 월급",
+    blurb: "시급×시간, 주휴 포함 월 환산. 시행령 제5조 시간.",
+    when: "시급 알바 월 수입",
+    group: "work",
+  },
+  {
+    slug: "prorate-pay",
+    title: "월급 일할",
+    blurb: "달력일 또는 30일로 그 달 근무분.",
+    when: "입사·퇴사 달 정산",
     group: "work",
   },
   {
@@ -186,6 +214,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "전세 vs 월세",
     blurb: "법정 전환 상한으로 월 부담을 비교.",
     when: "전세와 월세 중 고를 때",
+    group: "rent",
+  },
+  {
+    slug: "rent-credit",
+    title: "월세 세액공제",
+    blurb: "무주택·총급여 8천 이하, 연 1천만 한도 15·17%.",
+    when: "연말정산 월세 공제",
     group: "rent",
   },
   {

@@ -7,6 +7,7 @@ import {
   computeQuick,
   formatQuickInput,
   formatQuickResult,
+  previewQuickResult,
   quickToNumber,
 } from "@/lib/quick-math"
 
@@ -28,8 +29,9 @@ export function useQuickCalc({ keyboard }: { keyboard: boolean }) {
     setHistory((prev) => [{ id: historyId.current, expression: line, value }, ...prev].slice(0, 24))
   }, [])
 
-  const showValue = error ? "오류" : formatQuickInput(display)
   const currentNumber = quickToNumber(display)
+  const preview = previewQuickResult({ display, stored, op, waiting, error })
+  const showValue = preview.text
 
   const clearAll = useCallback(() => {
     setDisplay("0")

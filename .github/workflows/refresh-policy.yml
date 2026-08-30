@@ -61,6 +61,8 @@ jobs:
       - run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: ""
+          NEXT_PUBLIC_ADSENSE_CLIENT: ${{ secrets.NEXT_PUBLIC_ADSENSE_CLIENT }}
+          NEXT_PUBLIC_ADSENSE_PUB: ${{ secrets.NEXT_PUBLIC_ADSENSE_PUB }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out

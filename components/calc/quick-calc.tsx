@@ -6,14 +6,16 @@ import { CalcShell } from "@/components/calc/calc-shell"
 import { QuickPad } from "@/components/calc/quick-pad"
 import { useQuickCalc } from "@/components/calc/use-quick-calc"
 import type { CalcItem } from "@/lib/catalog"
-import { formatQuickResult, quickCopyText } from "@/lib/quick-math"
+import { formatQuickResult, shownCopyText } from "@/lib/quick-math"
 import { cn } from "@/lib/utils"
 
 export function QuickCalc({ item }: { item: CalcItem }) {
   const calc = useQuickCalc({ keyboard: true })
 
-  async function copyValue(value: number) {
-    await navigator.clipboard.writeText(quickCopyText(value))
+  async function copyShown(shown: string) {
+    const digits = shownCopyText(shown)
+    if (!digits) return
+    await navigator.clipboard.writeText(digits)
     toast.success("숫자를 복사했어요")
   }
 
@@ -43,10 +45,10 @@ export function QuickCalc({ item }: { item: CalcItem }) {
               <p className="text-xs text-muted-foreground">지금</p>
               <button
                 type="button"
-                disabled={calc.currentNumber === null}
+                disabled={shownCopyText(calc.showValue) === null}
                 className={cn(ghostTextBtn, "disabled:pointer-events-none disabled:opacity-40")}
                 aria-label="복사"
-                onClick={() => calc.currentNumber !== null && copyValue(calc.currentNumber)}
+                onClick={() => copyShown(calc.showValue)}
               >
                 복사
               </button>
@@ -78,7 +80,7 @@ export function QuickCalc({ item }: { item: CalcItem }) {
                     type="button"
                     className={ghostTextBtn}
                     aria-label="복사"
-                    onClick={() => copyValue(row.value)}
+                    onClick={() => copyShown(formatQuickResult(row.value))}
                   >
                     복사
                   </button>

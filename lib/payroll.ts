@@ -1,33 +1,11 @@
-import { INCOME_BRACKETS } from "./policy.generated.ts"
+import { INCOME_BRACKETS, PAYROLL_DEDUCTIONS, PAYROLL_INSURANCE } from "./policy.generated.ts"
 
 /**
- * 직장 4대보험·간이세액 근처 상수 (2026 고시).
- *
- * 국민연금: 보험료율 9.5%의 근로자 절반 4.75%. 기준소득월액 상·하한은
- * 2026.7.1.~2027.6.30. 보건복지부 고시(하한 41만, 상한 659만).
- * 건강보험: 직장 보험료율 7.19%의 근로자 절반 3.595%.
- * 장기요양: 건강보험료의 13.14%(소득 대비 0.9448%의 절반).
- * 고용보험 실업급여: 근로자 0.9%.
- * 건강보험 근로자 부담 상한: 4,591,740원.
+ * 직장 4대보험·소득세 공제는 법제처 현행 법령·고시에서 받습니다.
  */
 export const PAYROLL = {
-  year: 2026,
-  pensionEmployeeRate: 0.0475,
-  pensionFloor: 410_000,
-  pensionCeil: 6_590_000,
-  healthEmployeeRate: 0.03595,
-  longTermCareOfHealth: 0.1314,
-  employmentEmployeeRate: 0.009,
-  healthEmployeeCap: 4_591_740,
-  healthFloor: 20_160,
-  youthReliefRate: 0.9,
-  youthReliefCap: 2_000_000,
-  mealExemptMonthly: 200_000,
-  basicPersonDeduction: 1_500_000,
-  localIncomeRate: 0.1,
-  bizWithholdingNational: 0.03,
-  bizWithholdingLocal: 0.003,
-  earnedDeductionCap: 20_000_000,
+  ...PAYROLL_INSURANCE,
+  ...PAYROLL_DEDUCTIONS,
 } as const
 
 export const SIDE_JOB_PRESETS = {

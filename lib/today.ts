@@ -1,6 +1,14 @@
 import { CALCULATORS, getCalculator, type CalcItem } from "@/lib/catalog"
 
-export const TODAY_SLUGS = ["quick", "dutch", "sale-vat", "vehicle-tax", "import-duty"] as const
+export const TODAY_SLUGS = [
+  "quick",
+  "dutch",
+  "sale-vat",
+  "vehicle-tax",
+  "car-tax",
+  "import-duty",
+  "deposit",
+] as const
 
 export function isTodaySlug(slug: string) {
   return (TODAY_SLUGS as readonly string[]).includes(slug)

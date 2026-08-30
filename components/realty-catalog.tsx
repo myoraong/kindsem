@@ -1,8 +1,9 @@
 import { Fragment } from "react"
 import { CalcDirRow } from "@/components/calc-card"
+import type { HomeSection } from "@/lib/home-section"
 import { REALTY_CATEGORIES, realtyItems } from "@/lib/realty"
 
-export function RealtyCatalog() {
+export function RealtyCatalog({ from }: { from?: HomeSection }) {
   return (
     <div className="grid grid-cols-2 gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8">
       {REALTY_CATEGORIES.map((category) => (
@@ -11,7 +12,7 @@ export function RealtyCatalog() {
             {category.title}
           </h3>
           {realtyItems(category).map((item) => (
-            <CalcDirRow key={item.slug} item={item} />
+            <CalcDirRow key={item.slug} item={item} from={from} />
           ))}
         </Fragment>
       ))}

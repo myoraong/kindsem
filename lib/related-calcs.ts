@@ -3,7 +3,9 @@ import { CALCULATORS, getCalculator, type CalcItem } from "./catalog.ts"
 /** 계산기마다 이어서 볼 것. 앞에 둔 순서가 우선이고, 부족하면 같은 분류에서 채웁니다. */
 const RELATED: Record<string, string[]> = {
   "take-home": ["weekly-holiday", "overtime-pay", "annual-leave"],
-  "weekly-holiday": ["overtime-pay", "take-home", "annual-leave"],
+  "weekly-holiday": ["part-time-month", "overtime-pay", "take-home"],
+  "part-time-month": ["weekly-holiday", "take-home", "prorate-pay"],
+  "prorate-pay": ["take-home", "weekly-holiday", "severance"],
   "overtime-pay": ["weekly-holiday", "take-home", "annual-leave"],
   "annual-leave": ["weekly-holiday", "overtime-pay", "severance"],
   severance: ["take-home", "annual-leave", "parental-leave"],
@@ -26,7 +28,10 @@ const RELATED: Record<string, string[]> = {
   "import-duty": ["sale-vat", "dutch", "quick"],
   "sale-vat": ["import-duty", "dutch", "quick"],
   dutch: ["quick", "sale-vat", "import-duty"],
-  "vehicle-tax": ["acquisition", "closing-cost", "quick"],
+  "vehicle-tax": ["car-tax", "acquisition", "quick"],
+  "car-tax": ["vehicle-tax", "dutch", "quick"],
+  deposit: ["quick", "dutch", "take-home"],
+  "rent-credit": ["rent-convert", "jeonse-vs-rent", "moving"],
   quick: ["dutch", "sale-vat", "take-home"],
 }
 

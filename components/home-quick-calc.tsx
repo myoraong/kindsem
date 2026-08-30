@@ -5,20 +5,24 @@ import Link from "next/link"
 import { toast } from "sonner"
 import { QuickPad } from "@/components/calc/quick-pad"
 import { useQuickCalc } from "@/components/calc/use-quick-calc"
-import { quickCopyText } from "@/lib/quick-math"
+import { rememberBackSection } from "@/lib/home-back"
+import { shownCopyText } from "@/lib/quick-math"
+import { useHomeSection } from "@/lib/use-home-section"
 import { cn } from "@/lib/utils"
 
 const ghostBtn =
   "inline-flex h-7 items-center rounded-md px-1.5 text-xs text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
 
 export function HomeQuickCalc({ folded = false }: { folded?: boolean }) {
+  const section = useHomeSection()
   const [active, setActive] = useState(false)
   const [open, setOpen] = useState(!folded)
   const calc = useQuickCalc({ keyboard: active && open })
 
   async function copy() {
-    if (calc.currentNumber === null) return
-    await navigator.clipboard.writeText(quickCopyText(calc.currentNumber))
+    const digits = shownCopyText(calc.showValue)
+    if (!digits) return
+    await navigator.clipboard.writeText(digits)
     toast.success("숫자를 복사했어요")
   }
 
@@ -57,13 +61,17 @@ export function HomeQuickCalc({ folded = false }: { folded?: boolean }) {
           <button
             type="button"
             className={ghostBtn}
-            disabled={calc.currentNumber === null}
+            disabled={shownCopyText(calc.showValue) === null}
             aria-label="복사"
             onClick={copy}
           >
             복사
           </button>
-          <Link href="/calc/quick/" className={ghostBtn}>
+          <Link
+            href="/calc/quick/"
+            className={ghostBtn}
+            onClick={() => rememberBackSection(section)}
+          >
             크게
           </Link>
           {folded ? (

@@ -163,7 +163,7 @@ export function ImportDuty({ item }: { item: CalcItem }) {
           환율은 관세청 고시 환율이 아니라 직접 넣는 숫자입니다. 국제운송비가 물품가격과 명백히 구분되면
           특송 고시는 그 운임을 빼 볼 수 있습니다. 여기 물품가격은 넣은 달러 그대로입니다.
         </Hint>
-        <LawNote lines={[LAW_SOURCES.importDuty]} />
+        <LawNote lines={[LAW_SOURCES.importDuty, LAW_SOURCES.importDeMinimis]} />
       </div>
     </CalcShell>
   )

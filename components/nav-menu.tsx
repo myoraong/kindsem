@@ -1,14 +1,21 @@
 "use client"
 
-import { useEffect, useId, useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react"
 import { createPortal } from "react-dom"
 import Link from "next/link"
 import { interceptHomeSectionClick } from "@/lib/home-section-snap"
+import { closeNavMenu, getOpenNavMenu, openNavMenu, subscribeNavMenu } from "@/lib/nav-menu-open"
 import { cn } from "@/lib/utils"
 
 type Item = { slug: string; title: string; blurb: string }
 
 const EDGE = 8
+const BRIDGE_PX = 14
+const CLOSE_MS = 240
+
+function snapshotOpen(id: string) {
+  return getOpenNavMenu() === id
+}
 
 export function NavMenu({
   href,
@@ -25,15 +32,19 @@ export function NavMenu({
   align?: "left" | "right"
   onNavigate?: () => void
 }) {
-  const openId = useId()
+  const menuId = useId()
   const rootRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
+  const hideTimer = useRef<number | null>(null)
   const [box, setBox] = useState({ top: 0, left: 0, width: 288 })
   const [mounted, setMounted] = useState(false)
+  const open = useSyncExternalStore(subscribeNavMenu, () => snapshotOpen(menuId), () => false)
 
   useEffect(() => {
     setMounted(true)
+    return () => {
+      if (hideTimer.current !== null) window.clearTimeout(hideTimer.current)
+    }
   }, [])
 
   function place() {
@@ -45,7 +56,7 @@ export function NavMenu({
     let left = align === "right" ? rect.right - width : rect.left
     if (left + width > vw - EDGE) left = vw - EDGE - width
     if (left < EDGE) left = EDGE
-    setBox({ top: rect.bottom, left, width })
+    setBox({ top: rect.bottom - BRIDGE_PX, left, width })
   }
 
   useLayoutEffect(() => {
@@ -59,24 +70,43 @@ export function NavMenu({
     }
   }, [open, align])
 
-  function isInside(node: Node | null) {
-    return Boolean(
-      (node && rootRef.current?.contains(node)) || (node && panelRef.current?.contains(node)),
-    )
+  function isInside(node: EventTarget | null) {
+    if (!(node instanceof Node)) return false
+    return Boolean(rootRef.current?.contains(node) || panelRef.current?.contains(node))
   }
 
-  function openMenu() {
+  function cancelHide() {
+    if (hideTimer.current === null) return
+    window.clearTimeout(hideTimer.current)
+    hideTimer.current = null
+  }
+
+  function show() {
+    cancelHide()
     place()
-    setOpen(true)
+    openNavMenu(menuId)
+  }
+
+  function hideNow() {
+    cancelHide()
+    closeNavMenu(menuId)
+  }
+
+  function hideSoon() {
+    cancelHide()
+    hideTimer.current = window.setTimeout(() => {
+      hideTimer.current = null
+      closeNavMenu(menuId)
+    }, CLOSE_MS)
   }
 
   useEffect(() => {
     if (!open) return
     function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false)
+      if (event.key === "Escape") hideNow()
     }
     function onPointer(event: MouseEvent) {
-      if (!isInside(event.target as Node)) setOpen(false)
+      if (!isInside(event.target)) hideNow()
     }
     document.addEventListener("keydown", onKey)
     document.addEventListener("mousedown", onPointer)
@@ -84,36 +114,42 @@ export function NavMenu({
       document.removeEventListener("keydown", onKey)
       document.removeEventListener("mousedown", onPointer)
     }
-  }, [open])
+  }, [open, menuId])
 
   const panel =
     open && mounted
       ? createPortal(
           <div
             ref={panelRef}
-            id={openId}
+            id={menuId}
             style={{ top: box.top, left: box.left, width: box.width }}
-            className="fixed z-50 overflow-hidden rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4"
-            onMouseEnter={openMenu}
+            className="fixed z-50"
+            onMouseEnter={show}
             onMouseLeave={(event) => {
-              if (isInside(event.relatedTarget as Node)) return
-              setOpen(false)
+              if (isInside(event.relatedTarget)) return
+              hideSoon()
             }}
           >
-            <ul className="max-h-[min(20rem,calc(100dvh-var(--site-header-h)-1.5rem))] space-y-0.5 overflow-y-auto overscroll-contain">
-              {items.map((item) => (
-                <li key={item.slug}>
-                  <Link
-                    href={`/calc/${item.slug}`}
-                    onClick={() => setOpen(false)}
-                    className="block rounded-xl px-3 py-2 text-sm hover:bg-muted"
-                  >
-                    <span className="font-medium">{item.title}</span>
-                    <span className="mt-0.5 block text-xs text-muted-foreground">{item.blurb}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <div style={{ height: BRIDGE_PX }} aria-hidden="true" />
+            <div className="overflow-hidden rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:p-4">
+              <ul className="max-h-[min(20rem,calc(100dvh-var(--site-header-h)-1.5rem))] space-y-0.5 overflow-y-auto overscroll-contain">
+                {items.map((item) => (
+                  <li key={item.slug}>
+                    <Link
+                      href={`/calc/${item.slug}`}
+                      onClick={() => {
+                        onNavigate?.()
+                        hideNow()
+                      }}
+                      className="block rounded-xl px-3 py-2 text-sm hover:bg-muted"
+                    >
+                      <span className="font-medium">{item.title}</span>
+                      <span className="mt-0.5 block text-xs text-muted-foreground">{item.blurb}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>,
           document.body,
         )
@@ -123,30 +159,34 @@ export function NavMenu({
     <div
       ref={rootRef}
       className="relative"
-      onMouseEnter={openMenu}
+      onMouseEnter={show}
       onMouseLeave={(event) => {
-        if (isInside(event.relatedTarget as Node)) return
-        setOpen(false)
+        if (isInside(event.relatedTarget)) return
+        hideSoon()
       }}
     >
       <Link
         href={href}
         scroll={false}
         aria-expanded={open}
-        aria-controls={openId}
+        aria-controls={menuId}
         aria-current={active ? "page" : undefined}
         className={cn(
           "inline-flex h-[var(--site-header-h)] items-center border-b-2 px-2 text-sm whitespace-nowrap transition-colors sm:px-2.5",
           active || open
             ? "border-primary font-medium text-foreground"
-            : "border-transparent text-muted-foreground hover:text-foreground"
+            : "border-transparent text-muted-foreground hover:text-foreground",
         )}
         onClick={(event) => {
-          setOpen(false)
+          hideNow()
           onNavigate?.()
           interceptHomeSectionClick(href, event)
         }}
-        onFocus={openMenu}
+        onFocus={show}
+        onBlur={(event) => {
+          if (isInside(event.relatedTarget)) return
+          hideNow()
+        }}
       >
         {label}
       </Link>

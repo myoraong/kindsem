@@ -32,7 +32,12 @@ import {
   LicenseTaxCalc,
 } from "@/components/calc/tax-pack"
 import { VehicleTax } from "@/components/calc/vehicle-tax"
+import { CarTax } from "@/components/calc/car-tax"
 import { WeeklyHoliday } from "@/components/calc/weekly-holiday"
+import { PartTimeMonth } from "@/components/calc/part-time-month"
+import { ProratePay } from "@/components/calc/prorate-pay"
+import { DepositCalc } from "@/components/calc/deposit-calc"
+import { RentCredit } from "@/components/calc/rent-credit"
 import { YieldCalc } from "@/components/calc/yield-calc"
 import { CALCULATORS, getCalculator } from "@/lib/catalog"
 import type { Metadata } from "next"
@@ -75,12 +80,20 @@ export default async function CalcPage({
       return <SaleVat item={item} />
     case "vehicle-tax":
       return <VehicleTax item={item} />
+    case "car-tax":
+      return <CarTax item={item} />
     case "import-duty":
       return <ImportDuty item={item} />
+    case "deposit":
+      return <DepositCalc item={item} />
     case "take-home":
       return <TakeHomeCalc item={item} />
     case "weekly-holiday":
       return <WeeklyHoliday item={item} />
+    case "part-time-month":
+      return <PartTimeMonth item={item} />
+    case "prorate-pay":
+      return <ProratePay item={item} />
     case "overtime-pay":
       return <OvertimePay item={item} />
     case "annual-leave":
@@ -107,6 +120,8 @@ export default async function CalcPage({
       return <RentConvert item={item} />
     case "jeonse-vs-rent":
       return <JeonseVsRent item={item} />
+    case "rent-credit":
+      return <RentCredit item={item} />
     case "acquisition":
       return <AcquisitionCalc item={item} />
     case "capital-gains":
