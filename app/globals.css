@@ -170,3 +170,12 @@
     animation: none;
   }
 }
+
+/* Google이 칸을 비웠을 때(unfilled) 빈 「광고」 상자를 남기지 않습니다. */
+ins.adsbygoogle[data-ad-status="unfilled"] {
+  display: none !important;
+}
+
+aside:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
+  display: none !important;
+}
