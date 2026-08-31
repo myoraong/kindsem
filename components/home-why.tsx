@@ -24,21 +24,21 @@ export function HomeWhy() {
           const Icon = ICONS[item.id]
           return (
             <li key={item.id}>
-              <article className="flex h-full flex-col gap-3 rounded-2xl bg-card p-4 ring-1 ring-primary/15 sm:p-5">
-                <div className="flex items-center gap-3">
-                  <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-primary ring-1 ring-primary/20">
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs font-medium tracking-[0.12em] text-primary [font-variant-numeric:tabular-nums]">
+              <article className="flex h-full gap-3 rounded-2xl bg-card p-4 ring-1 ring-primary/15 sm:p-5">
+                <span className="grid size-11 shrink-0 place-items-center rounded-full bg-accent text-primary ring-1 ring-primary/20">
+                  <Icon className="size-5" aria-hidden />
+                </span>
+                <div className="min-w-0">
+                  <h3 className="flex items-baseline gap-2 text-[15px] font-semibold tracking-tight">
+                    <span className="text-xs font-medium tracking-[0.12em] text-primary tabular-nums">
                       {String(index + 1).padStart(2, "0")}
-                    </p>
-                    <h3 className="text-lg font-semibold tracking-tight">{item.title}</h3>
-                  </div>
+                    </span>
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-pretty break-keep text-[15px] leading-7 text-muted-foreground">
+                    {item.body}
+                  </p>
                 </div>
-                <p className="text-pretty break-keep text-[15px] leading-7 text-muted-foreground sm:text-base">
-                  {item.body}
-                </p>
               </article>
             </li>
           )
