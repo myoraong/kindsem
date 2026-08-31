@@ -35,7 +35,7 @@ export function HomeWhy() {
                     </span>
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-pretty break-keep text-[15px] leading-7 text-muted-foreground">
+                  <p className="mt-1.5 text-pretty break-keep text-[13px] leading-6 text-muted-foreground">
                     {item.body}
                   </p>
                 </div>
