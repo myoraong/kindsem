@@ -23,6 +23,10 @@ export const CALC_SEO: Record<string, CalcSeo> = {
     query: "더치페이 계산기",
     also: ["엔빵 계산기", "n빵 계산기", "더치페이", "더치"],
   },
+  ladder: {
+    query: "사다리타기 계산기",
+    also: ["사다리게임", "사다리 타기", "제비뽑기"],
+  },
   "sale-vat": {
     query: "부가세 계산기",
     also: ["부가가치세 계산기", "할인 계산기", "VAT 계산기", "세일 부가세"],

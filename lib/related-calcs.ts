@@ -27,12 +27,13 @@ const RELATED: Record<string, string[]> = {
   yield: ["rent-convert", "jeonse-vs-rent", "holding-tax"],
   "import-duty": ["sale-vat", "dutch", "quick"],
   "sale-vat": ["import-duty", "dutch", "quick"],
-  dutch: ["quick", "sale-vat", "import-duty"],
+  dutch: ["ladder", "quick", "sale-vat"],
+  ladder: ["dutch", "quick", "sale-vat"],
   "vehicle-tax": ["car-tax", "acquisition", "quick"],
   "car-tax": ["vehicle-tax", "dutch", "quick"],
   deposit: ["quick", "dutch", "take-home"],
   "rent-credit": ["rent-convert", "jeonse-vs-rent", "moving"],
-  quick: ["dutch", "sale-vat", "take-home"],
+  quick: ["dutch", "ladder", "sale-vat"],
 }
 
 export function relatedCalculators(slug: string, limit = 4): CalcItem[] {

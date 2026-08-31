@@ -21,8 +21,13 @@ test("취득세 다음에 살 때 총비용", () => {
   assert.equal(relatedCalculators("acquisition")[0]?.slug, "closing-cost")
 })
 
+test("사다리 다음에 더치페이", () => {
+  assert.equal(relatedCalculators("ladder")[0]?.slug, "dutch")
+  assert.equal(relatedCalculators("dutch")[0]?.slug, "ladder")
+})
+
 test("이어서 볼 것은 카탈로그에 있는 슬로그만", () => {
-  for (const slug of ["take-home", "import-duty", "parental-leave", "jeonse-vs-rent"]) {
+  for (const slug of ["take-home", "import-duty", "parental-leave", "jeonse-vs-rent", "ladder"]) {
     for (const item of relatedCalculators(slug)) {
       assert.ok(getCalculator(item.slug))
       assert.notEqual(item.slug, slug)

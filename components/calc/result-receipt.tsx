@@ -17,6 +17,7 @@ export function ResultReceipt({
   rows,
   empty,
   kind = "won",
+  headline,
   copyLine,
   copyNote,
   lawLine,
@@ -27,14 +28,17 @@ export function ResultReceipt({
   rows: ReceiptRow[]
   empty: string
   kind?: "won" | "percent" | "months" | "days"
+  /** 금액 서식 대신 이 문구를 큰 제목으로 씁니다. */
+  headline?: string
   copyLine?: string
   copyNote?: string
   lawLine?: string
 }) {
-  const hasResult = amount !== null
+  const hasResult = amount !== null || Boolean(headline)
 
-  const headline =
-    amount === null
+  const display =
+    headline ??
+    (amount === null
       ? ""
       : kind === "percent"
         ? `${amount.toFixed(2)}%`
@@ -42,13 +46,13 @@ export function ResultReceipt({
           ? `${amount.toFixed(1)}개월`
           : kind === "days"
             ? `${amount.toFixed(amount % 1 === 0 ? 0 : 1)}일`
-            : formatWon(Math.round(amount))
+            : formatWon(Math.round(amount)))
 
   async function copy() {
-    if (amount === null) return
+    if (!hasResult) return
     const line =
       copyLine ??
-      kakaoCopyLine(title, headline, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
+      kakaoCopyLine(title, display, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
     await navigator.clipboard.writeText(line)
     toast.success("복사됨")
   }
@@ -59,11 +63,11 @@ export function ResultReceipt({
       {hasResult ? (
         <>
           <p className="mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl">
-            {headline}
+            {display}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
             {caption ??
-              (kind === "won"
+              (kind === "won" && amount !== null
                 ? formatKoreanUnit(amount)
                 : kind === "months"
                   ? "세후 상승 기준"

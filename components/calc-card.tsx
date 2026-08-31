@@ -17,6 +17,7 @@ import {
   Coins,
   Gauge,
   Gift,
+  GitFork,
   Home,
   Landmark,
   Moon,
@@ -39,6 +40,7 @@ import { calcSeo } from "@/lib/seo"
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   quick: Calculator,
   dutch: Split,
+  ladder: GitFork,
   "sale-vat": Percent,
   "vehicle-tax": Car,
   "car-tax": Gauge,

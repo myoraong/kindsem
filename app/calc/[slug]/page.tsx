@@ -7,6 +7,7 @@ import { CertPayback } from "@/components/calc/cert-payback"
 import { ClosingCost } from "@/components/calc/closing-cost"
 import { DsrCalc } from "@/components/calc/dsr-calc"
 import { DutchPay } from "@/components/calc/dutch-pay"
+import { LadderCalc } from "@/components/calc/ladder-calc"
 import { ImportDuty } from "@/components/calc/import-duty"
 import { JeonseLoan } from "@/components/calc/jeonse-loan"
 import { JeonseVsRent } from "@/components/calc/jeonse-vs-rent"
@@ -85,6 +86,8 @@ function calcBody(slug: string, item: CalcItem): ReactNode {
       return <QuickCalc item={item} />
     case "dutch":
       return <DutchPay item={item} />
+    case "ladder":
+      return <LadderCalc item={item} />
     case "sale-vat":
       return <SaleVat item={item} />
     case "vehicle-tax":

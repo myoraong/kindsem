@@ -12,7 +12,7 @@ export type CalcItem = {
 export const CATALOG_HEADINGS = {
   today: {
     title: "생활",
-    blurb: "더치페이, 자동차 취득세, 일상에서 쓰는 계산.",
+    blurb: "더치페이, 사다리타기, 자동차 취득세.",
   },
   work: {
     title: "급여",
@@ -60,6 +60,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "더치페이",
     blurb: "인원만 넣으면 1인 금액과 남는 원까지.",
     when: "모임, 회식, 여행 정산",
+    group: "today",
+  },
+  {
+    slug: "ladder",
+    title: "사다리타기",
+    blurb: "인원만 넣으면 사다리가 나옵니다.",
+    when: "회식, 내기, 역할 나누기",
     group: "today",
   },
   {

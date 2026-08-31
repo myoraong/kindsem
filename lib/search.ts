@@ -23,6 +23,7 @@ const GROUP_LABEL: Record<LifeGroup, string> = {
 const ALIASES: Record<string, string[]> = {
   quick: ["계산기", "사칙", "산수"],
   dutch: ["더치", "엔빵", "n빵", "더치페이"],
+  ladder: ["사다리", "사다리게임", "사다리타기", "제비뽑기"],
   "sale-vat": ["부가세", "부가가치세", "할인", "세일", "vat"],
   "vehicle-tax": ["취등록세", "차량취득세", "자동차취득세", "출고세금"],
   "car-tax": ["자동차세", "보유자동차세", "배기량세", "차령", "자동차세계산기"],

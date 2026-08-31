@@ -165,9 +165,28 @@
   animation: sena-bob 3.8s ease-in-out infinite;
 }
 
+@keyframes ladder-trace {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ladder-trace {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: ladder-trace 0.7s ease forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .sena-bob {
     animation: none;
+  }
+  .ladder-trace {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
 

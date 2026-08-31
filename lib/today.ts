@@ -3,6 +3,7 @@ import { CALCULATORS, getCalculator, type CalcItem } from "@/lib/catalog"
 export const TODAY_SLUGS = [
   "quick",
   "dutch",
+  "ladder",
   "sale-vat",
   "vehicle-tax",
   "car-tax",
