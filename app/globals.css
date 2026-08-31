@@ -177,7 +177,7 @@
 .ladder-trace {
   stroke-dasharray: 1;
   stroke-dashoffset: 1;
-  animation: ladder-trace 0.7s ease forwards;
+  animation: ladder-trace 1.45s cubic-bezier(0.33, 0, 0.2, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

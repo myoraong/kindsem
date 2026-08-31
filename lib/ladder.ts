@@ -112,8 +112,12 @@ export function isPermutation(map: number[]): boolean {
   return map.every((value) => Number.isInteger(value) && value >= 0 && value < map.length)
 }
 
+export function pairCopyLine(start: string, end: string): string {
+  return `${start} → ${end}`
+}
+
 export function mappingCopyLine(starts: string[], ends: string[], map: number[]): string {
   return map
-    .map((end, start) => `${starts[start] ?? start + 1} → ${ends[end] ?? end + 1}`)
+    .map((end, start) => pairCopyLine(starts[start] ?? String(start + 1), ends[end] ?? String(end + 1)))
     .join(" · ")
 }

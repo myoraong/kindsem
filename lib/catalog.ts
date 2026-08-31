@@ -65,8 +65,8 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "ladder",
     title: "사다리타기",
-    blurb: "인원만 넣으면 사다리가 나옵니다.",
-    when: "회식, 내기, 역할 나누기",
+    blurb: "출발과 도착을 넣으면 누가 어디로 가는지 매칭합니다.",
+    when: "회식·내기·역할 정하기",
     group: "today",
   },
   {

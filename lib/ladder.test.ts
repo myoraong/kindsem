@@ -12,6 +12,7 @@ import {
   LADDER_MIN,
   ladderMapping,
   mappingCopyLine,
+  pairCopyLine,
   resizeLabels,
   tracePath,
 } from "./ladder.ts"
@@ -87,5 +88,6 @@ test("사다리를 타면 출발마다 도착이 하나씩이다", () => {
 })
 
 test("복사 문장은 누가 어디로만 적는다", () => {
+  assert.equal(pairCopyLine("가", "2"), "가 → 2")
   assert.equal(mappingCopyLine(["가", "나"], ["1", "2"], [1, 0]), "가 → 2 · 나 → 1")
 })
