@@ -1,6 +1,14 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { HOME_WHY } from "./why.ts"
+import { HOME_WHY, HOME_WHY_HEADING } from "./why.ts"
+
+test("홈 다른 점 제목은 짧고 슬로건 말을 쓰지 않는다", () => {
+  const forbidden = /친절한|바로|한 장으로|웰컴|최고|차별화|여기가/
+  assert.equal(HOME_WHY_HEADING.title, "다른 점")
+  assert.doesNotMatch(HOME_WHY_HEADING.title, forbidden)
+  assert.doesNotMatch(HOME_WHY_HEADING.blurb, forbidden)
+  assert.match(HOME_WHY_HEADING.blurb, /빼 둡니다/)
+})
 
 test("홈 다른 점은 세 줄이고 슬로건 말을 쓰지 않는다", () => {
   assert.equal(HOME_WHY.length, 3)

@@ -1,3 +1,9 @@
+/** 홈 제목. 생활·급여 섹션과 같은 크기로 둔다. */
+export const HOME_WHY_HEADING = {
+  title: "다른 점",
+  blurb: "한곳에서 세고, 고시는 다시 읽고, 표에 없는 숫자는 빼 둡니다.",
+} as const
+
 /** 홈에 적는 다른 점. 슬로건이 아니라 계산이 실제로 하는 일만. */
 export const HOME_WHY = [
   {
