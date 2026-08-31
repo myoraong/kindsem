@@ -1,65 +1,119 @@
 export const LADDER_MIN = 2
 export const LADDER_MAX = 8
-export const LADDER_ROWS = 11
+export const LADDER_ROWS = 10
 
-/** [row][i] = 세로줄 i와 i+1 사이 가로대. 같은 칸에서 이웃 가로대는 붙지 않습니다. */
-export type Rungs = boolean[][]
+const START_NAMES = ["가", "나", "다", "라", "마", "바", "사", "아"] as const
 
-/** 같은 씨앗이면 같은 사다리가 나옵니다. */
-export function seededRandom(seed: number): () => number {
-  let s = seed >>> 0
-  return () => {
-    s = (Math.imul(s, 1664525) + 1013904223) >>> 0
-    return s / 4294967296
-  }
+/** 가로줄 유무. rungs[줄][칸] — 칸 i 는 세로선 i 와 i+1 사이. */
+export type LadderRungs = boolean[][]
+
+export function clampLadderCount(n: number): number {
+  if (!Number.isFinite(n)) return LADDER_MIN
+  return Math.min(LADDER_MAX, Math.max(LADDER_MIN, Math.round(n)))
 }
 
-export function makeRungs(count: number, rng: () => number = Math.random): Rungs {
-  const n = Math.min(LADDER_MAX, Math.max(LADDER_MIN, Math.floor(count)))
-  const rungs: Rungs = []
-  for (let row = 0; row < LADDER_ROWS; row++) {
-    const line = Array.from({ length: n - 1 }, () => false)
-    for (let i = 0; i < n - 1; i++) {
-      if (i > 0 && line[i - 1]) continue
-      line[i] = rng() < 0.42
+export function defaultStartLabels(n: number): string[] {
+  const count = clampLadderCount(n)
+  return Array.from({ length: count }, (_, i) => START_NAMES[i] ?? `사람${i + 1}`)
+}
+
+export function defaultEndLabels(n: number): string[] {
+  const count = clampLadderCount(n)
+  return Array.from({ length: count }, (_, i) => String(i + 1))
+}
+
+export function resizeLabels(current: string[], n: number, fallback: (index: number) => string): string[] {
+  const count = clampLadderCount(n)
+  return Array.from({ length: count }, (_, i) => {
+    const prev = current[i]?.trim()
+    return prev ? prev : fallback(i)
+  })
+}
+
+export function clientRandom(): number {
+  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+    const buf = new Uint32Array(1)
+    crypto.getRandomValues(buf)
+    return (buf[0] ?? 0) / 4294967296
+  }
+  return Math.random()
+}
+
+function shuffle<T>(items: T[], random: () => number): T[] {
+  const next = items.slice()
+  for (let i = next.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1))
+    const tmp = next[i]!
+    next[i] = next[j]!
+    next[j] = tmp
+  }
+  return next
+}
+
+export function hasAdjacentRungs(rungs: LadderRungs): boolean {
+  for (const row of rungs) {
+    for (let g = 1; g < row.length; g++) {
+      if (row[g] && row[g - 1]) return true
     }
-    rungs.push(line)
   }
-  return rungs
+  return false
 }
 
-export function followColumn(start: number, rungs: Rungs): number {
-  if (rungs.length === 0) return start
-  const n = rungs[0].length + 1
+/** 같은 높이에 이웃 가로줄이 붙지 않게 사다리를 만듭니다. */
+export function generateRungs(
+  n: number,
+  rows = LADDER_ROWS,
+  random: () => number = Math.random,
+): LadderRungs {
+  const count = clampLadderCount(n)
+  const gaps = count - 1
+  const out: LadderRungs = []
+  for (let r = 0; r < rows; r++) {
+    const row = Array<boolean>(gaps).fill(false)
+    const order = shuffle(
+      Array.from({ length: gaps }, (_, g) => g),
+      random,
+    )
+    for (const g of order) {
+      if ((g > 0 && row[g - 1]) || (g + 1 < gaps && row[g + 1])) continue
+      if (random() < 0.65) row[g] = true
+    }
+    out.push(row)
+  }
+  return out
+}
+
+/** 각 가로줄 직후 칸. 길이 = 가로줄 수 + 1 (맨 위 출발 포함). */
+export function tracePath(start: number, rungs: LadderRungs): number[] {
+  const cols = [start]
   let col = start
   for (const row of rungs) {
-    if (col < n - 1 && row[col]) col += 1
-    else if (col > 0 && row[col - 1]) col -= 1
+    if (col > 0 && row[col - 1]) col -= 1
+    else if (col < row.length && row[col]) col += 1
+    cols.push(col)
   }
-  return col
+  return cols
 }
 
-/** 출발 칸 → 도착 칸. 한 칸에 두 명이 모이지 않습니다. */
-export function ladderMap(rungs: Rungs): number[] {
-  if (rungs.length === 0) return []
-  const n = rungs[0].length + 1
-  return Array.from({ length: n }, (_, i) => followColumn(i, rungs))
+export function followPath(start: number, rungs: LadderRungs): number {
+  const cols = tracePath(start, rungs)
+  return cols[cols.length - 1] ?? start
+}
+
+export function ladderMapping(n: number, rungs: LadderRungs): number[] {
+  const count = clampLadderCount(n)
+  return Array.from({ length: count }, (_, i) => followPath(i, rungs))
 }
 
 export function isPermutation(map: number[]): boolean {
   if (map.length === 0) return false
   const seen = new Set(map)
-  return seen.size === map.length && map.every((x) => Number.isInteger(x) && x >= 0 && x < map.length)
+  if (seen.size !== map.length) return false
+  return map.every((value) => Number.isInteger(value) && value >= 0 && value < map.length)
 }
 
-export function rungsNeighborOk(rungs: Rungs): boolean {
-  for (const row of rungs) {
-    for (let i = 1; i < row.length; i++) {
-      if (row[i] && row[i - 1]) return false
-    }
-  }
-  return true
+export function mappingCopyLine(starts: string[], ends: string[], map: number[]): string {
+  return map
+    .map((end, start) => `${starts[start] ?? start + 1} → ${ends[end] ?? end + 1}`)
+    .join(" · ")
 }
-
-export const DEFAULT_STARTS = ["가", "나", "다", "라", "마", "바", "사", "아"] as const
-export const DEFAULT_ENDS = ["1", "2", "3", "4", "5", "6", "7", "8"] as const

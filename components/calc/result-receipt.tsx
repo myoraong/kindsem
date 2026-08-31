@@ -76,8 +76,8 @@ export function ResultReceipt({
                     : "연 기준 단순 수익률")}
           </p>
           <div className="mt-5 space-y-2.5 border-t border-dashed border-border pt-4">
-            {rows.map((row) => (
-              <div key={row.label} className="flex items-start justify-between gap-4 text-sm">
+            {rows.map((row, index) => (
+              <div key={`${index}-${row.label}`} className="flex items-start justify-between gap-4 text-sm">
                 <span className="text-muted-foreground">{row.label}</span>
                 <span className={row.mute ? "text-muted-foreground tabular" : "tabular"}>
                   {row.value}
