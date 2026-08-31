@@ -12,8 +12,9 @@ test("홈 다른 점은 세 줄이고 슬로건 말을 쓰지 않는다", () => 
     assert.doesNotMatch(item.body, forbidden)
   }
   assert.equal(HOME_WHY[0].title, "한곳에서")
-  assert.equal(HOME_WHY[1].title, "고시 숫자")
+  assert.equal(HOME_WHY[1].title, "하루에 두 번")
   assert.equal(HOME_WHY[2].title, "빼 둠")
   assert.match(HOME_WHY[1].body, /법제처/)
   assert.match(HOME_WHY[2].body, /공제/)
+  assert.match(HOME_WHY[2].body, /스트레스 DSR/)
 })
