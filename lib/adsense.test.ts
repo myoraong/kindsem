@@ -4,12 +4,15 @@ import {
   ADS_TXT_COMMENT,
   ADSENSE_ADS_TXT_CERT,
   ADSENSE_CLIENT,
+  ADSENSE_SLOT,
   adsenseClientIdFromEnv,
   adsenseScriptSrc,
   existingAdsTxtPublisherId,
   parseAdsensePublisherId,
+  parseAdsenseSlot,
   renderAdsTxt,
   resolveAdsenseClientId,
+  resolveAdsenseSlot,
   shouldRenderAdOnPath,
   adFillFromStatus,
   adSlotShowsChrome,
@@ -37,6 +40,16 @@ test("광고 스크립트 client는 NEXT_PUBLIC_ADSENSE_CLIENT가 있을 때만 
   assert.equal(resolveAdsenseClientId(""), ADSENSE_CLIENT)
   assert.equal(resolveAdsenseClientId(undefined), ADSENSE_CLIENT)
   assert.equal(resolveAdsenseClientId("ca-pub-1234567890123456"), "ca-pub-1234567890123456")
+})
+
+test("디스플레이 슬롯은 숫자만 받고 kindsem-계산기 단위를 쓴다", () => {
+  assert.equal(parseAdsenseSlot("8467476474"), "8467476474")
+  assert.equal(parseAdsenseSlot(" 8467476474 "), "8467476474")
+  assert.equal(parseAdsenseSlot(""), null)
+  assert.equal(parseAdsenseSlot("XXXXXXXX"), null)
+  assert.equal(ADSENSE_SLOT, "8467476474")
+  assert.equal(resolveAdsenseSlot(""), ADSENSE_SLOT)
+  assert.equal(resolveAdsenseSlot("1111222233"), "1111222233")
 })
 
 test("인페이지 광고는 채워지기 전에는 상자를 그리지 않는다", () => {

@@ -6,6 +6,7 @@ import {
   adFillFromStatus,
   adSlotShowsChrome,
   resolveAdsenseClientId,
+  resolveAdsenseSlot,
   shouldRenderAdOnPath,
   type AdFill,
 } from "@/lib/adsense"
@@ -27,7 +28,8 @@ export function AdSenseInPage({
   const pathname = usePathname()
   const insRef = useRef<HTMLModElement>(null)
   const client = resolveAdsenseClientId()
-  const show = Boolean(client) && shouldRenderAdOnPath(pathname)
+  const slot = resolveAdsenseSlot()
+  const show = Boolean(client) && Boolean(slot) && shouldRenderAdOnPath(pathname)
   const compact = size === "compact"
   const [fill, setFill] = useState<AdFill>("pending")
   const chrome = adSlotShowsChrome(fill)
@@ -64,7 +66,7 @@ export function AdSenseInPage({
     }
   }, [show, pathname, compact])
 
-  if (!show || !client) return null
+  if (!show || !client || !slot) return null
 
   return (
     <aside
@@ -93,6 +95,7 @@ export function AdSenseInPage({
         className="adsbygoogle block"
         style={{ display: "block", width: compact ? 300 : "100%", minHeight: compact ? 80 : 100 }}
         data-ad-client={client}
+        data-ad-slot={slot}
         data-ad-format="auto"
         data-full-width-responsive={compact ? "false" : "true"}
       />

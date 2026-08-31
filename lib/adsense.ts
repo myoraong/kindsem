@@ -4,6 +4,11 @@ export const ADSENSE_ADS_TXT_CERT = "f08c47fec0942fa0"
 /** 애드센스가 준 게시자 번호. 헤드 확인용 스크립트에 씁니다. */
 export const ADSENSE_CLIENT = "ca-pub-1559116385038077"
 
+/** 디스플레이 광고 단위 kindsem-계산기. */
+export const ADSENSE_SLOT = "8467476474"
+
+const SLOT_RE = /^\d{8,16}$/
+
 const PUB_ID_RE = /pub-\d+/
 
 export function parseAdsensePublisherId(value: string | undefined | null): string | null {
@@ -30,6 +35,18 @@ export function adsenseClientIdFromEnv(
 export function adsenseScriptSrc(clientId: string | null): string | null {
   if (!clientId) return null
   return `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`
+}
+
+export function parseAdsenseSlot(value: string | undefined | null): string | null {
+  if (!value) return null
+  const slot = value.trim()
+  return SLOT_RE.test(slot) ? slot : null
+}
+
+export function resolveAdsenseSlot(
+  envSlot = process.env.NEXT_PUBLIC_ADSENSE_SLOT,
+): string | null {
+  return parseAdsenseSlot(envSlot) ?? parseAdsenseSlot(ADSENSE_SLOT)
 }
 
 /** Head snippet과 같은 client. env가 있으면 그걸 쓰고, 없으면 게시자 상수를 씁니다. */
