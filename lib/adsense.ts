@@ -46,6 +46,19 @@ export function shouldRenderAdOnPath(pathname: string | null | undefined): boole
   return path !== "/privacy" && path !== "/contact"
 }
 
+export type AdFill = "pending" | "filled" | "unfilled"
+
+export function adFillFromStatus(status: string | null | undefined): AdFill {
+  if (status === "filled") return "filled"
+  if (status === "unfilled") return "unfilled"
+  return "pending"
+}
+
+/** 소재가 붙기 전에는 빈 「광고」 상자를 그리지 않습니다. */
+export function adSlotShowsChrome(fill: AdFill) {
+  return fill === "filled"
+}
+
 export function existingAdsTxtPublisherId(text: string): string | null {
   for (const line of text.split(/\r?\n/)) {
     const trimmed = line.trim()

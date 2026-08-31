@@ -1,8 +1,14 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
-import { resolveAdsenseClientId, shouldRenderAdOnPath } from "@/lib/adsense"
+import {
+  adFillFromStatus,
+  adSlotShowsChrome,
+  resolveAdsenseClientId,
+  shouldRenderAdOnPath,
+  type AdFill,
+} from "@/lib/adsense"
 import { cn } from "@/lib/utils"
 
 declare global {
@@ -23,13 +29,20 @@ export function AdSenseInPage({
   const client = resolveAdsenseClientId()
   const show = Boolean(client) && shouldRenderAdOnPath(pathname)
   const compact = size === "compact"
+  const [fill, setFill] = useState<AdFill>("pending")
+  const chrome = adSlotShowsChrome(fill)
 
   useEffect(() => {
     if (!show) return
     const el = insRef.current
     if (!el) return
 
-    const fill = () => {
+    const readFill = () => setFill(adFillFromStatus(el.getAttribute("data-ad-status")))
+    readFill()
+    const observer = new MutationObserver(readFill)
+    observer.observe(el, { attributes: true, attributeFilter: ["data-ad-status"] })
+
+    const fillSlot = () => {
       if (el.getAttribute("data-adsbygoogle-status")) return
       if (compact && !window.matchMedia("(min-width: 768px)").matches) return
       try {
@@ -39,31 +52,46 @@ export function AdSenseInPage({
       }
     }
 
-    fill()
-    if (!compact) return
+    fillSlot()
+    if (!compact) {
+      return () => observer.disconnect()
+    }
     const mq = window.matchMedia("(min-width: 768px)")
-    mq.addEventListener("change", fill)
-    return () => mq.removeEventListener("change", fill)
+    mq.addEventListener("change", fillSlot)
+    return () => {
+      observer.disconnect()
+      mq.removeEventListener("change", fillSlot)
+    }
   }, [show, pathname, compact])
 
   if (!show || !client) return null
 
   return (
     <aside
+      aria-hidden={!chrome}
       aria-label="광고"
       className={cn(
-        "overflow-hidden rounded-2xl bg-muted/50 p-3 ring-1 ring-dashed ring-foreground/12",
-        compact
-          ? "hidden w-[300px] min-h-[100px] shrink-0 self-start md:block"
-          : "mt-6 min-h-[140px] w-full",
+        compact && "shrink-0 self-start",
+        compact && fill === "unfilled" && "hidden",
+        compact && fill !== "unfilled" && "hidden md:block",
+        !compact && "w-full",
+        !compact && fill === "unfilled" && "hidden",
+        fill === "pending" && "pointer-events-none overflow-hidden opacity-0",
+        fill === "pending" && (compact ? "h-0 w-[300px]" : "h-0"),
+        chrome &&
+          (compact
+            ? "w-[300px] overflow-hidden rounded-2xl bg-muted/50 p-3 ring-1 ring-dashed ring-foreground/12"
+            : "mt-6 overflow-hidden rounded-2xl bg-muted/50 p-3 ring-1 ring-dashed ring-foreground/12"),
         className,
       )}
     >
-      <p className="mb-2 text-center text-[11px] leading-none text-muted-foreground">광고</p>
+      {chrome ? (
+        <p className="mb-2 text-center text-[11px] leading-none text-muted-foreground">광고</p>
+      ) : null}
       <ins
         ref={insRef}
-        className={cn("adsbygoogle block w-full", compact ? "min-h-[80px]" : "min-h-[100px]")}
-        style={{ display: "block", minHeight: compact ? 80 : 100 }}
+        className="adsbygoogle block"
+        style={{ display: "block", width: compact ? 300 : "100%", minHeight: compact ? 80 : 100 }}
         data-ad-client={client}
         data-ad-format="auto"
         data-full-width-responsive={compact ? "false" : "true"}

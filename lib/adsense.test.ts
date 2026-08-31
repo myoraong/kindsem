@@ -11,6 +11,8 @@ import {
   renderAdsTxt,
   resolveAdsenseClientId,
   shouldRenderAdOnPath,
+  adFillFromStatus,
+  adSlotShowsChrome,
 } from "./adsense.ts"
 
 test("게시자 ID는 pub- 숫자만 뽑고 가짜 값은 만들지 않는다", () => {
@@ -35,6 +37,16 @@ test("광고 스크립트 client는 NEXT_PUBLIC_ADSENSE_CLIENT가 있을 때만 
   assert.equal(resolveAdsenseClientId(""), ADSENSE_CLIENT)
   assert.equal(resolveAdsenseClientId(undefined), ADSENSE_CLIENT)
   assert.equal(resolveAdsenseClientId("ca-pub-1234567890123456"), "ca-pub-1234567890123456")
+})
+
+test("인페이지 광고는 채워지기 전에는 상자를 그리지 않는다", () => {
+  assert.equal(adFillFromStatus(null), "pending")
+  assert.equal(adFillFromStatus(""), "pending")
+  assert.equal(adFillFromStatus("filled"), "filled")
+  assert.equal(adFillFromStatus("unfilled"), "unfilled")
+  assert.equal(adSlotShowsChrome("pending"), false)
+  assert.equal(adSlotShowsChrome("unfilled"), false)
+  assert.equal(adSlotShowsChrome("filled"), true)
 })
 
 test("인페이지 광고는 개인정보·문의 경로에는 넣지 않는다", () => {
