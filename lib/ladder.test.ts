@@ -13,6 +13,9 @@ import {
   ladderMapping,
   mappingCopyLine,
   pairCopyLine,
+  defaultPrizeMarks,
+  resizePrizeMarks,
+  winningStarts,
   resizeLabels,
   tracePath,
 } from "./ladder.ts"
@@ -90,4 +93,16 @@ test("사다리를 타면 출발마다 도착이 하나씩이다", () => {
 test("복사 문장은 누가 어디로만 적는다", () => {
   assert.equal(pairCopyLine("가", "2"), "가 → 2")
   assert.equal(mappingCopyLine(["가", "나"], ["1", "2"], [1, 0]), "가 → 2 · 나 → 1")
+})
+
+test("당첨 도착으로 온 출발만 고른다", () => {
+  assert.deepEqual(defaultPrizeMarks(4), [true, false, false, false])
+  assert.deepEqual(resizePrizeMarks([false, true, false, true], 2), [false, true])
+  assert.deepEqual(resizePrizeMarks([false, false, true], 2), [true, false])
+  assert.deepEqual(resizePrizeMarks([true], 4), [true, false, false, false])
+
+  // 가→2, 나→3, 다→1, 라→4  — 도착 1·3이 당첨이면 나와 다
+  assert.deepEqual(winningStarts([1, 2, 0, 3], [true, false, true, false]), [1, 2])
+  assert.deepEqual(winningStarts([1, 0], [true, false]), [1])
+  assert.deepEqual(winningStarts([0, 1, 2], [false, false, false]), [])
 })

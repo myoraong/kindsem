@@ -112,6 +112,25 @@ export function isPermutation(map: number[]): boolean {
   return map.every((value) => Number.isInteger(value) && value >= 0 && value < map.length)
 }
 
+/** 첫 도착 칸만 당첨. 나머지는 끔. */
+export function defaultPrizeMarks(n: number): boolean[] {
+  const count = clampLadderCount(n)
+  return Array.from({ length: count }, (_, i) => i === 0)
+}
+
+/** 인원이 줄어도 남은 당첨은 유지. 하나도 없으면 첫 칸. */
+export function resizePrizeMarks(current: boolean[], n: number): boolean[] {
+  const count = clampLadderCount(n)
+  const next = Array.from({ length: count }, (_, i) => Boolean(current[i]))
+  if (!next.some(Boolean)) next[0] = true
+  return next
+}
+
+/** 당첨으로 표시한 도착으로 온 출발 인덱스. */
+export function winningStarts(map: number[], prizes: boolean[]): number[] {
+  return map.flatMap((end, start) => (prizes[end] ? [start] : []))
+}
+
 export function pairCopyLine(start: string, end: string): string {
   return `${start} → ${end}`
 }

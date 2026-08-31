@@ -11,11 +11,13 @@ import {
   clientRandom,
   clampLadderCount,
   defaultEndLabels,
+  defaultPrizeMarks,
   defaultStartLabels,
   generateRungs,
   ladderMapping,
   pairCopyLine,
   resizeLabels,
+  resizePrizeMarks,
   tracePath,
   type LadderRungs,
 } from "@/lib/ladder"
@@ -60,11 +62,13 @@ function ClimbPath({
   playId,
   token,
   strokeWidth,
+  win,
 }: {
   d: string
   playId: number
   token: boolean
   strokeWidth: number
+  win: boolean
 }) {
   const pathRef = useRef<SVGPathElement>(null)
   const tokenRef = useRef<SVGCircleElement>(null)
@@ -130,19 +134,20 @@ function ClimbPath({
         ref={pathRef}
         d={d}
         fill="none"
-        className="stroke-primary"
+        className={win ? "stroke-primary" : "stroke-foreground/18"}
         style={{ strokeDasharray: 800, strokeDashoffset: 800 }}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeLinejoin="round"
+        opacity={win ? 1 : 0.7}
       />
       {token ? (
         <circle
           ref={tokenRef}
-          r={strokeWidth > 3 ? 6 : 5}
+          r={win ? (strokeWidth > 3 ? 6.5 : 5.5) : 4}
           opacity={0}
-          className="fill-primary stroke-background"
-          strokeWidth={2}
+          className={win ? "fill-primary stroke-background" : "fill-foreground/35 stroke-background"}
+          strokeWidth={win ? 2 : 1.5}
         />
       ) : null}
     </g>
@@ -156,6 +161,7 @@ function LadderBoard({
   playId,
   onSelect,
   startLabels,
+  prizes,
 }: {
   n: number
   rungs: LadderRungs | null
@@ -163,6 +169,7 @@ function LadderBoard({
   playId: number
   onSelect: (index: number) => void
   startLabels: string[]
+  prizes: boolean[]
 }) {
   const vbW = 320
   const vbH = 280
@@ -180,9 +187,12 @@ function LadderBoard({
   const hitW = Math.min(36, (vbW - 2 * padX) / Math.max(1, n - 1))
   const climbers =
     rungs == null ? [] : selected === null ? Array.from({ length: n }, (_, i) => i) : [selected]
-  const endCols = new Set(
-    rungs ? climbers.map((start) => tracePath(start, rungs).at(-1) ?? start) : [],
-  )
+  const endOf = (start: number) => (rungs ? (tracePath(start, rungs).at(-1) ?? start) : start)
+  const winStarts = climbers.filter((start) => Boolean(prizes[endOf(start)]))
+  const muteStarts = climbers.filter((start) => !prizes[endOf(start)])
+  const winStartSet = new Set(winStarts)
+  const winEndSet = new Set(winStarts.map(endOf))
+  const endCols = new Set(climbers.map(endOf))
   const many = climbers.length > 1
 
   return (
@@ -225,29 +235,47 @@ function LadderBoard({
           )
         : null}
       {rungs
-        ? climbers.map((start) => (
-            <ClimbPath
-              key={`${playId}-${start}`}
-              d={pathD(start, rungs, xs, rowYs, yTop, yBottom)}
-              playId={playId}
-              token
-              strokeWidth={many ? 2.6 : 3.2}
-            />
-          ))
+        ? [...muteStarts, ...winStarts].map((start) => {
+            const win = winStartSet.has(start)
+            return (
+              <ClimbPath
+                key={`${playId}-${start}`}
+                d={pathD(start, rungs, xs, rowYs, yTop, yBottom)}
+                playId={playId}
+                token
+                win={win}
+                strokeWidth={win ? (many ? 3.4 : 3.8) : many ? 2 : 2.4}
+              />
+            )
+          })
         : null}
       {xs.map((x, i) => (
         <g key={`ends-${i}`}>
           <circle
             cx={x}
             cy={yTop}
-            r={climbers.includes(i) ? 5 : 3.5}
-            className={climbers.includes(i) ? "fill-primary" : "fill-foreground/35"}
+            r={winStartSet.has(i) ? 6 : climbers.includes(i) ? 4.5 : 3.5}
+            className={
+              winStartSet.has(i)
+                ? "fill-primary"
+                : climbers.includes(i)
+                  ? "fill-foreground/30"
+                  : "fill-foreground/25"
+            }
           />
           <circle
             cx={x}
             cy={yBottom}
-            r={endCols.has(i) ? 5 : 3.5}
-            className={endCols.has(i) ? "fill-primary" : "fill-foreground/35"}
+            r={winEndSet.has(i) ? 6 : endCols.has(i) ? 4.5 : 3.5}
+            className={
+              winEndSet.has(i)
+                ? "fill-primary"
+                : endCols.has(i)
+                  ? "fill-foreground/30"
+                  : prizes[i]
+                    ? "fill-primary/45"
+                    : "fill-foreground/25"
+            }
           />
         </g>
       ))}
@@ -277,7 +305,7 @@ function LadderResult({
   onRemove,
   onClear,
 }: {
-  rows: { start: number; line: string; label: string; value: string }[]
+  rows: { start: number; line: string; label: string; value: string; win: boolean }[]
   selected: number | null
   hasBoard: boolean
   onSelect: (start: number) => void
@@ -286,6 +314,7 @@ function LadderResult({
 }) {
   const selectedRow = selected === null ? null : (rows.find((row) => row.start === selected) ?? null)
   const allLine = rows.map((row) => row.line).join(" · ")
+  const winCount = rows.filter((row) => row.win).length
 
   async function copyLine(line: string) {
     await navigator.clipboard.writeText(line)
@@ -315,7 +344,12 @@ function LadderResult({
         </p>
       ) : (
         <>
-          <div className="mt-4 rounded-xl bg-secondary/70 px-3 py-3">
+          <div
+            className={cn(
+              "mt-4 rounded-xl px-3 py-3",
+              winCount > 0 ? "bg-accent/80 ring-1 ring-primary/25" : "bg-secondary/70",
+            )}
+          >
             <div className="flex items-center justify-between gap-2">
               <p className="text-xs text-muted-foreground">{selectedRow ? "지금" : "전체"}</p>
               <button
@@ -328,17 +362,42 @@ function LadderResult({
               </button>
             </div>
             {selectedRow ? (
-              <p className="mt-1 text-2xl font-semibold tracking-tight">{selectedRow.line}</p>
+              <p
+                className={cn(
+                  "mt-1 text-2xl font-semibold tracking-tight",
+                  selectedRow.win ? "text-foreground" : "text-muted-foreground",
+                )}
+              >
+                {selectedRow.line}
+                {selectedRow.win ? (
+                  <span className="ml-2 align-middle text-xs font-medium text-primary">당첨</span>
+                ) : null}
+              </p>
             ) : (
               <ul className="mt-1 space-y-1">
                 {rows.map((row) => (
-                  <li key={row.start} className="text-lg font-semibold tracking-tight">
+                  <li
+                    key={row.start}
+                    className={cn(
+                      "tracking-tight",
+                      row.win
+                        ? "text-lg font-semibold text-foreground"
+                        : "text-base font-medium text-muted-foreground/80",
+                    )}
+                  >
                     {row.line}
+                    {row.win ? (
+                      <span className="ml-2 text-xs font-medium text-primary">당첨</span>
+                    ) : null}
                   </li>
                 ))}
               </ul>
             )}
-            <p className="mt-1 text-xs text-muted-foreground">출발마다 도착이 하나씩</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {winCount > 0
+                ? `당첨 ${winCount}줄 · 출발마다 도착이 하나씩`
+                : "출발마다 도착이 하나씩"}
+            </p>
           </div>
           <div className="mt-4 space-y-1 border-t border-dashed border-border pt-3">
             {rows.map((row) => (
@@ -346,7 +405,9 @@ function LadderResult({
                 key={row.start}
                 className={cn(
                   "flex items-center gap-1 rounded-lg py-0.5 pl-1 hover:bg-muted/70",
-                  selected === row.start && "bg-muted/70",
+                  row.win && "bg-accent/70 ring-1 ring-primary/20",
+                  selected === row.start && !row.win && "bg-muted/70",
+                  selected === row.start && row.win && "ring-primary/40",
                 )}
               >
                 <button
@@ -354,8 +415,23 @@ function LadderResult({
                   onClick={() => onSelect(row.start)}
                   className="min-w-0 flex-1 py-1.5 text-left text-sm"
                 >
-                  <span className="block truncate text-muted-foreground">{row.label}</span>
-                  <span className="tabular font-medium">{row.value}</span>
+                  <span
+                    className={cn(
+                      "block truncate",
+                      row.win ? "text-primary" : "text-muted-foreground",
+                    )}
+                  >
+                    {row.label}
+                    {row.win ? " · 당첨" : ""}
+                  </span>
+                  <span
+                    className={cn(
+                      "tabular font-medium",
+                      !row.win && "text-muted-foreground",
+                    )}
+                  >
+                    {row.value}
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -388,6 +464,7 @@ export function LadderCalc({ item }: { item: CalcItem }) {
   const n = clampLadderCount(Number(count))
   const [starts, setStarts] = useState(() => defaultStartLabels(4))
   const [ends, setEnds] = useState(() => defaultEndLabels(4))
+  const [prizes, setPrizes] = useState(() => defaultPrizeMarks(4))
   const [rungs, setRungs] = useState<LadderRungs | null>(null)
   const [selected, setSelected] = useState<number | null>(null)
   const [hidden, setHidden] = useState<Set<number>>(() => new Set())
@@ -411,6 +488,7 @@ export function LadderCalc({ item }: { item: CalcItem }) {
     setCount(String(nextN) as CountKey)
     setStarts((prev) => resizeLabels(prev, nextN, (i) => defaultStartLabels(nextN)[i]!))
     setEnds((prev) => resizeLabels(prev, nextN, (i) => defaultEndLabels(nextN)[i]!))
+    setPrizes((prev) => resizePrizeMarks(prev, nextN))
     setRungs(null)
     setSelected(null)
     setHidden(new Set())
@@ -446,7 +524,7 @@ export function LadderCalc({ item }: { item: CalcItem }) {
       ?.map((end, start) => {
         const label = starts[start] || defaultStartLabels(n)[start]!
         const value = ends[end] || defaultEndLabels(n)[end]!
-        return { start, label, value, line: pairCopyLine(label, value) }
+        return { start, label, value, line: pairCopyLine(label, value), win: Boolean(prizes[end]) }
       })
       .filter((row) => !hidden.has(row.start)) ?? []
 
@@ -495,7 +573,9 @@ export function LadderCalc({ item }: { item: CalcItem }) {
                   }}
                   className={cn(
                     "h-10 w-full min-w-0 rounded-xl border bg-transparent px-1 text-center outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-                    selected === i ? "border-primary" : "border-input",
+                    selected === i || (map != null && prizes[map[i]!])
+                      ? "border-primary"
+                      : "border-input",
                     n >= 7 ? "text-xs" : "text-sm",
                   )}
                 />
@@ -512,6 +592,7 @@ export function LadderCalc({ item }: { item: CalcItem }) {
             playId={playId}
             onSelect={startFrom}
             startLabels={starts}
+            prizes={prizes}
           />
         </div>
 
@@ -522,23 +603,41 @@ export function LadderCalc({ item }: { item: CalcItem }) {
             style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}
           >
             {ends.map((label, i) => (
-              <label key={`${fieldId}-e-${i}`} className="min-w-0">
-                <span className="sr-only">도착 {i + 1}</span>
-                <input
-                  value={label}
-                  onChange={(event) => {
-                    const value = event.target.value
-                    setEnds((prev) => prev.map((item, idx) => (idx === i ? value : item)))
+              <div key={`${fieldId}-e-${i}`} className="min-w-0">
+                <label className="block min-w-0">
+                  <span className="sr-only">도착 {i + 1}</span>
+                  <input
+                    value={label}
+                    onChange={(event) => {
+                      const value = event.target.value
+                      setEnds((prev) => prev.map((item, idx) => (idx === i ? value : item)))
+                    }}
+                    className={cn(
+                      "h-10 w-full min-w-0 rounded-xl border bg-transparent px-1 text-center outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+                      prizes[i] || (map && selected !== null && map[selected] === i)
+                        ? "border-primary"
+                        : "border-input",
+                      n >= 7 ? "text-xs" : "text-sm",
+                    )}
+                  />
+                </label>
+                <button
+                  type="button"
+                  aria-pressed={prizes[i]}
+                  aria-label={`${label || i + 1} 당첨`}
+                  onClick={() => {
+                    setPrizes((prev) => prev.map((on, idx) => (idx === i ? !on : on)))
                   }}
                   className={cn(
-                    "h-10 w-full min-w-0 rounded-xl border border-input bg-transparent px-1 text-center outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
-                    map && selected !== null && map[selected] === i
-                      ? "border-primary"
-                      : "border-input",
-                    n >= 7 ? "text-xs" : "text-sm",
+                    "mt-1 h-7 w-full truncate rounded-lg px-0.5 text-[11px] leading-none transition-colors",
+                    prizes[i]
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground",
                   )}
-                />
-              </label>
+                >
+                  당첨
+                </button>
+              </div>
             ))}
           </div>
         </div>
@@ -547,7 +646,8 @@ export function LadderCalc({ item }: { item: CalcItem }) {
           타기
         </Button>
         <p className="text-sm leading-6 text-muted-foreground">
-          타기를 누르면 모두 타고, 누가 어디로인지 한꺼번에 나옵니다. 출발 이름이나 세로선을 누르면 그 줄만 다시 타입니다.
+          도착 칸의 당첨을 고르면 그곳으로 온 줄만 진하게 보입니다. 타기를 누르면 모두 타고, 누가
+          어디로인지 한꺼번에 나옵니다. 출발 이름이나 세로선을 누르면 그 줄만 다시 타입니다.
         </p>
       </div>
     </CalcShell>
