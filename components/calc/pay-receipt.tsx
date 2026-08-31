@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
-import type { QuitHealthResult, TakeHomeResult } from "@/lib/payroll"
+import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
 
 function healthWon(row: TakeHomeResult) {
   return row.insurance.healthCapped
@@ -108,8 +108,14 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
       <div className="mt-5 space-y-0 border-t border-dashed border-border pt-3">
         <Line label="4대보험(월)" value={formatWon(row.insurance.monthly)} />
         <Line label="세금(월)" value={formatWon(row.monthlyTax)} />
+        <Line
+          label="공제 합(월)"
+          value={formatWon(row.insurance.monthly + row.monthlyTax)}
+        />
         {row.insurance.pensionCapped ? (
-          <p className="pt-1 text-xs text-muted-foreground">국민연금 상한 · 월 659만 원 기준</p>
+          <p className="pt-1 text-xs text-muted-foreground">
+            국민연금 상한 · 월 {formatKoreanUnit(PAYROLL.pensionCeil)} 기준
+          </p>
         ) : null}
         {row.insurance.healthCapped ? (
           <p className="pt-1 text-xs text-muted-foreground">건강보험 근로자 부담 상한</p>
@@ -139,8 +145,8 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
       <div className="mt-3 border-t border-dashed border-border pt-3">
         <Line label="세전 연봉" value={formatWon(row.annualGross)} />
         <Line label="세전 월급" value={formatWon(row.monthlyGross)} />
-        <Line label="연소득" value={formatWon(row.annualTakeHome)} />
-        <Line label="월소득" value={formatWon(row.monthlyTakeHome)} />
+        <Line label="세후 연" value={formatWon(row.annualTakeHome)} />
+        <Line label="세후 월" value={formatWon(row.monthlyTakeHome)} />
       </div>
     </Frame>
   )
@@ -258,7 +264,9 @@ export function PayOfferReceipt({
           </div>
         ) : null}
         {now.insurance.pensionCapped || next.insurance.pensionCapped ? (
-          <p className="pt-1 text-xs text-muted-foreground">국민연금 상한 · 월 659만 원 기준</p>
+          <p className="pt-1 text-xs text-muted-foreground">
+            국민연금 상한 · 월 {formatKoreanUnit(PAYROLL.pensionCeil)} 기준
+          </p>
         ) : null}
         {now.insurance.healthCapped || next.insurance.healthCapped ? (
           <p className="pt-1 text-xs text-muted-foreground">건강보험 근로자 부담 상한</p>
@@ -351,12 +359,12 @@ export function PayOfferReceipt({
           next={formatWon(next.monthlyGross)}
         />
         <CompareRow
-          label="연소득"
+          label="세후 연"
           now={formatWon(now.annualTakeHome)}
           next={formatWon(next.annualTakeHome)}
         />
         <CompareRow
-          label="월소득"
+          label="세후 월"
           now={formatWon(now.monthlyTakeHome)}
           next={formatWon(next.monthlyTakeHome)}
           strong

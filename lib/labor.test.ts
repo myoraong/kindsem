@@ -16,6 +16,7 @@ test("주 40시간이면 주휴 8시간, 시급×8", () => {
   assert.equal(result.holidayHours, 8)
   assert.equal(result.holidayPay, 80_000)
   assert.equal(result.workPay, 400_000)
+  assert.equal(result.monthHoliday, Math.round(80_000 * MONTH_HOURS_FACTOR))
 })
 
 test("주 20시간이면 주휴 4시간", () => {

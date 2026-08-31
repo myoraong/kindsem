@@ -8,7 +8,7 @@ import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { PayOfferReceipt, PayTakeHomeReceipt } from "@/components/calc/pay-receipt"
-import { manwonToWon } from "@/lib/format"
+import { formatKoreanUnit, formatWon, manwonToWon } from "@/lib/format"
 import {
   PAYROLL,
   calcOfferCompare,
@@ -102,8 +102,8 @@ export function PayCompare({ item }: { item: CalcItem }) {
               a: "회사를 나오면 직장 건보가 끊깁니다. 임의계속가입은 퇴직 전 월급 기준으로 회사분까지 본인이 내고, 최대 36개월입니다. 지역가입 고지액은 소득에 집·전세 점수가 붙어야 나옵니다. 가족 직장 피부양자면 보험료가 없습니다.",
             },
             {
-              q: "최사건보는 언제 보이나요?",
-              a: "건강보험 근로자 부담이 월 상한(2026년 약 459만 원)에 닿으면 ‘상한’이 붙습니다. 국민연금은 월 659만 원 상한이라 그보다 낮은 연봉에서도 줄이 바뀝니다.",
+              q: "상한은 언제 보이나요?",
+              a: `건강보험 근로자 부담이 월 상한(${formatWon(PAYROLL.healthEmployeeCap)})에 닿으면 ‘상한’이 붙습니다. 국민연금은 월 ${formatKoreanUnit(PAYROLL.pensionCeil)} 상한이라 그보다 낮은 연봉에서도 줄이 바뀝니다.`,
             },
           ]}
         />
@@ -193,7 +193,7 @@ export function PayCompare({ item }: { item: CalcItem }) {
           <Hint>소득세 90%, 연 200만 원 한도. 이직하면 끊기거나 새로 생기는 경우가 많습니다.</Hint>
         ) : null}
         <CheckRow id="meal" checked={meal} onChange={setMeal}>
-          식대 비과세 월 20만 원
+          식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}
         </CheckRow>
         {compare ? (
           <>

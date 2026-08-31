@@ -30,12 +30,14 @@ export function calcWeeklyHoliday(input: {
   const holidayHours = input.attended ? weeklyHolidayHours(input.weeklyHours) : 0
   const workPay = Math.round(input.hourlyWage * input.weeklyHours)
   const holidayPay = Math.round(input.hourlyWage * holidayHours)
+  const monthHoliday = Math.round(input.hourlyWage * holidayHours * MONTH_HOURS_FACTOR)
   return {
     eligible: input.weeklyHours >= SHORT_HOUR_THRESHOLD,
     holidayHours,
     workPay,
     holidayPay,
     weeklyTotal: workPay + holidayPay,
+    monthHoliday,
     monthlyHours: monthlyContractHours(input.weeklyHours),
   }
 }

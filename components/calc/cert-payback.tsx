@@ -6,7 +6,7 @@ import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, manwonToWon } from "@/lib/format"
-import { calcCertPayback } from "@/lib/payroll"
+import { PAYROLL, calcCertPayback } from "@/lib/payroll"
 import type { CalcItem } from "@/lib/catalog"
 
 export function CertPayback({ item }: { item: CalcItem }) {
@@ -65,7 +65,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
         <MoneyField id="cost" label="자격·수강 비용" value={cost} onChange={setCost} />
         <MoneyField id="now" label="지금 연봉" value={now} onChange={setNow} />
         <MoneyField id="after" label="자격 후 연봉" value={after} onChange={setAfter} />
-        <Hint>실수령은 이직 계산과 같은 4대보험 고시·소득세법 공제입니다. 식대 비과세 월 20만 원을 넣습니다.</Hint>
+        <Hint>실수령은 이직 계산과 같은 4대보험 고시·소득세법 공제입니다. 식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}을 넣습니다.</Hint>
       </div>
     </CalcShell>
   )

@@ -42,11 +42,12 @@ export function DutchPay({ item }: { item: CalcItem }) {
               ? [
                   { label: "전체 + 팁", value: formatWon(result.withTip) },
                   { label: "인원", value: `${people}명` },
-                  { label: "거스름·남는 돈", value: formatWon(result.leftover) },
+                  { label: "거둔 금액", value: formatWon(result.each * Number(people)) },
+                  { label: "남는 돈", value: formatWon(result.leftover) },
                 ]
               : []
           }
-          empty="총액과 인원을 넣으면 바로 나눠 드려요."
+          empty="총액과 인원을 넣으면 1인 금액이 나옵니다."
         />
       }
     >
@@ -55,7 +56,7 @@ export function DutchPay({ item }: { item: CalcItem }) {
         <MoneyField id="people" label="인원" unit="명" value={people} onChange={setPeople} />
         <MoneyField id="tip" label="팁·봉사료" unit="%" value={tip} onChange={setTip} />
         <CheckRow id="ceil" checked={ceil} onChange={setCeil}>
-          원 단위 올림 (카드 정산이 편해요)
+          원 단위 올림
         </CheckRow>
         <p className="text-sm leading-6 text-muted-foreground">
           남는 돈은 먼저 낸 사람이 가져가거나, 다음 모임 적립으로 두면 됩니다.

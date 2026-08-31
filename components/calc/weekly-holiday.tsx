@@ -81,6 +81,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
                   { label: "근로수당", value: formatWon(result.workPay) },
                   { label: "주휴수당", value: formatWon(result.holidayPay) },
                   { label: "주 합계", value: formatWon(result.weeklyTotal) },
+                  { label: "월 환산 주휴", value: formatWon(result.monthHoliday) },
                 ]
               : []
           }
@@ -117,7 +118,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           onChange={setWeeklyHours}
         />
         <CheckRow id="attended" checked={attended} onChange={setAttended}>
-          주휴수당 포함
+          그 주 소정근로일 개근
         </CheckRow>
         <Hint>
           월급제는 최저임금법 시행령 제5조 월 환산 시간으로 시급을 나눕니다. 주휴수당이 이미 월급에
