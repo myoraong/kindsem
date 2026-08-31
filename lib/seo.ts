@@ -268,7 +268,7 @@ export function homeJsonLd() {
       url: SITE_URL,
       inLanguage: "ko",
       description:
-        "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세 등 생활·급여·부동산 계산기.",
+        "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세 등 생활·급여·부동산 계산기. 법령·고시 현행본. 빠진 공제는 넣지 않습니다.",
     },
     {
       "@context": "https://schema.org",
@@ -287,7 +287,7 @@ export function homeJsonLd() {
 export const HOME_METADATA: Metadata = {
   title: { absolute: `생활·급여·부동산 계산기 · ${SITE_NAME}` },
   description:
-    "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR, 더치페이 계산기. 법령·고시 기준.",
+    "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 계산기. 법령·고시 현행본. 빠진 공제는 넣지 않습니다.",
   alternates: { canonical: "/" },
 }
 

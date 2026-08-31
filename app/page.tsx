@@ -1,5 +1,6 @@
 import { AdSenseInPage } from "@/components/adsense-inpage"
 import { HomeBrowse } from "@/components/home-browse"
+import { HomeWhy } from "@/components/home-why"
 import { JsonLd } from "@/components/json-ld"
 import { Sena } from "@/components/sena"
 import { HOME_METADATA, homeJsonLd } from "@/lib/seo"
@@ -25,6 +26,7 @@ export default function HomePage() {
         </figure>
       </section>
 
+      <HomeWhy />
       <HomeBrowse />
       <AdSenseInPage />
     </div>
