@@ -55,6 +55,100 @@ function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches
 }
 
+function ClimbPath({
+  d,
+  playId,
+  token,
+  strokeWidth,
+}: {
+  d: string
+  playId: number
+  token: boolean
+  strokeWidth: number
+}) {
+  const pathRef = useRef<SVGPathElement>(null)
+  const tokenRef = useRef<SVGCircleElement>(null)
+
+  useEffect(() => {
+    const path = pathRef.current
+    const dot = tokenRef.current
+    if (!path) return
+
+    let raf = 0
+    let cancelled = false
+
+    const play = () => {
+      if (cancelled) return
+      const len = path.getTotalLength()
+      if (len === 0) {
+        raf = requestAnimationFrame(play)
+        return
+      }
+      const startPt = path.getPointAtLength(0)
+      if (dot) {
+        dot.setAttribute("cx", String(startPt.x))
+        dot.setAttribute("cy", String(startPt.y))
+        dot.setAttribute("opacity", "1")
+      }
+      path.style.strokeDasharray = String(len)
+      if (prefersReducedMotion()) {
+        path.style.strokeDashoffset = "0"
+        if (dot) {
+          const end = path.getPointAtLength(len)
+          dot.setAttribute("cx", String(end.x))
+          dot.setAttribute("cy", String(end.y))
+        }
+        return
+      }
+      path.style.strokeDashoffset = String(len)
+      const t0 = performance.now()
+      const tick = (now: number) => {
+        if (cancelled) return
+        const t = Math.min(1, (now - t0) / TRACE_MS)
+        const eased = 1 - (1 - t) ** 3
+        const p = path.getPointAtLength(len * eased)
+        if (dot) {
+          dot.setAttribute("cx", String(p.x))
+          dot.setAttribute("cy", String(p.y))
+        }
+        path.style.strokeDashoffset = String(len * (1 - eased))
+        if (t < 1) raf = requestAnimationFrame(tick)
+      }
+      raf = requestAnimationFrame(tick)
+    }
+
+    raf = requestAnimationFrame(play)
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(raf)
+    }
+  }, [playId, d, token])
+
+  return (
+    <g>
+      <path
+        ref={pathRef}
+        d={d}
+        fill="none"
+        className="stroke-primary"
+        style={{ strokeDasharray: 800, strokeDashoffset: 800 }}
+        strokeWidth={strokeWidth}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      {token ? (
+        <circle
+          ref={tokenRef}
+          r={strokeWidth > 3 ? 6 : 5}
+          opacity={0}
+          className="fill-primary stroke-background"
+          strokeWidth={2}
+        />
+      ) : null}
+    </g>
+  )
+}
+
 function LadderBoard({
   n,
   rungs,
@@ -70,8 +164,6 @@ function LadderBoard({
   onSelect: (index: number) => void
   startLabels: string[]
 }) {
-  const pathRef = useRef<SVGPathElement>(null)
-  const tokenRef = useRef<SVGCircleElement>(null)
   const vbW = 320
   const vbH = 280
   const padX = n >= 7 ? 12 : n >= 5 ? 18 : 28
@@ -86,61 +178,12 @@ function LadderBoard({
     (_, r) => yTop + ((r + 1) / (rowCount + 1)) * (yBottom - yTop),
   )
   const hitW = Math.min(36, (vbW - 2 * padX) / Math.max(1, n - 1))
-  const endCol = selected !== null && rungs ? (tracePath(selected, rungs).at(-1) ?? selected) : null
-  const rungKey = rungs?.map((row) => row.map(Number).join("")).join("|") ?? ""
-  const rideKey = `${playId}-${selected}-${rungKey}`
-
-  useEffect(() => {
-    const path = pathRef.current
-    const token = tokenRef.current
-    if (!path || !token || selected === null) {
-      token?.setAttribute("opacity", "0")
-      return
-    }
-
-    let raf = 0
-    let cancelled = false
-
-    const play = () => {
-      if (cancelled) return
-      const len = path.getTotalLength()
-      if (len === 0) {
-        raf = requestAnimationFrame(play)
-        return
-      }
-      const startPt = path.getPointAtLength(0)
-      token.setAttribute("cx", String(startPt.x))
-      token.setAttribute("cy", String(startPt.y))
-      token.setAttribute("opacity", "1")
-      path.style.strokeDasharray = String(len)
-      if (prefersReducedMotion()) {
-        path.style.strokeDashoffset = "0"
-        const end = path.getPointAtLength(len)
-        token.setAttribute("cx", String(end.x))
-        token.setAttribute("cy", String(end.y))
-        return
-      }
-      path.style.strokeDashoffset = String(len)
-      const t0 = performance.now()
-      const tick = (now: number) => {
-        if (cancelled) return
-        const t = Math.min(1, (now - t0) / TRACE_MS)
-        const eased = 1 - (1 - t) ** 3
-        const p = path.getPointAtLength(len * eased)
-        token.setAttribute("cx", String(p.x))
-        token.setAttribute("cy", String(p.y))
-        path.style.strokeDashoffset = String(len * (1 - eased))
-        if (t < 1) raf = requestAnimationFrame(tick)
-      }
-      raf = requestAnimationFrame(tick)
-    }
-
-    raf = requestAnimationFrame(play)
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(raf)
-    }
-  }, [rideKey, selected])
+  const climbers =
+    rungs == null ? [] : selected === null ? Array.from({ length: n }, (_, i) => i) : [selected]
+  const endCols = new Set(
+    rungs ? climbers.map((start) => tracePath(start, rungs).at(-1) ?? start) : [],
+  )
+  const many = climbers.length > 1
 
   return (
     <svg
@@ -181,42 +224,33 @@ function LadderBoard({
             ),
           )
         : null}
-      {rungs && selected !== null ? (
-        <path
-          key={rideKey}
-          ref={pathRef}
-          d={pathD(selected, rungs, xs, rowYs, yTop, yBottom)}
-          fill="none"
-          className="stroke-primary"
-          style={{ strokeDasharray: 800, strokeDashoffset: 800 }}
-          strokeWidth={3.2}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      ) : null}
+      {rungs
+        ? climbers.map((start) => (
+            <ClimbPath
+              key={`${playId}-${start}`}
+              d={pathD(start, rungs, xs, rowYs, yTop, yBottom)}
+              playId={playId}
+              token
+              strokeWidth={many ? 2.6 : 3.2}
+            />
+          ))
+        : null}
       {xs.map((x, i) => (
         <g key={`ends-${i}`}>
           <circle
             cx={x}
             cy={yTop}
-            r={selected === i ? 5 : 3.5}
-            className={selected === i ? "fill-primary" : "fill-foreground/35"}
+            r={climbers.includes(i) ? 5 : 3.5}
+            className={climbers.includes(i) ? "fill-primary" : "fill-foreground/35"}
           />
           <circle
             cx={x}
             cy={yBottom}
-            r={endCol === i ? 5 : 3.5}
-            className={endCol === i ? "fill-primary" : "fill-foreground/35"}
+            r={endCols.has(i) ? 5 : 3.5}
+            className={endCols.has(i) ? "fill-primary" : "fill-foreground/35"}
           />
         </g>
       ))}
-      <circle
-        ref={tokenRef}
-        r={6}
-        opacity={0}
-        className="fill-primary stroke-background"
-        strokeWidth={2}
-      />
       {xs.map((x, i) => (
         <rect
           key={`hit-${i}`}
@@ -250,7 +284,8 @@ function LadderResult({
   onRemove: (start: number) => void
   onClear: () => void
 }) {
-  const selectedRow = rows.find((row) => row.start === selected) ?? rows[0] ?? null
+  const selectedRow = selected === null ? null : (rows.find((row) => row.start === selected) ?? null)
+  const allLine = rows.map((row) => row.line).join(" · ")
 
   async function copyLine(line: string) {
     await navigator.clipboard.writeText(line)
@@ -278,21 +313,31 @@ function LadderResult({
         <p className="mt-6 text-sm leading-6 text-muted-foreground">
           목록을 지웠습니다. 타기를 누르면 다시 나옵니다.
         </p>
-      ) : selectedRow ? (
+      ) : (
         <>
           <div className="mt-4 rounded-xl bg-secondary/70 px-3 py-3">
             <div className="flex items-center justify-between gap-2">
-              <p className="text-xs text-muted-foreground">지금</p>
+              <p className="text-xs text-muted-foreground">{selectedRow ? "지금" : "전체"}</p>
               <button
                 type="button"
                 className={ghostTextBtn}
                 aria-label="복사"
-                onClick={() => copyLine(selectedRow.line)}
+                onClick={() => copyLine(selectedRow ? selectedRow.line : allLine)}
               >
                 복사
               </button>
             </div>
-            <p className="mt-1 text-2xl font-semibold tracking-tight">{selectedRow.line}</p>
+            {selectedRow ? (
+              <p className="mt-1 text-2xl font-semibold tracking-tight">{selectedRow.line}</p>
+            ) : (
+              <ul className="mt-1 space-y-1">
+                {rows.map((row) => (
+                  <li key={row.start} className="text-lg font-semibold tracking-tight">
+                    {row.line}
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className="mt-1 text-xs text-muted-foreground">출발마다 도착이 하나씩</p>
           </div>
           <div className="mt-4 space-y-1 border-t border-dashed border-border pt-3">
@@ -332,7 +377,7 @@ function LadderResult({
             ))}
           </div>
         </>
-      ) : null}
+      )}
     </aside>
   )
 }
@@ -371,13 +416,19 @@ export function LadderCalc({ item }: { item: CalcItem }) {
     setHidden(new Set())
   }
 
-  function ride(selectIndex?: number) {
-    const next = generateRungs(n, undefined, clientRandom)
-    const pick = selectIndex ?? selected ?? 0
-    setRungs(next)
+  function ride() {
+    setRungs(generateRungs(n, undefined, clientRandom))
     setHidden(new Set())
-    setSelected(Math.min(Math.max(0, pick), n - 1))
+    setSelected(null)
     setPlayId((id) => id + 1)
+  }
+
+  function startFrom(index: number) {
+    if (!rungs) {
+      setRungs(generateRungs(n, undefined, clientRandom))
+      setHidden(new Set())
+    }
+    replay(index)
   }
 
   function removeRow(start: number) {
@@ -459,10 +510,7 @@ export function LadderCalc({ item }: { item: CalcItem }) {
             rungs={rungs}
             selected={selected}
             playId={playId}
-            onSelect={(index) => {
-              if (!rungs) ride(index)
-              else replay(index)
-            }}
+            onSelect={startFrom}
             startLabels={starts}
           />
         </div>
@@ -495,11 +543,11 @@ export function LadderCalc({ item }: { item: CalcItem }) {
           </div>
         </div>
 
-        <Button type="button" className="h-11 w-full text-sm" onClick={() => ride()}>
+        <Button type="button" className="h-11 w-full text-sm" onClick={ride}>
           타기
         </Button>
         <p className="text-sm leading-6 text-muted-foreground">
-          타기를 누르면 가로줄이 다시 놓이고, 점이 그 줄을 타고 내려갑니다. 출발 이름이나 세로선을 누르면 그 줄이 다시 타입니다.
+          타기를 누르면 모두 타고, 누가 어디로인지 한꺼번에 나옵니다. 출발 이름이나 세로선을 누르면 그 줄만 다시 타입니다.
         </p>
       </div>
     </CalcShell>
