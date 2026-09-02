@@ -1,4 +1,5 @@
-import { ACQUISITION, STAMP } from "@/lib/policy.generated"
+import { truncWon } from "./format.ts"
+import { ACQUISITION, STAMP } from "./policy.generated.ts"
 
 export type HomeCount = "1" | "2" | "3" | "4+"
 
@@ -68,7 +69,7 @@ export function calcAcquisition(input: {
     adjustedArea: input.adjustedArea,
   })
   const rate = policy.heavy ? policy.rate : standardHousingRate(input.price)
-  const baseTax = input.price * rate
+  const baseTax = truncWon(input.price * rate)
 
   const reliefCap = input.shrinkingArea ? ACQUISITION.shrinkingRelief : ACQUISITION.firstHomeRelief
   const firstHomeRelief =
@@ -78,16 +79,14 @@ export function calcAcquisition(input: {
 
   const acquisitionTax = Math.max(0, baseTax - firstHomeRelief)
   const educationTax = policy.heavy
-    ? input.price * ACQUISITION.educationHeavyFixed
-    : baseTax * ACQUISITION.educationShare
-  const ruralTax = input.over85
-    ? input.price *
-      (policy.heavy
-        ? policy.rate >= ACQUISITION.heavy3
-          ? ACQUISITION.ruralHeavy3
-          : ACQUISITION.ruralHeavy2
-        : ACQUISITION.ruralNormal)
-    : 0
+    ? truncWon(input.price * ACQUISITION.educationHeavyFixed)
+    : truncWon(acquisitionTax * ACQUISITION.educationShare)
+  const ruralRate = policy.heavy
+    ? policy.rate >= ACQUISITION.heavy3
+      ? ACQUISITION.ruralHeavy3
+      : ACQUISITION.ruralHeavy2
+    : ACQUISITION.ruralNormal
+  const ruralTax = input.over85 ? truncWon(input.price * ruralRate) : 0
 
   const total = acquisitionTax + educationTax + ruralTax
 

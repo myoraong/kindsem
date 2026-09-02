@@ -89,8 +89,8 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
           조정대상지역
         </CheckRow>
         <p className="text-sm leading-6 text-muted-foreground">
-          1주택·2년 거주·12억 이하는 비과세로 봅니다. 다주택 중과는 2026년 5월 10일 이후
-          양도분입니다.
+          1주택·2년 보유·12억 이하는 비과세입니다. 조정대상지역은 2년 거주도 필요합니다. 다주택
+          중과는 2026년 5월 10일 이후 양도분이며, 중과 때는 장기보유특별공제를 적용하지 않습니다.
         </p>
         <LawNote lines={[LAW_SOURCES.income]} />
       </div>

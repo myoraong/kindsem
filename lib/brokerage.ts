@@ -1,3 +1,4 @@
+import { truncWon } from "./format.ts"
 import { BROKERAGE, BROKERAGE_LEASE, BROKERAGE_SALE, VAT_RATE } from "./policy.generated.ts"
 
 export type DealType = "sale" | "jeonse" | "wolse"
@@ -69,14 +70,15 @@ export function calcBrokerage(input: {
     rule = isLease ? "주택 임대차 상한요율" : "주택 매매 상한요율"
   }
 
-  const vat = input.includeVat ? fee * VAT_RATE : 0
-  const total = fee + vat
+  const feeWon = truncWon(fee)
+  const vat = input.includeVat ? truncWon(feeWon * VAT_RATE) : 0
+  const total = feeWon + vat
 
   return {
     amount,
     rate,
     cap,
-    fee,
+    fee: feeWon,
     vat,
     total,
     rule,

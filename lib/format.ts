@@ -1,3 +1,9 @@
+/** 원 미만 절사. 음수는 0에 가깝게. */
+export function truncWon(value: number) {
+  if (!Number.isFinite(value) || value === 0) return 0
+  return value > 0 ? Math.floor(value) : Math.ceil(value)
+}
+
 export function parseAmount(raw: string): number | null {
   const cleaned = raw.replace(/[,\s원만원억]/g, "").trim()
   if (!cleaned) return null
@@ -37,14 +43,17 @@ export function formatKoreanUnit(value: number): string {
   if (!Number.isFinite(value) || value === 0) return "0원"
   const sign = value < 0 ? "-" : ""
   const abs = Math.abs(Math.round(value))
-  const eok = Math.floor(abs / 100_000_000)
-  const rest = abs % 100_000_000
+  const jo = Math.floor(abs / 1_000_000_000_000)
+  const afterJo = abs % 1_000_000_000_000
+  const eok = Math.floor(afterJo / 100_000_000)
+  const rest = afterJo % 100_000_000
   const man = Math.floor(rest / 10_000)
   const won = rest % 10_000
   const parts: string[] = []
-  if (eok) parts.push(`${eok}억`)
+  if (jo) parts.push(`${jo.toLocaleString("ko-KR")}조`)
+  if (eok) parts.push(`${eok.toLocaleString("ko-KR")}억`)
   if (man) parts.push(`${man.toLocaleString("ko-KR")}만`)
-  if (won && eok === 0) parts.push(`${won.toLocaleString("ko-KR")}`)
+  if (won && jo === 0 && eok === 0) parts.push(`${won.toLocaleString("ko-KR")}`)
   if (parts.length === 0) return `${sign}${abs.toLocaleString("ko-KR")}원`
   return `${sign}${parts.join(" ")}원`
 }

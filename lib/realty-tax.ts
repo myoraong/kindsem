@@ -1,3 +1,4 @@
+import { truncWon } from "./format.ts"
 import {
   CAPITAL_GAINS,
   CORP_EXTRA_LAND,
@@ -5,8 +6,8 @@ import {
   HOLDING,
   INHERITANCE,
   LICENSE,
-} from "@/lib/policy.generated"
-import { CORP_BRACKETS, GIFT_BRACKETS, INCOME_BRACKETS, progressiveTax } from "@/lib/tax-brackets"
+} from "./policy.generated.ts"
+import { CORP_BRACKETS, GIFT_BRACKETS, INCOME_BRACKETS, progressiveTax } from "./tax-brackets.ts"
 
 export type Homes = "1" | "2" | "3+"
 export type GiftRelation = "spouse" | "ascendant" | "descendant" | "other"
@@ -37,6 +38,8 @@ export function calcCapitalGains(input: {
   homes: Homes
   adjusted: boolean
   lived2y: boolean
+  /** 부담부증여 채무 양도분은 1주택 비과세를 넣지 않습니다. */
+  allowOneHouseExempt?: boolean
 }) {
   const profit = input.sell - input.buy - input.costs
   if (input.sell <= 0) return null
@@ -53,7 +56,9 @@ export function calcCapitalGains(input: {
   }
 
   const oneHouse = input.homes === "1"
-  const canExempt = oneHouse && input.lived2y && input.years >= 2
+  const residenceOk = input.lived2y || !input.adjusted
+  const canExempt =
+    input.allowOneHouseExempt !== false && oneHouse && input.years >= 2 && residenceOk
   if (canExempt && input.sell <= CAPITAL_GAINS.houseExempt) {
     return {
       profit,
@@ -73,25 +78,25 @@ export function calcCapitalGains(input: {
 
   const heavy = input.adjusted && input.homes !== "1" && input.years >= 2
   const surcharge = heavy ? (input.homes === "2" ? CAPITAL_GAINS.surcharge2 : CAPITAL_GAINS.surcharge3) : 0
-  const specialRate = holdingSpecialRate(input.years, oneHouse && input.lived2y && !heavy)
+  const specialRate = heavy ? 0 : holdingSpecialRate(input.years, oneHouse && input.lived2y)
   const afterSpecial = taxableGain * (1 - specialRate)
-  const taxable = Math.max(0, afterSpecial - CAPITAL_GAINS.basicDeduction)
+  const taxable = Math.max(0, truncWon(afterSpecial - CAPITAL_GAINS.basicDeduction))
 
   let national: number
   let label: string
   if (input.years < 1) {
-    national = taxable * CAPITAL_GAINS.under1y
+    national = truncWon(taxable * CAPITAL_GAINS.under1y)
     label = `1년 미만 ${Math.round(CAPITAL_GAINS.under1y * 100)}%`
   } else if (input.years < 2) {
-    national = taxable * CAPITAL_GAINS.under2y
+    national = truncWon(taxable * CAPITAL_GAINS.under2y)
     label = `2년 미만 ${Math.round(CAPITAL_GAINS.under2y * 100)}%`
   } else {
     const base = progressiveTax(taxable, INCOME_BRACKETS)
-    national = base.tax + taxable * surcharge
+    national = truncWon(base.tax + taxable * surcharge)
     label = heavy ? `기본세율 +${Math.round(surcharge * 100)}%p 중과` : "기본세율"
   }
 
-  const local = national * CAPITAL_GAINS.localIncome
+  const local = truncWon(national * CAPITAL_GAINS.localIncome)
   return {
     profit,
     taxable,
@@ -115,7 +120,7 @@ export function calcCorporateGains(input: {
     return { profit, corp: 0, extra: 0, total: 0, label: "양도차익 없음" }
   }
   const corp = progressiveTax(profit, CORP_BRACKETS).tax
-  const extra = input.unbusinessLand ? profit * CORP_EXTRA_LAND : 0
+  const extra = input.unbusinessLand ? truncWon(profit * CORP_EXTRA_LAND) : 0
   return {
     profit,
     corp,
@@ -127,16 +132,16 @@ export function calcCorporateGains(input: {
 
 export function calcHoldingTax(input: { price: number; homes: Homes }) {
   if (input.price <= 0) return null
-  const standard = input.price * HOLDING.fairMarket
-  const property = propertyTaxOn(standard, input.homes === "1")
-  const city = standard * HOLDING.cityRate
-  const education = property * HOLDING.educationShare
+  const standard = truncWon(input.price * HOLDING.fairMarket)
+  const property = truncWon(propertyTaxOn(standard, input.homes === "1"))
+  const city = truncWon(standard * HOLDING.cityRate)
+  const education = truncWon(property * HOLDING.educationShare)
   const deduction = input.homes === "1" ? HOLDING.oneHouseDeduction : HOLDING.otherDeduction
   const jongbuBase = Math.max(0, standard - deduction)
   const jongbuRate =
     input.homes === "3+" ? HOLDING.jongbuThree : input.homes === "1" ? HOLDING.jongbuOne : HOLDING.jongbuTwo
-  const jongbu = jongbuBase * jongbuRate
-  const rural = input.homes === "1" ? 0 : jongbu * HOLDING.ruralShare
+  const jongbu = truncWon(jongbuBase * jongbuRate)
+  const rural = input.homes === "1" ? 0 : truncWon(jongbu * HOLDING.ruralShare)
   const total = property + city + education + jongbu + rural
   return { standard, property, city, education, jongbu, rural, total }
 }
@@ -176,8 +181,8 @@ export function calcInheritance(input: { estate: number; spouse: boolean }) {
 export function calcLicenseTax(input: { value: number; kind: "inherit" | "gift" }) {
   if (input.value <= 0) return null
   const rate = input.kind === "inherit" ? LICENSE.inherit : LICENSE.gift
-  const tax = input.value * rate
-  const education = tax * LICENSE.educationShare
+  const tax = truncWon(input.value * rate)
+  const education = truncWon(tax * LICENSE.educationShare)
   return { rate, tax, education, total: tax + education }
 }
 
@@ -201,6 +206,7 @@ export function calcEncumberedGift(input: {
     homes: "1",
     adjusted: false,
     lived2y: false,
+    allowOneHouseExempt: false,
   })
   return {
     giftAmount,

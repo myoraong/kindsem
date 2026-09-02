@@ -1,4 +1,7 @@
+import { truncWon } from "./format.ts"
 import { INCOME_BRACKETS, PAYROLL_DEDUCTIONS, PAYROLL_INSURANCE } from "./policy.generated.ts"
+
+export { truncWon }
 
 /**
  * 직장 4대보험·소득세 공제는 법제처 현행 법령·고시에서 받습니다.
@@ -30,11 +33,6 @@ export const SIDE_JOB_PRESETS = {
 } as const
 
 export type SideJobPresetId = keyof typeof SIDE_JOB_PRESETS
-
-export function truncWon(value: number) {
-  if (!Number.isFinite(value) || value === 0) return 0
-  return value > 0 ? Math.floor(value) : Math.ceil(value)
-}
 
 export function progressiveIncomeTax(base: number) {
   if (base <= 0) return { tax: 0, rate: 0 }

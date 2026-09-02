@@ -91,8 +91,8 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
           </>
         ) : null}
         <p className="text-sm leading-6 text-muted-foreground">
-          주택 유상취득만 계산합니다. 생애최초 감면은 취득세에서만 빠지고, 지방교육세는 산출세액
-          기준으로 남습니다.
+          주택 유상취득만 계산합니다. 생애최초 감면 뒤 납부 취득세액의 10%가 지방교육세입니다.
+          취득세가 전액 면제면 지방교육세도 없습니다. 중과 주택은 과세표준의 0.4%입니다.
         </p>
         <LawNote
           lines={[LAW_SOURCES.acquisition, LAW_SOURCES.firstHome, LAW_SOURCES.rural]}
