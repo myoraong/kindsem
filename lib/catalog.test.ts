@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { CATALOG_HEADINGS, getCalculator } from "./catalog.ts"
+import { CATALOG_HEADINGS, CALCULATORS, getCalculator } from "./catalog.ts"
 
 test("홈 섹션 제목은 생활·급여·부동산이다", () => {
   assert.equal(CATALOG_HEADINGS.today.title, "생활")
@@ -17,6 +17,13 @@ test("홈 섹션 설명은 사실만 적고 슬로건 말을 쓰지 않는다", 
   assert.equal(CATALOG_HEADINGS.today.blurb, "더치페이, 사다리타기, 자동차 취득세.")
   assert.equal(CATALOG_HEADINGS.work.blurb, "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.")
   assert.equal(CATALOG_HEADINGS.realty.blurb, "취득·보유·양도, 전월세, 대출 한도. 법령·고시.")
+})
+
+test("급여에서 연봉비교는 실수령 바로 다음이다", () => {
+  const work = CALCULATORS.filter((item) => item.group === "work")
+  const takeHome = work.findIndex((item) => item.slug === "take-home")
+  assert.equal(work[0]?.slug, "take-home")
+  assert.equal(work[takeHome + 1]?.slug, "offer-compare")
 })
 
 test("미리보기 계산기가 카탈로그에 있다", () => {

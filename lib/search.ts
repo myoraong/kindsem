@@ -90,19 +90,20 @@ export function searchCalculators(query: string, section: HomeSection = "all"): 
     .filter(Boolean)
   if (tokens.length === 0) return []
 
-  return CALCULATORS.filter((item) => {
-    if (!itemInHomeSection(item, section)) return false
-    const hay = compact(
-      [
-        item.title,
-        item.blurb,
-        item.when,
-        item.slug,
-        groupLabel(item.group),
-        calcSearchText(item.slug),
-        ...(ALIASES[item.slug] ?? []),
-      ].join(" "),
+  const hits: { item: CalcItem; rank: number }[] = []
+  for (const item of CALCULATORS) {
+    if (!itemInHomeSection(item, section)) continue
+    const aliases = ALIASES[item.slug] ?? []
+    const strong = compact(
+      [item.title, item.slug, groupLabel(item.group), calcSearchText(item.slug), ...aliases].join(" "),
     )
-    return tokens.every((token) => hay.includes(token))
-  })
+    const hay = compact([item.blurb, item.when, strong].join(" "))
+    if (!tokens.every((token) => hay.includes(token))) continue
+    hits.push({
+      item,
+      rank: tokens.filter((token) => strong.includes(token)).length,
+    })
+  }
+  hits.sort((a, b) => b.rank - a.rank)
+  return hits.map((row) => row.item)
 }

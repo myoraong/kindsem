@@ -2,6 +2,7 @@ import { CALCULATORS, getCalculator, type CalcItem } from "@/lib/catalog"
 
 export const WORK_SLUGS = [
   "take-home",
+  "offer-compare",
   "weekly-holiday",
   "part-time-month",
   "prorate-pay",
@@ -9,7 +10,6 @@ export const WORK_SLUGS = [
   "annual-leave",
   "severance",
   "parental-leave",
-  "offer-compare",
   "side-job-tax",
   "benefit-net",
   "cert-payback",

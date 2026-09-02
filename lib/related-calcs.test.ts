@@ -3,9 +3,10 @@ import test from "node:test"
 import { getCalculator } from "./catalog.ts"
 import { relatedCalculators } from "./related-calcs.ts"
 
-test("실수령 다음에 주휴를 보여 준다", () => {
+test("실수령 다음에 연봉비교를 보여 준다", () => {
   const rows = relatedCalculators("take-home")
-  assert.equal(rows[0]?.slug, "weekly-holiday")
+  assert.equal(rows[0]?.slug, "offer-compare")
+  assert.equal(rows[1]?.slug, "weekly-holiday")
   assert.ok(rows.length >= 2 && rows.length <= 4)
 })
 

@@ -2,7 +2,7 @@ import { CALCULATORS, getCalculator, type CalcItem } from "./catalog.ts"
 
 /** 계산기마다 이어서 볼 것. 앞에 둔 순서가 우선이고, 부족하면 같은 분류에서 채웁니다. */
 const RELATED: Record<string, string[]> = {
-  "take-home": ["weekly-holiday", "overtime-pay", "annual-leave"],
+  "take-home": ["offer-compare", "weekly-holiday", "overtime-pay"],
   "weekly-holiday": ["part-time-month", "overtime-pay", "take-home"],
   "part-time-month": ["weekly-holiday", "take-home", "prorate-pay"],
   "prorate-pay": ["take-home", "weekly-holiday", "severance"],

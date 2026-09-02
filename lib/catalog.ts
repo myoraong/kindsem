@@ -112,6 +112,13 @@ export const CALCULATORS: CalcItem[] = [
     group: "work",
   },
   {
+    slug: "offer-compare",
+    title: "연봉 vs 이직 제안",
+    blurb: "세후 비교에 감면·퇴직금·퇴사 후 건보까지.",
+    when: "이직 제안을 받았을 때",
+    group: "work",
+  },
+  {
     slug: "weekly-holiday",
     title: "주휴수당",
     blurb: "주 15시간 이상, 개근한 주의 유급 주휴.",
@@ -158,13 +165,6 @@ export const CALCULATORS: CalcItem[] = [
     title: "육아휴직 급여",
     blurb: "고용보험 시행령 상한·하한·지급률.",
     when: "육아휴직 기간을 정할 때",
-    group: "work",
-  },
-  {
-    slug: "offer-compare",
-    title: "연봉 vs 이직 제안",
-    blurb: "세후 비교에 감면·퇴직금·퇴사 후 건보까지.",
-    when: "이직 제안을 받았을 때",
     group: "work",
   },
   {
