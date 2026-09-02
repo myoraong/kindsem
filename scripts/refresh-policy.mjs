@@ -102,8 +102,35 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+/** 법제처 샘플 URL은 http www.law.go.kr 이다. https가 죽으면 그다음으로 받는다. */
+export const LAW_API_ORIGINS = ["https://www.law.go.kr", "http://www.law.go.kr"]
+
+export const LAW_FETCH_HEADERS = {
+  Accept: "application/json, text/plain, */*",
+  Referer: "https://www.law.go.kr/",
+  "User-Agent": "Mozilla/5.0 (compatible; Kindsem/1.0; +https://kindsem.com/)",
+}
+
+export function lawUrlFallbacks(url) {
+  let parsed
+  try {
+    parsed = new URL(url)
+  } catch {
+    return [url]
+  }
+  if (!/(^|\.)law\.go\.kr$/i.test(parsed.host)) return [url]
+  const path = parsed.pathname + parsed.search
+  const origins = [`${parsed.protocol}//${parsed.host}`, ...LAW_API_ORIGINS]
+  const out = []
+  for (const origin of origins) {
+    const next = `${origin}${path}`
+    if (!out.includes(next)) out.push(next)
+  }
+  return out
+}
+
 function isTransientHttpStatus(status) {
-  return status === 429 || status >= 500
+  return status === 403 || status === 408 || status === 425 || status === 429 || status >= 500
 }
 
 function isRetryableNetworkError(error) {
@@ -125,38 +152,72 @@ function isRetryableNetworkError(error) {
   ].includes(code)
 }
 
+async function parseOkJson(res, url) {
+  if (typeof res.text === "function") {
+    const text = String(await res.text()).trim()
+    if (!text) throw new TransientFetchError(`빈 응답 ${url}`)
+    if (text.startsWith("<")) throw new TransientFetchError(`HTML 응답 ${url}`)
+    try {
+      return JSON.parse(text)
+    } catch (error) {
+      throw new TransientFetchError(`응답 JSON 실패 ${url}`, { cause: error })
+    }
+  }
+  try {
+    return await res.json()
+  } catch (error) {
+    throw new TransientFetchError(`응답 JSON 실패 ${url}`, { cause: error })
+  }
+}
+
+function wrapFetchError(error, url) {
+  if (isTransientFetchError(error)) return error
+  if (error.name === "AbortError" || error.name === "TimeoutError") {
+    return new TransientFetchError(`타임아웃 ${url}`, { cause: error })
+  }
+  if (isRetryableNetworkError(error)) {
+    return new TransientFetchError(error.message || String(error), { cause: error })
+  }
+  return error
+}
+
 /**
  * @param {string} url
- * @param {{ tries?: number, backoffMs?: number }} [opts]
+ * @param {{ tries?: number, backoffMs?: number, timeoutMs?: number }} [opts]
  */
 export async function getJson(url, opts = {}) {
   const tries = opts.tries ?? 3
   const backoffMs = opts.backoffMs ?? 1000
+  const timeoutMs = opts.timeoutMs ?? 25_000
+  const urls = lawUrlFallbacks(url)
   let lastError
   for (let attempt = 1; attempt <= tries; attempt++) {
-    try {
-      const res = await fetch(url, { headers: { "User-Agent": "kindsem-policy-refresh" } })
-      if (res.ok) {
-        try {
-          return await res.json()
-        } catch (error) {
-          throw new TransientFetchError(`응답 JSON 실패 ${url}`, { cause: error })
+    for (const candidate of urls) {
+      try {
+        const res = await fetch(candidate, {
+          headers: LAW_FETCH_HEADERS,
+          signal: AbortSignal.timeout(timeoutMs),
+        })
+        if (res.ok) return await parseOkJson(res, candidate)
+        const message = `${res.status} ${candidate}`
+        if (!isTransientHttpStatus(res.status)) {
+          lastError = new Error(message)
+          continue
+        }
+        lastError = new TransientFetchError(message, { status: res.status })
+      } catch (error) {
+        lastError = wrapFetchError(error, candidate)
+        if (!isTransientFetchError(lastError)) {
+          continue
         }
       }
-      const message = `${res.status} ${url}`
-      if (!isTransientHttpStatus(res.status)) {
-        throw new Error(message)
-      }
-      lastError = new TransientFetchError(message, { status: res.status })
-    } catch (error) {
-      if (!isRetryableNetworkError(error)) throw error
-      lastError = isTransientFetchError(error)
-        ? error
-        : new TransientFetchError(error.message || String(error), { cause: error })
+    }
+    if (lastError && !isTransientFetchError(lastError) && !isRetryableNetworkError(lastError)) {
+      throw lastError
     }
     if (attempt < tries) {
       const wait = backoffMs * 2 ** (attempt - 1)
-      console.warn(`법제처 조회 재시도 ${attempt}/${tries} ${wait}ms 후: ${lastError.message}`)
+      console.warn(`법제처 조회 재시도 ${attempt}/${tries} ${wait}ms 후: ${lastError?.message}`)
       if (wait > 0) await sleep(wait)
     }
   }

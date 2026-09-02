@@ -5,6 +5,7 @@ import {
   exitCodeForRefreshFailure,
   getJson,
   isTransientFetchError,
+  lawUrlFallbacks,
   parseGiftDeductions,
   parseKoreanWon,
   TransientFetchError,
@@ -296,6 +297,48 @@ test("getJson does not retry 404", async () => {
   }, async () => {
     await assert.rejects(() => getJson("https://example.test/law", { backoffMs: 0 }), /404/)
     assert.equal(n, 1)
+  })
+})
+
+test("lawUrlFallbacks adds http 법제처 after https", () => {
+  const urls = lawUrlFallbacks("https://www.law.go.kr/DRF/lawService.do?type=JSON&ID=1")
+  assert.deepEqual(urls, [
+    "https://www.law.go.kr/DRF/lawService.do?type=JSON&ID=1",
+    "http://www.law.go.kr/DRF/lawService.do?type=JSON&ID=1",
+  ])
+  assert.deepEqual(lawUrlFallbacks("https://example.test/law"), ["https://example.test/law"])
+})
+
+test("getJson uses http 법제처 host after https 503", async () => {
+  const seen = []
+  await withMockFetch(async (url) => {
+    seen.push(String(url))
+    if (String(url).startsWith("https://")) return { ok: false, status: 503 }
+    return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true }) }
+  }, async () => {
+    const data = await getJson("https://www.law.go.kr/DRF/lawService.do?type=JSON", {
+      tries: 1,
+      backoffMs: 0,
+    })
+    assert.deepEqual(data, { ok: true })
+    assert.equal(seen.length, 2)
+    assert.match(seen[0], /^https:\/\/www\.law\.go\.kr\//)
+    assert.match(seen[1], /^http:\/\/www\.law\.go\.kr\//)
+  })
+})
+
+test("getJson treats HTML 200 as transient then succeeds", async () => {
+  let n = 0
+  await withMockFetch(async () => {
+    n += 1
+    if (n === 1) {
+      return { ok: true, status: 200, text: async () => "<html>blocked</html>" }
+    }
+    return { ok: true, status: 200, text: async () => JSON.stringify({ ok: true }) }
+  }, async () => {
+    const data = await getJson("https://example.test/law", { backoffMs: 0 })
+    assert.deepEqual(data, { ok: true })
+    assert.equal(n, 2)
   })
 })
 
