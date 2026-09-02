@@ -237,7 +237,12 @@ export function calcJsonLd(item: CalcItem) {
       inLanguage: "ko",
       isAccessibleForFree: true,
       offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
-      publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      publisher: {
+        "@type": "Organization",
+        name: SITE_NAME,
+        alternateName: ["Kindsem", "카인드셈"],
+        url: SITE_URL,
+      },
     },
     {
       "@context": "https://schema.org",
@@ -269,10 +274,17 @@ export function homeJsonLd() {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: SITE_NAME,
+      alternateName: ["Kindsem", "카인드셈"],
       url: SITE_URL,
       inLanguage: "ko",
       description:
         "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세 등 생활·급여·부동산 계산기. 법령·고시 현행본. 빠진 공제는 넣지 않습니다.",
+      publisher: {
+        "@type": "Organization",
+        name: SITE_NAME,
+        alternateName: ["Kindsem", "카인드셈"],
+        url: SITE_URL,
+      },
     },
     {
       "@context": "https://schema.org",
@@ -298,6 +310,6 @@ export const HOME_METADATA: Metadata = {
 export const CALC_INDEX_METADATA: Metadata = {
   title: "계산기 목록",
   description:
-    "Kindsem 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
+    "카인드셈 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
   alternates: { canonical: "/calc/" },
 }

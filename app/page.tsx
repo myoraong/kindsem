@@ -15,7 +15,7 @@ export default function HomePage() {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-primary">생활 · 급여 · 부동산</p>
           <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl md:text-4xl">
-            생활·급여·부동산 계산기
+            카인드셈 생활·급여·부동산 계산기
           </h1>
           <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
             실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR.

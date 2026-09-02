@@ -27,7 +27,7 @@ export default function CalcIndexPage() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
       <JsonLd data={homeJsonLd()} />
-      <p className="text-sm font-medium text-primary">Kindsem</p>
+      <p className="text-sm font-medium text-primary">Kindsem 카인드셈</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">계산기 목록</h1>
       <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground">
         생활·급여·부동산에서 쓰는 계산기입니다. 검색에 나오는 이름으로 모아 두었습니다.

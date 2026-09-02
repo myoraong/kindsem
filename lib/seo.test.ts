@@ -9,6 +9,7 @@ import {
   calcPath,
   calcSearchText,
   calcSeo,
+  homeJsonLd,
 } from "./seo.ts"
 
 test("계산기마다 검색어가 있고 제목에 계산기가 들어간다", () => {
@@ -59,4 +60,14 @@ test("JSON-LD에 계산기 URL이 있다", () => {
   assert.equal(app.name, "자동차세 계산기")
   assert.equal(app.url, "https://kindsem.com/calc/car-tax/")
   assert.equal(crumbs["@type"], "BreadcrumbList")
+  assert.deepEqual(
+    (app.publisher as { alternateName: string[] }).alternateName,
+    ["Kindsem", "카인드셈"],
+  )
+})
+
+test("홈 JSON-LD에 카인드셈 별칭이 있다", () => {
+  const [site] = homeJsonLd()
+  assert.equal(site["@type"], "WebSite")
+  assert.deepEqual(site.alternateName, ["Kindsem", "카인드셈"])
 })
