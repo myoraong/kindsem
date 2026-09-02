@@ -25,9 +25,17 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: node scripts/refresh-policy.mjs
+      - name: Refresh tax rates from 법제처
         env:
           POLICY_STRICT: "1"
+        run: |
+          node scripts/refresh-policy.mjs && exit 0
+          echo "1차 실패, 8초 후 재시도"
+          sleep 8
+          node scripts/refresh-policy.mjs && exit 0
+          echo "2차 실패, 16초 후 재시도"
+          sleep 16
+          node scripts/refresh-policy.mjs
       - id: commit
         name: Commit if rates changed
         run: |

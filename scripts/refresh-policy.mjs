@@ -74,10 +74,93 @@ const LAWS = [
   { key: "severanceLaw", query: "근로자퇴직급여 보장법", id: "009883" },
 ]
 
-export async function getJson(url) {
-  const res = await fetch(url, { headers: { "User-Agent": "kindsem-policy-refresh" } })
-  if (!res.ok) throw new Error(`${res.status} ${url}`)
-  return res.json()
+export class TransientFetchError extends Error {
+  /**
+   * 법제처 Open API의 429·5xx·네트워크 오류처럼 잠깐 났다가 사라지는 조회 실패.
+   * @param {string} message
+   * @param {{ status?: number, cause?: unknown }} [opts]
+   */
+  constructor(message, opts = {}) {
+    super(message, opts.cause != null ? { cause: opts.cause } : undefined)
+    this.name = "TransientFetchError"
+    this.status = opts.status
+  }
+}
+
+export function isTransientFetchError(error) {
+  return error instanceof TransientFetchError || error?.name === "TransientFetchError"
+}
+
+/** POLICY_STRICT 잡에서 일시 조회 실패면 메일 없이 이전 세율을 남기고, 파서 실패는 그대로 실패. */
+export function exitCodeForRefreshFailure(error, { strict = false, hasPrev = false } = {}) {
+  if (hasPrev && isTransientFetchError(error)) return 0
+  if (strict || !hasPrev) return 1
+  return 0
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function isTransientHttpStatus(status) {
+  return status === 429 || status >= 500
+}
+
+function isRetryableNetworkError(error) {
+  if (!error) return false
+  if (isTransientFetchError(error)) return true
+  if (error.name === "AbortError" || error.name === "TimeoutError") return true
+  if (error instanceof TypeError) return true
+  const code = error.cause?.code || error.code
+  return [
+    "ECONNRESET",
+    "ETIMEDOUT",
+    "ENOTFOUND",
+    "EAI_AGAIN",
+    "ECONNREFUSED",
+    "UND_ERR_CONNECT_TIMEOUT",
+    "UND_ERR_SOCKET",
+    "UND_ERR_HEADERS_TIMEOUT",
+    "UND_ERR_BODY_TIMEOUT",
+  ].includes(code)
+}
+
+/**
+ * @param {string} url
+ * @param {{ tries?: number, backoffMs?: number }} [opts]
+ */
+export async function getJson(url, opts = {}) {
+  const tries = opts.tries ?? 3
+  const backoffMs = opts.backoffMs ?? 1000
+  let lastError
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": "kindsem-policy-refresh" } })
+      if (res.ok) {
+        try {
+          return await res.json()
+        } catch (error) {
+          throw new TransientFetchError(`응답 JSON 실패 ${url}`, { cause: error })
+        }
+      }
+      const message = `${res.status} ${url}`
+      if (!isTransientHttpStatus(res.status)) {
+        throw new Error(message)
+      }
+      lastError = new TransientFetchError(message, { status: res.status })
+    } catch (error) {
+      if (!isRetryableNetworkError(error)) throw error
+      lastError = isTransientFetchError(error)
+        ? error
+        : new TransientFetchError(error.message || String(error), { cause: error })
+    }
+    if (attempt < tries) {
+      const wait = backoffMs * 2 ** (attempt - 1)
+      console.warn(`법제처 조회 재시도 ${attempt}/${tries} ${wait}ms 후: ${lastError.message}`)
+      if (wait > 0) await sleep(wait)
+    }
+  }
+  throw lastError
 }
 
 export function parseKoreanWon(raw) {
@@ -1148,14 +1231,17 @@ if (isDirectRun()) {
   refreshPolicy().catch((error) => {
     console.error(error)
     const hasPrev = existsSync(join(root, "lib/policy.generated.ts"))
-    if (hasPrev) {
+    const code = exitCodeForRefreshFailure(error, {
+      strict: process.env.POLICY_STRICT === "1",
+      hasPrev,
+    })
+    if (hasPrev && isTransientFetchError(error)) {
+      console.error("법제처 Open API가 잠깐 실패했습니다. 이전 세율을 유지하고 성공으로 끝냅니다.")
+    } else if (hasPrev) {
       console.error("이전 세율 파일을 그대로 씁니다.")
     }
-    // 사이트 빌드(prebuild)는 법령 조회가 잠깐 깨져도 막지 않습니다.
-    // 자동 갱신 잡(POLICY_STRICT=1)은 실패로 끝내서 파서를 고치러 오게 합니다.
-    if (process.env.POLICY_STRICT === "1" || !hasPrev) {
-      process.exit(1)
-    }
-    process.exit(0)
+    // 사이트 빌드(prebuild)와 일시 HTTP 실패는 이전 세율이 있으면 0.
+    // 파서·필수 필드 실패는 POLICY_STRICT=1 에서 1로 남겨 메일이 가게 합니다.
+    process.exit(code)
   })
 }

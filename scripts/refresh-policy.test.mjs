@@ -1,6 +1,14 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { extractProgressive, parseGiftDeductions, parseKoreanWon } from "./refresh-policy.mjs"
+import {
+  extractProgressive,
+  exitCodeForRefreshFailure,
+  getJson,
+  isTransientFetchError,
+  parseGiftDeductions,
+  parseKoreanWon,
+  TransientFetchError,
+} from "./refresh-policy.mjs"
 import {
   parseBrokerageHouse,
   parseLtvFromBanking,
@@ -240,4 +248,62 @@ test("취득세·연장수당·이자·육아·관세·급여공제 표기를 �
   assert.deepEqual(parental?.bothCapsFirst6, [
     2_500_000, 2_500_000, 3_000_000, 3_500_000, 4_000_000, 4_500_000,
   ])
+})
+
+async function withMockFetch(impl, fn) {
+  const original = globalThis.fetch
+  globalThis.fetch = impl
+  try {
+    await fn()
+  } finally {
+    globalThis.fetch = original
+  }
+}
+
+test("getJson retries 503 then succeeds", async () => {
+  let n = 0
+  await withMockFetch(async () => {
+    n += 1
+    if (n < 3) return { ok: false, status: 503 }
+    return { ok: true, status: 200, json: async () => ({ ok: true }) }
+  }, async () => {
+    const data = await getJson("https://example.test/law", { backoffMs: 0 })
+    assert.deepEqual(data, { ok: true })
+    assert.equal(n, 3)
+  })
+})
+
+test("getJson retries 429 and network errors then throws TransientFetchError", async () => {
+  let n = 0
+  await withMockFetch(async () => {
+    n += 1
+    if (n === 1) return { ok: false, status: 429 }
+    throw new TypeError("fetch failed")
+  }, async () => {
+    await assert.rejects(
+      () => getJson("https://example.test/law", { tries: 3, backoffMs: 0 }),
+      (error) => isTransientFetchError(error) && error instanceof TransientFetchError,
+    )
+    assert.equal(n, 3)
+  })
+})
+
+test("getJson does not retry 404", async () => {
+  let n = 0
+  await withMockFetch(async () => {
+    n += 1
+    return { ok: false, status: 404 }
+  }, async () => {
+    await assert.rejects(() => getJson("https://example.test/law", { backoffMs: 0 }), /404/)
+    assert.equal(n, 1)
+  })
+})
+
+test("exitCodeForRefreshFailure keeps previous rates on transient HTTP, fails on parser miss", () => {
+  const flake = new TransientFetchError("503 https://example.test/law", { status: 503 })
+  const parser = new Error("월세 세액공제 파싱 실패")
+  assert.equal(exitCodeForRefreshFailure(flake, { strict: true, hasPrev: true }), 0)
+  assert.equal(exitCodeForRefreshFailure(parser, { strict: true, hasPrev: true }), 1)
+  assert.equal(exitCodeForRefreshFailure(flake, { strict: true, hasPrev: false }), 1)
+  assert.equal(exitCodeForRefreshFailure(parser, { strict: false, hasPrev: true }), 0)
 })
