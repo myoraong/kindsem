@@ -203,7 +203,12 @@ export function calcMetadata(item: CalcItem): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: url },
+    keywords: [title, ...seo.also, "카인드셈", "Kindsem"],
+    robots: { index: true, follow: true },
+    alternates: {
+      canonical: url,
+      languages: { "ko-KR": url },
+    },
     openGraph: {
       title: `${title} · ${SITE_NAME}`,
       description,
@@ -242,6 +247,7 @@ export function calcJsonLd(item: CalcItem) {
         name: SITE_NAME,
         alternateName: ["Kindsem", "카인드셈"],
         url: SITE_URL,
+        logo: `${SITE_URL}/kindsem-sena-icon.png`,
       },
     },
     {
@@ -284,12 +290,13 @@ export function homeJsonLd() {
         name: SITE_NAME,
         alternateName: ["Kindsem", "카인드셈"],
         url: SITE_URL,
+        logo: `${SITE_URL}/kindsem-sena-icon.png`,
       },
     },
     {
       "@context": "https://schema.org",
       "@type": "ItemList",
-      name: "Kindsem 계산기",
+      name: "카인드셈 계산기",
       itemListElement: CALCULATORS.map((item, index) => ({
         "@type": "ListItem",
         position: index + 1,
@@ -304,7 +311,9 @@ export const HOME_METADATA: Metadata = {
   title: { absolute: `생활·급여·부동산 계산기 · ${SITE_NAME}` },
   description:
     "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 계산기. 법령·고시 현행본. 빠진 공제는 넣지 않습니다.",
-  alternates: { canonical: "/" },
+  keywords: ["카인드셈", "Kindsem", "실수령액 계산기", "퇴직금 계산기", "중개수수료 계산기"],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/", languages: { "ko-KR": "/" } },
 }
 
 export const CALC_INDEX_METADATA: Metadata = {

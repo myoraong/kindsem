@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev --hostname 0.0.0.0 --port 43217",
     "refresh-policy": "node scripts/refresh-policy.mjs",
+    "indexnow": "node --experimental-strip-types scripts/indexnow.mjs",
     "prebuild": "node scripts/refresh-policy.mjs && node scripts/write-ads-txt.mjs",
     "build": "next build",
     "start": "next start --port 43217",

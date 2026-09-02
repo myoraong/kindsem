@@ -1,0 +1,52 @@
+# Kindsem 카인드셈
+# https://kindsem.com/
+
+생활·급여·부동산 계산기. 세율·상한은 법제처 현행 법령·고시입니다.
+
+- 홈: https://kindsem.com/
+- 계산기 목록: https://kindsem.com/calc/
+- 부동산: https://kindsem.com/realty/
+- 문의: https://kindsem.com/contact/
+- 개인정보: https://kindsem.com/privacy/
+- 사이트맵: https://kindsem.com/sitemap.xml
+
+## 계산기
+- 사칙연산 계산기: https://kindsem.com/calc/quick/
+- 더치페이 계산기: https://kindsem.com/calc/dutch/
+- 사다리타기 계산기: https://kindsem.com/calc/ladder/
+- 부가세 계산기: https://kindsem.com/calc/sale-vat/
+- 자동차 취득세 계산기: https://kindsem.com/calc/vehicle-tax/
+- 자동차세 계산기: https://kindsem.com/calc/car-tax/
+- 해외직구 관세 계산기: https://kindsem.com/calc/import-duty/
+- 예적금 이자 계산기: https://kindsem.com/calc/deposit/
+- 실수령액 계산기: https://kindsem.com/calc/take-home/
+- 주휴수당 계산기: https://kindsem.com/calc/weekly-holiday/
+- 알바 월급 계산기: https://kindsem.com/calc/part-time-month/
+- 월급 일할 계산기: https://kindsem.com/calc/prorate-pay/
+- 연장수당 계산기: https://kindsem.com/calc/overtime-pay/
+- 연차수당 계산기: https://kindsem.com/calc/annual-leave/
+- 퇴직금 계산기: https://kindsem.com/calc/severance/
+- 육아휴직 급여 계산기: https://kindsem.com/calc/parental-leave/
+- 연봉 비교 계산기: https://kindsem.com/calc/offer-compare/
+- 알바 3.3% 계산기: https://kindsem.com/calc/side-job-tax/
+- 실업급여 계산기: https://kindsem.com/calc/benefit-net/
+- 자격증 회수 계산기: https://kindsem.com/calc/cert-payback/
+- 중개수수료 계산기: https://kindsem.com/calc/brokerage/
+- 이사비용 계산기: https://kindsem.com/calc/moving/
+- 전세대출 이자 계산기: https://kindsem.com/calc/jeonse/
+- 전월세 전환율 계산기: https://kindsem.com/calc/rent-convert/
+- 전세 월세 비교 계산기: https://kindsem.com/calc/jeonse-vs-rent/
+- 월세 세액공제 계산기: https://kindsem.com/calc/rent-credit/
+- 취득세 계산기: https://kindsem.com/calc/acquisition/
+- 양도소득세 계산기: https://kindsem.com/calc/capital-gains/
+- 법인 양도세 계산기: https://kindsem.com/calc/corporate-gains/
+- 재산세 계산기: https://kindsem.com/calc/holding-tax/
+- 등록면허세 계산기: https://kindsem.com/calc/license-tax/
+- 증여세 계산기: https://kindsem.com/calc/gift-tax/
+- 상속세 계산기: https://kindsem.com/calc/inheritance/
+- 부담부증여 계산기: https://kindsem.com/calc/encumbered-gift/
+- 부동산 취득 총비용 계산기: https://kindsem.com/calc/closing-cost/
+- LTV 계산기: https://kindsem.com/calc/ltv/
+- DSR 계산기: https://kindsem.com/calc/dsr/
+- 주택담보대출 계산기: https://kindsem.com/calc/mortgage/
+- 임대수익률 계산기: https://kindsem.com/calc/yield/

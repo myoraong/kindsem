@@ -25,6 +25,7 @@ export const metadata: Metadata = {
     "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 계산기. 법령·고시 기준.",
   robots: { index: true, follow: true },
   other: { "google-adsense-account": ADSENSE_CLIENT },
+  alternates: { languages: { "ko-KR": "/" } },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },

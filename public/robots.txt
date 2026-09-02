@@ -1,5 +1,11 @@
 User-agent: *
 Allow: /
 
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
 Host: https://kindsem.com
 Sitemap: https://kindsem.com/sitemap.xml

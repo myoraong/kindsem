@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { calcSeo } from "@/lib/seo"
+import { calcFooterGroups } from "@/lib/site-urls"
 import { CONTACT_EMAIL } from "@/lib/site"
 
 export function SiteFooter() {
@@ -7,8 +9,27 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-5xl flex-col gap-5 px-4 py-8 text-sm text-muted-foreground">
         <div>
           <p className="text-[13px] font-semibold text-foreground">Kindsem 카인드셈</p>
-          <p className="mt-1 text-xs">친절한 생활 계산</p>
+          <p className="mt-1 text-xs">생활·급여·부동산 계산기</p>
         </div>
+        <nav aria-label="계산기" className="grid gap-5 sm:grid-cols-3">
+          {calcFooterGroups().map((group) => (
+            <div key={group.title}>
+              <p className="text-xs font-medium text-foreground">{group.title}</p>
+              <ul className="mt-2 space-y-1">
+                {group.items.map((item) => (
+                  <li key={item.slug}>
+                    <Link
+                      href={`/calc/${item.slug}/`}
+                      className="text-xs underline-offset-2 hover:text-foreground hover:underline"
+                    >
+                      {calcSeo(item.slug).query}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </nav>
         <p>
           <span className="text-muted-foreground/80">이메일</span>{" "}
           <a
@@ -23,10 +44,10 @@ export function SiteFooter() {
           <Link href="/calc/" className="w-fit underline underline-offset-2 hover:text-foreground">
             계산기 목록
           </Link>
-          <Link href="/privacy" className="w-fit underline underline-offset-2 hover:text-foreground">
+          <Link href="/privacy/" className="w-fit underline underline-offset-2 hover:text-foreground">
             개인정보 안내
           </Link>
-          <Link href="/contact" className="w-fit underline underline-offset-2 hover:text-foreground">
+          <Link href="/contact/" className="w-fit underline underline-offset-2 hover:text-foreground">
             문의
           </Link>
         </nav>

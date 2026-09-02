@@ -1,24 +1,28 @@
 import type { MetadataRoute } from "next"
-import { CALCULATORS } from "@/lib/catalog"
+import { POLICY_FETCHED_AT } from "@/lib/policy.generated"
+import { publicPaths } from "@/lib/site-urls"
 import { SITE_URL } from "@/lib/site"
 
 export const dynamic = "force-static"
 
+const HOT = new Set([
+  "/calc/take-home/",
+  "/calc/severance/",
+  "/calc/brokerage/",
+  "/calc/acquisition/",
+  "/calc/weekly-holiday/",
+])
+
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date()
-  const pages = ["", "/calc/", "/contact/", "/privacy/", "/realty/"]
-  return [
-    ...pages.map((path) => ({
-      url: `${SITE_URL}${path}`,
+  const lastModified = new Date(`${POLICY_FETCHED_AT}T00:00:00+09:00`)
+  return publicPaths().map((path) => {
+    const url = path === "/" ? `${SITE_URL}/` : `${SITE_URL}${path}`
+    const hot = path === "/" || HOT.has(path)
+    return {
+      url,
       lastModified,
-      changeFrequency: "weekly" as const,
-      priority: path === "" ? 1 : 0.6,
-    })),
-    ...CALCULATORS.map((item) => ({
-      url: `${SITE_URL}/calc/${item.slug}/`,
-      lastModified,
-      changeFrequency: "weekly" as const,
-      priority: 0.8,
-    })),
-  ]
+      changeFrequency: hot ? ("daily" as const) : ("weekly" as const),
+      priority: path === "/" ? 1 : HOT.has(path) ? 0.9 : path === "/calc/" ? 0.7 : 0.8,
+    }
+  })
 }

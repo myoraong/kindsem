@@ -1,16 +1,35 @@
 import { RealtyCatalog } from "@/components/realty-catalog"
+import { JsonLd } from "@/components/json-ld"
+import { CALCULATORS } from "@/lib/catalog"
+import { calcSeo, calcUrl } from "@/lib/seo"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "부동산 계산기",
   description:
     "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
-  alternates: { canonical: "/realty/" },
+  alternates: { canonical: "/realty/", languages: { "ko-KR": "/realty/" } },
+}
+
+function realtyJsonLd() {
+  const items = CALCULATORS.filter((item) => item.group !== "today" && item.group !== "work")
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "카인드셈 부동산 계산기",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: calcSeo(item.slug).query,
+      url: calcUrl(item.slug),
+    })),
+  }
 }
 
 export default function RealtyPage() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
+      <JsonLd data={realtyJsonLd()} />
       <p className="text-sm font-medium text-primary">부동산</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">
         부동산 계산기
@@ -25,3 +44,4 @@ export default function RealtyPage() {
     </div>
   )
 }
+
