@@ -11,7 +11,7 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-border/70">
       <div className="mx-auto max-w-5xl px-4 py-10 text-sm text-muted-foreground">
         <div className="mb-6 flex items-center gap-3">
-          <Sena variant="face" className="size-11 bg-transparent" />
+          <Sena variant="face" className="size-11 overflow-hidden rounded-full object-cover" />
           <div>
             <p className="text-[13px] font-semibold text-foreground">Kindsem 카인드셈</p>
             <p className="mt-0.5 text-xs">

@@ -20,9 +20,9 @@ const VARIANTS = {
   face: {
     src: "/kindsem-sena-face.png",
     alt: MASCOT.name,
-    width: 384,
-    height: 370,
-    className: "size-11 bg-transparent object-contain",
+    width: 512,
+    height: 512,
+    className: "size-11 overflow-hidden rounded-full object-cover",
   },
   icon: {
     src: "/kindsem-sena-icon.png",

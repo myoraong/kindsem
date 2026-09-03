@@ -6,7 +6,11 @@ import { Sena } from "@/components/sena"
 export function BrandMark() {
   return (
     <span className="flex items-center gap-2 sm:gap-2.5">
-      <Sena variant="face" className="size-8 shrink-0 bg-transparent sm:size-9" priority />
+      <Sena
+        variant="face"
+        className="size-9 shrink-0 overflow-hidden rounded-full object-cover sm:size-10"
+        priority
+      />
       <span className="flex min-w-0 flex-col justify-center leading-none">
         <span className="flex items-baseline gap-1.5">
           <span className="text-[15px] font-bold tracking-[-0.05em] [font-variant-numeric:tabular-nums]">
