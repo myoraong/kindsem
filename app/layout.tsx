@@ -25,7 +25,10 @@ export const metadata: Metadata = {
     "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 하루 두 번 법제처에서 세율을 다시 읽고, 표에 없는 공제는 넣지 않습니다.",
   robots: { index: true, follow: true },
   other: { "google-adsense-account": ADSENSE_CLIENT },
-  alternates: { languages: { "ko-KR": "/" } },
+  alternates: {
+    languages: { "ko-KR": "/" },
+    types: { "application/rss+xml": "/rss.xml" },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
