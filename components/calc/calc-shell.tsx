@@ -52,13 +52,13 @@ export function CalcShell({
     <div className="mx-auto w-full max-w-5xl px-4 py-6 pb-24 md:py-10 lg:pb-10">
       <Link
         href={backHref}
-        className="mb-4 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        className="mb-5 inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
       >
         <ArrowLeft className="size-4" />
         {backLabel}
       </Link>
-      <div className="mb-6 flex items-center gap-3 sm:gap-5">
-        <div className="min-w-0 flex-1 sm:flex-none sm:max-w-lg">
+      <div className="mb-4 flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
           <p className="text-sm text-primary">
             {realty
               ? `${realty.title} · ${item.when}`

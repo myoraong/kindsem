@@ -69,7 +69,7 @@ export function SenaFigure({
       className={cn(
         "shrink-0 bg-transparent",
         variant === "calc"
-          ? "w-24 sm:w-[6.5rem] md:w-28 lg:w-[7.5rem]"
+          ? "w-[5.25rem] sm:w-24 md:w-28 lg:w-[7.25rem]"
           : "w-[5.5rem] -translate-x-1 sm:w-[6.75rem] sm:-translate-x-2 md:w-32 md:-translate-x-3 lg:w-[8.75rem]",
       )}
     >
