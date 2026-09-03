@@ -28,7 +28,6 @@ export function MoneyField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const pendingDigits = useRef<number | null>(null)
-  const selectOnMouseUp = useRef(false)
   const numeric = Number(value.replace(/,/g, ""))
   const preview =
     unit === "만원" && Number.isFinite(numeric) && value !== ""
@@ -64,15 +63,6 @@ export function MoneyField({
           inputMode="decimal"
           value={formatGroupedInput(value)}
           placeholder={placeholder}
-          onFocus={(event) => {
-            selectOnMouseUp.current = true
-            event.currentTarget.select()
-          }}
-          onTouchEnd={() => {
-            if (!selectOnMouseUp.current) return
-            selectOnMouseUp.current = false
-            inputRef.current?.select()
-          }}
           onChange={(event) => {
             if (event.nativeEvent.isComposing) return
             const el = event.currentTarget

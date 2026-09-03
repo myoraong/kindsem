@@ -1,3 +1,6 @@
+"use client"
+
+import { useCallback, useState } from "react"
 import Image from "next/image"
 import { MASCOT } from "@/lib/brand"
 import { cn } from "@/lib/utils"
@@ -64,6 +67,14 @@ export function SenaFigure({
   variant?: "full" | "calc"
   priority?: boolean
 }) {
+  const [cheer, setCheer] = useState(false)
+
+  const playCheer = useCallback(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    setCheer(false)
+    requestAnimationFrame(() => setCheer(true))
+  }, [])
+
   return (
     <figure
       className={cn(
@@ -73,11 +84,19 @@ export function SenaFigure({
           : "w-[5.5rem] -translate-x-1 sm:w-[6.75rem] sm:-translate-x-2 md:w-32 md:-translate-x-3 lg:w-[8.75rem]",
       )}
     >
-      <Sena
-        variant={variant}
-        className={variant === "calc" ? "sena-calc" : "sena-bob"}
-        priority={priority}
-      />
+      <div
+        className={cn("sena-stage", cheer && "is-cheer")}
+        onClick={playCheer}
+        onAnimationEnd={(event) => {
+          if (event.animationName === "sena-cheer") setCheer(false)
+        }}
+      >
+        <Sena
+          variant={variant}
+          className={variant === "calc" ? "sena-calc" : "sena-bob"}
+          priority={priority}
+        />
+      </div>
       <figcaption className="mt-1 text-center">
         <span className="block text-[11px] font-semibold tracking-tight text-foreground">
           {MASCOT.name}
