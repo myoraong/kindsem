@@ -8,7 +8,7 @@ export function RealtyCatalog({ from }: { from?: HomeSection }) {
     <div className={CATALOG_GRID}>
       {REALTY_CATEGORIES.map((category) => (
         <Fragment key={category.id}>
-          <h3 className="col-span-full px-2.5 pt-2 pb-0.5 text-xs font-medium text-muted-foreground first:pt-1">
+          <h3 className="col-span-2 px-2.5 pt-2 pb-0.5 text-xs font-medium text-muted-foreground first:pt-1">
             {category.title}
           </h3>
           {realtyItems(category).map((item) => (
