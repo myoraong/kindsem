@@ -123,8 +123,11 @@ export function HomeBrowse() {
             onChange={(event) => setQuery(event.target.value)}
             placeholder="실수령액 계산기, 퇴직금, 복비…"
             autoComplete="off"
+            autoCapitalize="none"
+            autoCorrect="off"
             enterKeyHint="search"
-            className="h-12 rounded-2xl bg-card pr-11 pl-10 text-base md:text-base"
+            inputMode="search"
+            className="h-12 rounded-2xl bg-card pr-11 pl-10 text-base"
           />
           {searching ? (
             <button

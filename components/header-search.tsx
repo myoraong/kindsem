@@ -59,7 +59,7 @@ export function HeaderSearch() {
         aria-expanded={open}
         aria-controls={panelId}
         className={cn(
-          "grid size-9 shrink-0 place-items-center rounded-xl text-foreground hover:bg-muted",
+          "grid size-10 shrink-0 place-items-center rounded-xl text-foreground hover:bg-muted sm:size-9",
           open && "bg-muted",
         )}
         onClick={() => {
@@ -72,7 +72,7 @@ export function HeaderSearch() {
       {open ? (
         <div
           id={panelId}
-          className="absolute top-[calc(100%+0.35rem)] right-0 z-50 w-[min(calc(100vw-1.5rem),20rem)] rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10"
+          className="fixed top-[calc(var(--site-header-h)+0.4rem)] right-3 left-3 z-50 rounded-2xl bg-card p-3 shadow-lg ring-1 ring-foreground/10 sm:absolute sm:top-[calc(100%+0.35rem)] sm:left-auto sm:w-80"
         >
           <form
             role="search"
@@ -95,14 +95,17 @@ export function HeaderSearch() {
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="실수령액, 복비, 취득세…"
                 autoComplete="off"
+                autoCapitalize="none"
+                autoCorrect="off"
                 enterKeyHint="search"
-                className="h-10 rounded-xl pr-10 pl-9 text-base md:text-sm"
+                inputMode="search"
+                className="h-11 rounded-xl pr-10 pl-9 text-base sm:h-10"
               />
               {searching ? (
                 <button
                   type="button"
                   aria-label="검색어 지우기"
-                  className="absolute top-1/2 right-1.5 grid size-7 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                  className="absolute top-1/2 right-1.5 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
                   onClick={() => setQuery("")}
                 >
                   <X className="size-3.5" />
@@ -114,12 +117,12 @@ export function HeaderSearch() {
             {searching ? (list.length ? `검색 ${list.length}개` : "맞는 계산기가 없습니다") : "자주 찾는 계산기"}
           </p>
           {list.length ? (
-            <ul className="mt-1 max-h-[min(16rem,calc(100dvh-8rem))] space-y-0.5 overflow-y-auto">
+            <ul className="mt-1 max-h-[min(16rem,50dvh)] space-y-0.5 overflow-y-auto overscroll-contain">
               {list.map((item) => (
                 <li key={item.slug}>
                   <button
                     type="button"
-                    className="flex w-full rounded-xl px-2.5 py-2 text-left text-sm hover:bg-muted"
+                    className="flex min-h-11 w-full items-center rounded-xl px-2.5 py-2.5 text-left text-sm hover:bg-muted"
                     onClick={() => go(item.slug)}
                   >
                     <span className="font-medium">{calcSeo(item.slug).query}</span>
