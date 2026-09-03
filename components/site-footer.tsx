@@ -20,18 +20,18 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <nav aria-label="계산기" className="grid gap-x-6 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">
+        <nav aria-label="계산기" className="grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
           {groups.map((group) => (
             <div key={group.title}>
-              <p className="mb-2 text-xs font-semibold tracking-wide text-foreground/80 uppercase">
+              <p className="mb-2.5 text-xs font-semibold tracking-wide text-foreground/80 uppercase">
                 {group.title}
               </p>
-              <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:grid-cols-1">
+              <ul className="grid grid-cols-1 gap-y-2">
                 {group.items.map((item) => (
                   <li key={item.slug}>
                     <Link
                       href={`/calc/${item.slug}/`}
-                      className="text-xs leading-snug text-muted-foreground/80 underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                      className="text-sm leading-6 text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline"
                     >
                       {calcSeo(item.slug).query}
                     </Link>

@@ -77,6 +77,10 @@ const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   yield: TrendingUp,
 }
 
+/** 폰은 웹과 같은 한 줄 행. 넓은 화면만 두 칸. */
+export const CATALOG_GRID =
+  "grid grid-cols-1 gap-0.5 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2"
+
 export function CalcDirRow({ item, from }: { item: CalcItem; from?: HomeSection }) {
   const Icon = ICONS[item.slug] ?? Calculator
   return (
@@ -85,14 +89,14 @@ export function CalcDirRow({ item, from }: { item: CalcItem; from?: HomeSection 
       onClick={() => {
         if (from) rememberBackSection(from)
       }}
-      className="group flex min-w-0 items-center gap-2 rounded-xl px-1.5 py-2 hover:bg-accent sm:gap-3 sm:px-2.5"
+      className="group flex min-w-0 items-center gap-3 rounded-xl px-2.5 py-2.5 hover:bg-accent"
     >
-      <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-secondary text-primary">
+      <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-secondary text-primary">
         <Icon className="size-4" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-medium">{calcSeo(item.slug).query}</span>
-        <span className="mt-0.5 hidden truncate text-xs text-muted-foreground sm:block">{item.when}</span>
+        <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.when}</span>
       </span>
     </Link>
   )
