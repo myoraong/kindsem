@@ -11,6 +11,10 @@ import { CORP_BRACKETS, GIFT_BRACKETS, INCOME_BRACKETS, progressiveTax } from ".
 
 export type Homes = "1" | "2" | "3+"
 export type GiftRelation = "spouse" | "ascendant" | "descendant" | "other"
+export type InheritanceHeirs = "spouse-children" | "children" | "spouse-only"
+
+/** 상증세법 제47조 ②. 10년 합산은 1천만 원 이상일 때만. */
+const GIFT_LOOKBACK_FLOOR = 10_000_000
 
 export function holdingSpecialRate(years: number, oneHouseLived: boolean) {
   if (years < 3) return 0
@@ -160,22 +164,56 @@ function propertyTaxOn(standard: number, oneHouse: boolean) {
   return tax
 }
 
-export function calcGiftTax(input: { amount: number; relation: GiftRelation }) {
+export function calcGiftTax(input: { amount: number; relation: GiftRelation; prior?: number }) {
   if (input.amount <= 0) return null
   const deduction = giftDeduction(input.relation)
-  const taxable = Math.max(0, input.amount - deduction)
-  const { tax, rate } = progressiveTax(taxable, GIFT_BRACKETS)
-  return { deduction, taxable, tax, rate }
+  const prior = Math.max(0, input.prior ?? 0)
+  const combined = input.amount + prior
+  const addPrior = prior > 0 && combined >= GIFT_LOOKBACK_FLOOR
+  const base = addPrior ? combined : input.amount
+  const taxable = Math.max(0, base - deduction)
+  const { tax: grossTax, rate } = progressiveTax(taxable, GIFT_BRACKETS)
+  const prevTaxable = addPrior ? Math.max(0, prior - deduction) : 0
+  const prevTax = addPrior ? progressiveTax(prevTaxable, GIFT_BRACKETS).tax : 0
+  const tax = Math.max(0, grossTax - prevTax)
+  return {
+    deduction,
+    taxable,
+    tax,
+    rate,
+    prior: addPrior ? prior : 0,
+    remaining: Math.max(0, deduction - base),
+  }
 }
 
-export function calcInheritance(input: { estate: number; spouse: boolean }) {
+export function calcInheritance(input: {
+  estate: number
+  debts?: number
+  heirs?: InheritanceHeirs
+  spouse?: boolean
+}) {
   if (input.estate <= 0) return null
-  const lump = INHERITANCE.lump
-  const spouseDeduction = input.spouse ? INHERITANCE.spouseMin : 0
-  const deduction = lump + spouseDeduction
-  const taxable = Math.max(0, input.estate - deduction)
+  const heirs: InheritanceHeirs =
+    input.heirs ?? (input.spouse === false ? "children" : "spouse-children")
+  const debts = Math.max(0, input.debts ?? 0)
+  const net = Math.max(0, input.estate - debts)
+  const lump = heirs === "spouse-only" ? 0 : INHERITANCE.lump
+  const basic = heirs === "spouse-only" ? INHERITANCE.basic : 0
+  const spouseDeduction = heirs === "children" ? 0 : INHERITANCE.spouseMin
+  const deduction = lump + basic + spouseDeduction
+  const taxable = Math.max(0, net - deduction)
   const { tax, rate } = progressiveTax(taxable, GIFT_BRACKETS)
-  return { lump, spouseDeduction, deduction, taxable, tax, rate }
+  return {
+    heirs,
+    net,
+    lump,
+    basic,
+    spouseDeduction,
+    deduction,
+    taxable,
+    tax,
+    rate,
+  }
 }
 
 export function calcLicenseTax(input: { value: number; kind: "inherit" | "gift" }) {

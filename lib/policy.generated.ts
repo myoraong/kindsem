@@ -337,7 +337,9 @@ export const CAPITAL_GAINS = {
 
 export const INHERITANCE = {
   "lump": 500000000,
-  "spouseMin": 500000000
+  "spouseMin": 500000000,
+  "spouseMax": 3000000000,
+  "basic": 200000000
 } as const
 
 export const HOLDING = {
@@ -535,3 +537,20 @@ export const IMPORT_CLEARANCE = {
   "listUsUsd": 200,
   "deMinimisUsd": 150
 } as const
+
+export const RETIREMENT = {
+  years: [
+    { maxYears: 5, base: 0, perYear: 1000000, offsetYears: 0 },
+    { maxYears: 10, base: 5000000, perYear: 2000000, offsetYears: 5 },
+    { maxYears: 20, base: 15000000, perYear: 2500000, offsetYears: 10 },
+    { maxYears: Number.POSITIVE_INFINITY, base: 40000000, perYear: 3000000, offsetYears: 20 },
+  ],
+  converted: [
+    { upTo: 8000000, floor: 0, intercept: 0, rate: 1 },
+    { upTo: 70000000, floor: 8000000, intercept: 8000000, rate: 0.6 },
+    { upTo: 100000000, floor: 70000000, intercept: 45200000, rate: 0.55 },
+    { upTo: 300000000, floor: 100000000, intercept: 61700000, rate: 0.45 },
+    { upTo: Number.POSITIVE_INFINITY, floor: 300000000, intercept: 151700000, rate: 0.35 },
+  ],
+} as const
+

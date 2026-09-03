@@ -22,6 +22,14 @@ test("취득세 다음에 살 때 총비용", () => {
   assert.equal(relatedCalculators("acquisition")[0]?.slug, "closing-cost")
 })
 
+test("퇴직금 다음에 퇴직소득세", () => {
+  assert.equal(relatedCalculators("severance")[0]?.slug, "retirement-tax")
+})
+
+test("상속세 다음에 증여세", () => {
+  assert.equal(relatedCalculators("inheritance")[0]?.slug, "gift-tax")
+})
+
 test("사다리 다음에 더치페이", () => {
   assert.equal(relatedCalculators("ladder")[0]?.slug, "dutch")
   assert.equal(relatedCalculators("dutch")[0]?.slug, "ladder")

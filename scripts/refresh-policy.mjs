@@ -46,7 +46,11 @@ import {
   parseLaborMaternity,
   parseEiMaternity,
   parseMaternityCapNotice,
+  parseKoreanWon,
+  parseRetirementDeductions,
 } from "./policy-fields.mjs"
+
+export { parseKoreanWon }
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 const OC = process.env.LAW_OC || "test"
@@ -228,35 +232,6 @@ export async function getJson(url, opts = {}) {
     }
   }
   throw lastError
-}
-
-export function parseKoreanWon(raw) {
-  const s = String(raw).replace(/,/g, "").replace(/원/g, "").replace(/\s/g, "")
-  if (!s) return null
-  if (/^\d+$/.test(s)) return Number(s)
-  let rest = s
-  let total = 0
-  const cheonEok = rest.match(/(\d+)천억/)
-  if (cheonEok) {
-    total += Number(cheonEok[1]) * 100_000_000_000
-    rest = rest.replace(cheonEok[0], "")
-  }
-  const eok = rest.match(/(\d+)억/)
-  if (eok) {
-    total += Number(eok[1]) * 100_000_000
-    rest = rest.replace(eok[0], "")
-  }
-  const cheonMan = rest.match(/(\d+)천만/)
-  if (cheonMan) {
-    total += Number(cheonMan[1]) * 10_000_000
-    rest = rest.replace(cheonMan[0], "")
-  }
-  const man = rest.match(/(\d+)만/)
-  if (man) {
-    total += Number(man[1]) * 10_000
-    rest = rest.replace(man[0], "")
-  }
-  return total || null
 }
 
 function stripTags(html) {
@@ -534,6 +509,53 @@ function tsSlice(rows) {
     .join(",\n")
 }
 
+function reviveRetirement(parsed, prev) {
+  const src = parsed?.years?.length >= 4 && parsed?.converted?.length >= 5 ? parsed : prev
+  if (!src?.years?.length) return null
+  return {
+    years: (src.years || []).map((row) => ({
+      ...row,
+      maxYears: row.maxYears == null ? Number.POSITIVE_INFINITY : row.maxYears,
+    })),
+    converted: (src.converted || []).map((row) => ({
+      ...row,
+      upTo: row.upTo === Number.POSITIVE_INFINITY || row.upTo == null ? Number.POSITIVE_INFINITY : row.upTo,
+    })),
+  }
+}
+
+function tsRetirement(p) {
+  const y = (row) => {
+    const max = row.maxYears === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : row.maxYears
+    return `    { maxYears: ${max}, base: ${row.base}, perYear: ${row.perYear}, offsetYears: ${row.offsetYears} }`
+  }
+  const c = (row) => {
+    const up = row.upTo === Number.POSITIVE_INFINITY ? "Number.POSITIVE_INFINITY" : row.upTo
+    return `    { upTo: ${up}, floor: ${row.floor}, intercept: ${row.intercept}, rate: ${row.rate} }`
+  }
+  return `{
+  years: [
+${p.years.map(y).join(",\n")},
+  ],
+  converted: [
+${p.converted.map(c).join(",\n")},
+  ],
+}`
+}
+
+function jsonRetirement(p) {
+  return {
+    years: p.years.map((row) => ({
+      ...row,
+      maxYears: row.maxYears === Number.POSITIVE_INFINITY ? null : row.maxYears,
+    })),
+    converted: p.converted.map((row) => ({
+      ...row,
+      upTo: row.upTo === Number.POSITIVE_INFINITY ? null : row.upTo,
+    })),
+  }
+}
+
 function reviveParental(parsed, prev) {
   if (parsed?.floor && parsed.general?.length >= 3 && parsed.single?.length >= 3) return parsed
   const fallback = prev?.parentalLeave
@@ -792,7 +814,12 @@ export async function refreshPolicy() {
   const gift19 = findArticle(giftBody.법령.조문.조문단위, "19", "배우자 상속공제")
   const lump = parseWonAfter(articleText(gift21), "5억원") ?? 500_000_000
   const spouseMin = parseWonAfter(articleText(gift19), "5억원") ?? 500_000_000
-  const inheritance = { lump, spouseMin }
+  const spouseMax = parseWonAfter(articleText(gift19), "30억원") ?? prev.inheritance?.spouseMax ?? 3_000_000_000
+  const basic = parseWonAfter(articleText(gift18), "2억원") ?? prev.inheritance?.basic ?? 200_000_000
+  const inheritance = { lump, spouseMin, spouseMax, basic }
+
+  const income48 = findArticle(incomeBody.법령.조문.조문단위, "48", "퇴직소득공제")
+  const retirement = reviveRetirement(parseRetirementDeductions(articleText(income48)), prev.retirement)
 
   const holding8 = findArticle(holdingBody.법령.조문.조문단위, "8", "과세표준")
   const holding8Text = articleText(holding8)
@@ -1137,6 +1164,10 @@ export async function refreshPolicy() {
     if (!listParsed?.listUsd || deMinimisUsd == null) throw new Error("목록통관·소액면세 파싱 실패")
   }
 
+  if (!retirement?.years || retirement.years.length < 4 || retirement.converted.length < 5) {
+    throw new Error("퇴직소득공제 파싱 실패")
+  }
+
   const json = {
     fetchedAt,
     source: "법제처 국가법령정보 공동활용",
@@ -1167,6 +1198,7 @@ export async function refreshPolicy() {
     acquisition,
     capitalGains,
     inheritance,
+    retirement: retirement ? jsonRetirement(retirement) : null,
     holding: {
       ...holding,
       propertyOneHouse: jsonBands(holding.propertyOneHouse),
@@ -1269,6 +1301,8 @@ export const CAPITAL_GAINS = ${JSON.stringify(capitalGains, null, 2)} as const
 
 export const INHERITANCE = ${JSON.stringify(inheritance, null, 2)} as const
 
+export const RETIREMENT = ${tsRetirement(retirement)} as const
+
 export const HOLDING = {
   fairMarket: ${holding.fairMarket},
   oneHouseDeduction: ${holding.oneHouseDeduction},
@@ -1361,6 +1395,7 @@ export const IMPORT_CLEARANCE = ${JSON.stringify(importClearance, null, 2)} as c
   )
   console.log("월세공제", rentCredit.rate, rentCredit.rateLow, "자동차세", carTax.private.map((r) => r.perCc).join("/"))
   console.log("근로", laborStatute.weeklyFullHours, "시간 · 연차", laborStatute.annualLeaveBase, laborStatute.annualLeaveCap, "퇴직", laborStatute.severanceDays)
+  console.log("퇴직소득공제", retirement.years.map((row) => row.perYear).join("/"))
   console.log(
     "자동차취득",
     vehicleAcquisition.passenger,

@@ -140,6 +140,13 @@
 <description>3개월 평균임금 30일분 × 근속연수. 퇴직금 계산기. 퇴직금 평균임금, 법정 퇴직금, 퇴직 정산</description>
 </item>
 <item>
+<title>퇴직소득세 계산기</title>
+<link>https://kindsem.com/calc/retirement-tax/</link>
+<guid isPermaLink="true">https://kindsem.com/calc/retirement-tax/</guid>
+<pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
+<description>근속연수공제와 환산급여. 소득세법 제48조. 퇴직소득세 계산기. 퇴직금 세금, 퇴직소득세, 퇴직금 원천징수</description>
+</item>
+<item>
 <title>육아휴직 급여 계산기</title>
 <link>https://kindsem.com/calc/parental-leave/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/parental-leave/</guid>
@@ -256,14 +263,14 @@
 <link>https://kindsem.com/calc/gift-tax/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/gift-tax/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>관계별 공제와 10~50% 누진. 증여세 계산기. 증여세율, 증여 공제, 주택 증여세</description>
+<description>누구에게 주는지, 10년 합산, 10~50% 누진. 증여세 계산기. 증여세율, 증여 공제, 자녀 증여세</description>
 </item>
 <item>
 <title>상속세 계산기</title>
 <link>https://kindsem.com/calc/inheritance/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/inheritance/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>일괄공제·배우자공제 최소 한도. 상속세 계산기. 상속세 일괄공제, 배우자공제 상속세</description>
+<description>누가 받는지와 재산만 넣으면 일괄·배우자 공제. 상속세 계산기. 상속세 얼마나, 일괄공제, 배우자공제 상속세</description>
 </item>
 <item>
 <title>부담부증여 계산기</title>

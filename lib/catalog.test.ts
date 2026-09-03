@@ -33,6 +33,7 @@ test("미리보기 계산기가 카탈로그에 있다", () => {
   assert.equal(getCalculator("parental-leave")?.title, "육아휴직 급여")
   assert.equal(getCalculator("min-wage")?.title, "최저임금")
   assert.equal(getCalculator("maternity-leave")?.title, "출산전후휴가 급여")
+  assert.equal(getCalculator("retirement-tax")?.title, "퇴직소득세")
   assert.equal(getCalculator("loan-interest")?.title, "대출 이자")
   assert.equal(getCalculator("loan-interest")?.group, "loan")
   assert.equal(getCalculator("car-tax")?.title, "자동차세")

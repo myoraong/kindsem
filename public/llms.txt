@@ -27,6 +27,7 @@
 - 연장수당 계산기: https://kindsem.com/calc/overtime-pay/
 - 연차수당 계산기: https://kindsem.com/calc/annual-leave/
 - 퇴직금 계산기: https://kindsem.com/calc/severance/
+- 퇴직소득세 계산기: https://kindsem.com/calc/retirement-tax/
 - 육아휴직 급여 계산기: https://kindsem.com/calc/parental-leave/
 - 출산전후휴가 급여 계산기: https://kindsem.com/calc/maternity-leave/
 - 연봉 비교 계산기: https://kindsem.com/calc/offer-compare/

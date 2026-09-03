@@ -44,6 +44,7 @@ import {
   parseLaborMaternity,
   parseEiMaternity,
   parseMaternityCapNotice,
+  parseRetirementDeductions,
 } from "./policy-fields.mjs"
 
 const INCOME_GRID = `┌────────┬──────────────────────────┐│1,400만원 이하  │과세표준의 6퍼센트                                  │├────────┼──────────────────────────┤│1,400만원 초과  │84만원 + (1,400만원을 초과하는 금액의 15퍼센트)     ││5,000만원 이하  │                                                    │├────────┼──────────────────────────┤│5,000만원 초과  │624만원 + (5,000만원을 초과하는 금액의 24퍼센트)    ││8,800만원 이하  │                                                    │├────────┼──────────────────────────┤│8,800만원 초과  │1,536만원 + (8,800만원을 초과하는 금액의 35퍼센트)  ││1억5천만원 이하 │                                                    │└────────┴──────────────────────────┘`
@@ -53,6 +54,10 @@ test("parseKoreanWon reads mixed 억·천만 amounts", () => {
   assert.equal(parseKoreanWon("1억5천만원"), 150_000_000)
   assert.equal(parseKoreanWon("6억원"), 600_000_000)
   assert.equal(parseKoreanWon("5천만원. 다만, 미성년자는 2천만원"), 50_000_000)
+  assert.equal(parseKoreanWon("8백만원"), 8_000_000)
+  assert.equal(parseKoreanWon("4천520만원"), 45_200_000)
+  assert.equal(parseKoreanWon("1억5천170만원"), 151_700_000)
+  assert.equal(parseKoreanWon("1천500만원"), 15_000_000)
 })
 
 test("extractProgressive reads 소득세법 제55조 표", () => {
@@ -384,4 +389,21 @@ test("exitCodeForRefreshFailure keeps previous rates on transient HTTP, fails on
   assert.equal(exitCodeForRefreshFailure(parser, { strict: true, hasPrev: true }), 1)
   assert.equal(exitCodeForRefreshFailure(flake, { strict: true, hasPrev: false }), 1)
   assert.equal(exitCodeForRefreshFailure(parser, { strict: false, hasPrev: true }), 0)
+})
+
+test("parseRetirementDeductions reads 소득세법 제48조 표", () => {
+  const text = `┌──────────┬──────────────────┐│ 근속연수           │ 공제액                             │├──────────┼──────────────────┤│5년 이하            │100만원×근속연수                   │├──────────┼──────────────────┤│5년 초과 10년 이하  │500만원+200만원×(근속연수－5년)    │├──────────┼──────────────────┤│10년 초과 20년 이하 │1천500만원+250만원×(근속연수－10년)│├──────────┼──────────────────┤│20년 초과           │4천만원+300만원×(근속연수－20년)   │└──────────┴──────────────────┘
+┌─────────────┬───────────────────┐│환산급여                  │공    제    액                        │├─────────────┼───────────────────┤│8백만원 이하              │환산급여의 100퍼센트                  │├─────────────┼───────────────────┤│8백만원 초과 7천만원 이하 │8백만원+(8백만원 초과분의 60퍼센트)   │├─────────────┼───────────────────┤│7천만원 초과 1억원 이하   │4천520만원+(7천만원 초과분의 55퍼센트)│├─────────────┼───────────────────┤│1억원 초과 3억원 이하     │6천170만원+(1억원 초과분의 45퍼센트)  │├─────────────┼───────────────────┤│3억원 초과                │1억5천170만원+(3억원 초과분의         ││                          │35퍼센트)                             │└─────────────┴───────────────────┘`
+  const parsed = parseRetirementDeductions(text)
+  assert.ok(parsed)
+  assert.equal(parsed.years.length, 4)
+  assert.equal(parsed.years[0].perYear, 1_000_000)
+  assert.equal(parsed.years[1].base, 5_000_000)
+  assert.equal(parsed.years[2].perYear, 2_500_000)
+  assert.equal(parsed.years[3].base, 40_000_000)
+  assert.equal(parsed.converted.length, 5)
+  assert.equal(parsed.converted[0].upTo, 8_000_000)
+  assert.equal(parsed.converted[2].intercept, 45_200_000)
+  assert.equal(parsed.converted[4].intercept, 151_700_000)
+  assert.equal(parsed.converted[4].rate, 0.35)
 })

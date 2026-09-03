@@ -168,6 +168,13 @@ export const CALCULATORS: CalcItem[] = [
     group: "work",
   },
   {
+    slug: "retirement-tax",
+    title: "퇴직소득세",
+    blurb: "근속연수공제와 환산급여. 소득세법 제48조.",
+    when: "퇴직금에서 세금이 얼마나 빠지는지",
+    group: "work",
+  },
+  {
     slug: "parental-leave",
     title: "육아휴직 급여",
     blurb: "고용보험 시행령 상한·하한·지급률.",
@@ -282,14 +289,14 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "gift-tax",
     title: "증여세",
-    blurb: "관계별 공제와 10~50% 누진.",
+    blurb: "누구에게 주는지, 10년 합산, 10~50% 누진.",
     when: "집을 무상으로 줄 때",
     group: "buy",
   },
   {
     slug: "inheritance",
     title: "상속세",
-    blurb: "일괄공제·배우자공제 최소 한도.",
+    blurb: "누가 받는지와 재산만 넣으면 일괄·배우자 공제.",
     when: "상속 재산 가늠",
     group: "buy",
   },

@@ -10,6 +10,7 @@ export const WORK_SLUGS = [
   "overtime-pay",
   "annual-leave",
   "severance",
+  "retirement-tax",
   "parental-leave",
   "maternity-leave",
   "side-job-tax",

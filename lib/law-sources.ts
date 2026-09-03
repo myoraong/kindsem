@@ -52,9 +52,9 @@ export const LAW_SOURCES = {
   ),
   gift: fromPolicy(
     "gift",
-    "상속세 및 증여세법 제26조·제53조",
+    "상속세 및 증여세법 제18조·제19조·제21조·제26조·제47조·제53조",
     "https://www.law.go.kr/법령/상속세 및 증여세법",
-    "10년 합산 공제 한도입니다. 세대생략 할증은 넣지 않았습니다.",
+    "일괄공제 5억, 배우자공제 최소 5억·한도 30억. 증여는 10년 합산 공제 한도입니다. 세대생략 할증은 넣지 않았습니다.",
   ),
   holding: fromPolicy(
     "holding",
@@ -133,6 +133,12 @@ export const LAW_SOURCES = {
     "근로기준법 제74조, 고용보험법 제76조, 출산전후휴가 급여등 상한액 고시",
     "https://www.law.go.kr/법령/고용보험법",
     "단태아 90일·상한 660만, 미숙아 100일, 다태아 120일. 대기업은 최초 유급 일수를 뺀 잔여만 고용보험.",
+  ),
+  retirement: fromPolicy(
+    "income",
+    "소득세법 제48조·제55조",
+    "https://www.law.go.kr/법령/소득세법",
+    "근속연수공제 후 환산급여공제, 기본세율에 근속연수/12. 지방소득세는 그 10%.",
   ),
   importDuty: fromPolicy(
     "expressNotice",

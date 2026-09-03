@@ -79,6 +79,10 @@ export const CALC_SEO: Record<string, CalcSeo> = {
     query: "퇴직금 계산기",
     also: ["퇴직금 평균임금", "법정 퇴직금", "퇴직 정산"],
   },
+  "retirement-tax": {
+    query: "퇴직소득세 계산기",
+    also: ["퇴직금 세금", "퇴직소득세", "퇴직금 원천징수"],
+  },
   "parental-leave": {
     query: "육아휴직 급여 계산기",
     also: ["육아휴직 계산기", "육휴 급여", "고용보험 육아휴직"],
@@ -149,11 +153,11 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   "gift-tax": {
     query: "증여세 계산기",
-    also: ["증여세율", "증여 공제", "주택 증여세"],
+    also: ["증여세율", "증여 공제", "자녀 증여세"],
   },
   inheritance: {
     query: "상속세 계산기",
-    also: ["상속세 일괄공제", "배우자공제 상속세"],
+    also: ["상속세 얼마나", "일괄공제", "배우자공제 상속세"],
   },
   "encumbered-gift": {
     query: "부담부증여 계산기",

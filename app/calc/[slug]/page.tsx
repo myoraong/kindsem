@@ -24,6 +24,7 @@ import { QuickCalc } from "@/components/calc/quick-calc"
 import { RentConvert } from "@/components/calc/rent-convert"
 import { SaleVat } from "@/components/calc/sale-vat"
 import { Severance } from "@/components/calc/severance-calc"
+import { RetirementTax } from "@/components/calc/retirement-tax"
 import { SideJobTax } from "@/components/calc/side-job-tax"
 import { TakeHomeCalc } from "@/components/calc/take-home-calc"
 import {
@@ -117,6 +118,8 @@ function calcBody(slug: string, item: CalcItem): ReactNode {
       return <AnnualLeave item={item} />
     case "severance":
       return <Severance item={item} />
+    case "retirement-tax":
+      return <RetirementTax item={item} />
     case "parental-leave":
       return <ParentalLeave item={item} />
     case "maternity-leave":

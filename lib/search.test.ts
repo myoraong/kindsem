@@ -37,6 +37,8 @@ test("별칭으로 복비·DSR을 찾는다", () => {
 test("계산기 검색어로도 찾는다", () => {
   assert.equal(searchCalculators("실수령액 계산기")[0]?.slug, "take-home")
   assert.equal(searchCalculators("퇴직금 계산기")[0]?.slug, "severance")
+  assert.equal(searchCalculators("퇴직소득세")[0]?.slug, "retirement-tax")
+  assert.equal(searchCalculators("상속세")[0]?.slug, "inheritance")
   assert.equal(searchCalculators("주휴수당 계산기")[0]?.slug, "weekly-holiday")
   assert.equal(searchCalculators("중개수수료 계산기")[0]?.slug, "brokerage")
   assert.equal(searchCalculators("취득세 계산기").some((row) => row.slug === "acquisition"), true)

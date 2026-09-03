@@ -16,10 +16,20 @@ export function parseKoreanWon(raw) {
     total += Number(eok[1]) * 100_000_000
     rest = rest.replace(eok[0], "")
   }
+  const cheonMix = rest.match(/(\d+)천(\d+)만/)
+  if (cheonMix) {
+    total += (Number(cheonMix[1]) * 1000 + Number(cheonMix[2])) * 10_000
+    rest = rest.replace(cheonMix[0], "")
+  }
   const cheonMan = rest.match(/(\d+)천만/)
   if (cheonMan) {
     total += Number(cheonMan[1]) * 10_000_000
     rest = rest.replace(cheonMan[0], "")
+  }
+  const baekMan = rest.match(/(\d+)백만/)
+  if (baekMan) {
+    total += Number(baekMan[1]) * 1_000_000
+    rest = rest.replace(baekMan[0], "")
   }
   const man = rest.match(/(\d+)만/)
   if (man) {
@@ -728,6 +738,83 @@ function noticeWon(raw) {
   const s = String(raw).replace(/\s/g, "")
   if (s.includes("만원")) return parseKoreanWon(s)
   return parseLawWon(s)
+}
+
+/** 소득세법 제48조 근속연수공제·환산급여공제 표 */
+export function parseRetirementDeductions(text) {
+  const t = stripTags(text).replace(/\s+/g, " ")
+  const years = []
+  const ySimple = t.match(/(\d+)년 이하\s*│\s*([0-9,천백만억]+)원\s*×\s*근속연수/)
+  if (ySimple) {
+    const perYear = parseKoreanWon(ySimple[2])
+    if (perYear) {
+      years.push({ maxYears: Number(ySimple[1]), base: 0, perYear, offsetYears: 0 })
+    }
+  }
+  for (const row of t.matchAll(
+    /(\d+)년 초과\s*(\d+)년 이하\s*│\s*([0-9,천백만억]+)원\s*\+\s*([0-9,천백만억]+)원\s*×/g,
+  )) {
+    const base = parseKoreanWon(row[3])
+    const perYear = parseKoreanWon(row[4])
+    if (!base || !perYear) continue
+    years.push({
+      maxYears: Number(row[2]),
+      base,
+      perYear,
+      offsetYears: Number(row[1]),
+    })
+  }
+  const yOver = t.match(
+    /(\d+)년 초과\s*│\s*([0-9,천백만억]+)원\s*\+\s*([0-9,천백만억]+)원\s*×\s*\(\s*근속연수/,
+  )
+  if (yOver) {
+    const base = parseKoreanWon(yOver[2])
+    const perYear = parseKoreanWon(yOver[3])
+    if (base && perYear) {
+      years.push({
+        maxYears: Number.POSITIVE_INFINITY,
+        base,
+        perYear,
+        offsetYears: Number(yOver[1]),
+      })
+    }
+  }
+
+  const converted = []
+  const cFull = t.match(/([0-9,천백만억]+원)\s*이하\s*│\s*환산급여의\s*(\d+)\s*퍼센트/)
+  if (cFull) {
+    const upTo = parseKoreanWon(cFull[1])
+    if (upTo) {
+      converted.push({ upTo, floor: 0, intercept: 0, rate: Number(cFull[2]) / 100 })
+    }
+  }
+  for (const row of t.matchAll(
+    /([0-9,천백만억]+원)\s*초과\s*([0-9,천백만억]+원)\s*이하\s*│\s*([0-9,천백만억]+원)\s*\+\s*\([^)]*?(\d+)\s*퍼센트\)/g,
+  )) {
+    const floor = parseKoreanWon(row[1])
+    const upTo = parseKoreanWon(row[2])
+    const intercept = parseKoreanWon(row[3])
+    if (!floor || !upTo || !intercept) continue
+    converted.push({ upTo, floor, intercept, rate: Number(row[4]) / 100 })
+  }
+  const cOver = t.match(
+    /([0-9,천백만억]+원)\s*초과\s*│\s*([0-9,천백만억]+원)\s*\+\s*\([^)]*?(\d+)\s*퍼센트/s,
+  )
+  if (cOver) {
+    const floor = parseKoreanWon(cOver[1])
+    const intercept = parseKoreanWon(cOver[2])
+    if (floor && intercept) {
+      converted.push({
+        upTo: Number.POSITIVE_INFINITY,
+        floor,
+        intercept,
+        rate: Number(cOver[3]) / 100,
+      })
+    }
+  }
+
+  if (years.length < 4 || converted.length < 5) return null
+  return { years, converted }
 }
 
 export function parseMaternityCapNotice(text) {

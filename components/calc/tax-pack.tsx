@@ -1,14 +1,17 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
+import { Hint } from "@/components/calc/hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { LAW_SOURCES } from "@/lib/law-sources"
-import { formatKoreanUnit, formatPercent, formatWon, manwonToWon } from "@/lib/format"
+import { formatKoreanUnit, formatPercent, formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { GIFT_DEDUCTIONS, INHERITANCE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
 import {
@@ -21,6 +24,7 @@ import {
   calcLicenseTax,
   type GiftRelation,
   type Homes,
+  type InheritanceHeirs,
 } from "@/lib/realty-tax"
 
 export function CapitalGainsCalc({ item }: { item: CalcItem }) {
@@ -205,51 +209,108 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
 
 export function GiftTaxCalc({ item }: { item: CalcItem }) {
   const [amount, setAmount] = useState("20000")
+  const [prior, setPrior] = useState("")
   const [relation, setRelation] = useState<GiftRelation>("descendant")
 
   const result = useMemo(() => {
     return calcGiftTax({
       amount: manwonToWon(Number(amount) || 0),
+      prior: manwonToWon(Number(prior) || 0),
       relation,
     })
-  }, [amount, relation])
+  }, [amount, prior, relation])
+
+  const deductionLabel =
+    relation === "spouse"
+      ? formatKoreanUnit(GIFT_DEDUCTIONS.spouse)
+      : relation === "other"
+        ? formatKoreanUnit(GIFT_DEDUCTIONS.other)
+        : formatKoreanUnit(GIFT_DEDUCTIONS.descendant)
 
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "누구에게 주는 건가요?",
+              a: `공제는 받는 사람 기준입니다. 배우자 ${formatKoreanUnit(GIFT_DEDUCTIONS.spouse)}, 자녀·손주·부모는 ${formatKoreanUnit(GIFT_DEDUCTIONS.descendant)}, 그 외 친족은 ${formatKoreanUnit(GIFT_DEDUCTIONS.other)}입니다.`,
+            },
+            {
+              q: "예전에 준 돈이 있으면요?",
+              a: "같은 사람(직계존속이면 그 배우자 포함)에게 10년 안에 준 증여를 합칩니다. 합친 금액이 1천만 원 이상이면 이번 세금에서 이미 낸 세액을 뺍니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 증여세"
           amount={result?.tax ?? null}
-          caption={result ? `세율 ${formatPercent(result.rate * 100, 0)}` : undefined}
+          headline={result && result.tax === 0 ? "세금 없음" : undefined}
+          caption={
+            result
+              ? result.tax === 0
+                ? result.remaining > 0
+                  ? `공제 ${formatKoreanUnit(result.remaining)} 남음`
+                  : `공제 한도 ${deductionLabel}`
+                : `세율 ${formatPercent(result.rate * 100, 0)}`
+              : undefined
+          }
+          copyLine={
+            result
+              ? kakaoCopyLine("증여세", result.tax === 0 ? "세금 없음" : formatWon(result.tax), deductionLabel)
+              : undefined
+          }
           rows={
             result
               ? [
-                  { label: "공제", value: formatWon(result.deduction) },
+                  { label: "공제 한도", value: formatWon(result.deduction) },
+                  ...(result.prior ? [{ label: "10년 합산", value: formatWon(result.prior) }] : []),
                   { label: "과세표준", value: formatWon(result.taxable) },
+                  { label: "산출세액", value: formatWon(result.tax) },
                 ]
               : []
           }
-          empty="증여재산만 넣으면 됩니다."
+          empty="누구에게 주는지와 금액만 넣으면 됩니다."
         />
       }
     >
       <div className="space-y-5">
         <ChoiceGroup
-          label="수증자"
+          label="누구에게 주나요?"
           value={relation}
           onChange={setRelation}
           options={[
+            { value: "descendant", label: "자녀·손주" },
             { value: "spouse", label: "배우자" },
-            { value: "ascendant", label: "직계존속" },
-            { value: "descendant", label: "직계비속" },
+            { value: "ascendant", label: "부모·조부모" },
             { value: "other", label: "그 외" },
           ]}
         />
-        <MoneyField id="gift" label="증여재산" value={amount} onChange={setAmount} />
-        <p className="text-sm leading-6 text-muted-foreground">
-          배우자 {formatKoreanUnit(GIFT_DEDUCTIONS.spouse)}, 직계 {formatKoreanUnit(GIFT_DEDUCTIONS.descendant)}, 그 외 친족 {formatKoreanUnit(GIFT_DEDUCTIONS.other)} 공제입니다. 10년 합산은 넣지 않았습니다.
-        </p>
+        <div className="space-y-2">
+          <MoneyField id="gift" label="이번 증여" value={amount} onChange={setAmount} />
+          <AmountChips
+            options={[
+              { label: "5천만", value: "5000" },
+              { label: "1억", value: "10000" },
+              { label: "3억", value: "30000" },
+              { label: "6억", value: "60000" },
+            ]}
+            onPick={setAmount}
+          />
+        </div>
+        <MoneyField
+          id="prior"
+          label="10년 내 같은 사람 증여"
+          hint="없으면 비워 두세요"
+          value={prior}
+          onChange={setPrior}
+        />
+        <Hint>
+          공제 한도는 {deductionLabel}입니다. 미성년 직계존속 2천만 원, 세대생략 할증은 넣지 않았습니다.
+        </Hint>
         <LawNote lines={[LAW_SOURCES.gift]} />
       </div>
     </CalcShell>
@@ -257,62 +318,115 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
 }
 
 export function InheritanceCalc({ item }: { item: CalcItem }) {
-  const [estate, setEstate] = useState("80000")
-  const [spouse, setSpouse] = useState<"yes" | "no">("yes")
+  const [estate, setEstate] = useState("150000")
+  const [debts, setDebts] = useState("")
+  const [heirs, setHeirs] = useState<InheritanceHeirs>("spouse-children")
 
   const result = useMemo(() => {
     return calcInheritance({
       estate: manwonToWon(Number(estate) || 0),
-      spouse: spouse === "yes",
+      debts: manwonToWon(Number(debts) || 0),
+      heirs,
     })
-  }, [estate, spouse])
+  }, [estate, debts, heirs])
 
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "얼마까지 세금이 없나요?",
+              a: `배우자·자녀가 함께 받으면 일괄공제 ${formatKoreanUnit(INHERITANCE.lump)}과 배우자공제 최소 ${formatKoreanUnit(INHERITANCE.spouseMin)}을 더해 보통 ${formatKoreanUnit(INHERITANCE.lump + INHERITANCE.spouseMin)}까지는 없습니다. 자녀만 받으면 일괄공제 ${formatKoreanUnit(INHERITANCE.lump)}입니다. 배우자만 받으면 일괄공제를 쓰지 못하고 기초공제 ${formatKoreanUnit(INHERITANCE.basic)}과 배우자공제 최소를 더합니다.`,
+            },
+            {
+              q: "집값만 넣으면 되나요?",
+              a: "상속재산은 부동산·예금·보험 등을 더한 가액입니다. 대출 등 빚이 있으면 빼는 칸에 넣습니다. 감정가·사전증여 합산·금융재산공제는 넣지 않았습니다.",
+            },
+            {
+              q: "배우자가 더 받으면요?",
+              a: `여기서는 배우자공제 최소 ${formatKoreanUnit(INHERITANCE.spouseMin)}만 넣습니다. 실제로 더 받으면 한도 ${formatKoreanUnit(INHERITANCE.spouseMax)}까지 세금이 더 줄어들 수 있습니다. 신고세액이 아닙니다.`,
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
-          title="적용 공제"
-          amount={result?.deduction ?? null}
+          title="예상 상속세"
+          amount={result?.tax ?? null}
+          headline={result && result.tax === 0 ? "세금 없음" : undefined}
           caption={
             result
-              ? result.spouseDeduction
-                ? "일괄공제 + 배우자공제 최소"
-                : "일괄공제"
+              ? result.tax === 0
+                ? `${formatKoreanUnit(result.deduction)}까지는 공제`
+                : `세율 ${formatPercent(result.rate * 100, 0)}`
+              : undefined
+          }
+          copyLine={
+            result
+              ? kakaoCopyLine(
+                  "상속세",
+                  result.tax === 0 ? "세금 없음" : formatWon(result.tax),
+                  `${formatKoreanUnit(result.deduction)} 공제`,
+                )
               : undefined
           }
           rows={
             result
               ? [
-                  { label: "일괄공제", value: formatWon(result.lump) },
+                  { label: "순상속재산", value: formatWon(result.net) },
+                  ...(result.lump ? [{ label: "일괄공제", value: formatWon(result.lump) }] : []),
+                  ...(result.basic ? [{ label: "기초공제", value: formatWon(result.basic) }] : []),
                   ...(result.spouseDeduction
                     ? [{ label: "배우자공제(최소)", value: formatWon(result.spouseDeduction) }]
                     : []),
-                  { label: "공제 후 과세표준", value: formatWon(result.taxable) },
-                  { label: "위 공제만 적용한 산출세액", value: formatWon(result.tax) },
+                  { label: "이 금액까지 0원", value: formatWon(result.deduction) },
+                  { label: "과세표준", value: formatWon(result.taxable) },
+                  { label: "산출세액", value: formatWon(result.tax) },
                 ]
               : []
           }
-          empty="상속재산만 넣으면 법정 공제 한도가 나옵니다."
+          empty="누가 받는지와 재산만 넣으면 됩니다."
         />
       }
     >
       <div className="space-y-5">
         <ChoiceGroup
-          label="배우자"
-          value={spouse}
-          onChange={setSpouse}
+          label="누가 받나요?"
+          value={heirs}
+          onChange={setHeirs}
           options={[
-            { value: "yes", label: "있음" },
-            { value: "no", label: "없음" },
+            { value: "spouse-children", label: "배우자·자녀" },
+            { value: "children", label: "자녀만" },
+            { value: "spouse-only", label: "배우자만" },
           ]}
         />
-        <MoneyField id="est" label="상속재산" value={estate} onChange={setEstate} />
-        <p className="text-sm leading-6 text-muted-foreground">
-          상증세법 일괄공제 {formatKoreanUnit(INHERITANCE.lump)}, 배우자 있으면 배우자공제 최소{" "}
-          {formatKoreanUnit(INHERITANCE.spouseMin)}입니다. 채무·감정가·그 외 공제는 넣지 않았습니다.
-          위 산출세액은 신고세액이 아닙니다.
-        </p>
+        <div className="space-y-2">
+          <MoneyField id="est" label="상속재산" value={estate} onChange={setEstate} />
+          <AmountChips
+            options={[
+              { label: "5억", value: "50000" },
+              { label: "10억", value: "100000" },
+              { label: "15억", value: "150000" },
+              { label: "20억", value: "200000" },
+              { label: "30억", value: "300000" },
+            ]}
+            onPick={setEstate}
+          />
+        </div>
+        <MoneyField
+          id="debt"
+          label="빚·대출"
+          hint="없으면 비워 두세요"
+          value={debts}
+          onChange={setDebts}
+        />
+        <Hint>
+          집·예금·보험을 더한 가액을 넣으면 됩니다. 배우자·자녀면 보통{" "}
+          {formatKoreanUnit(INHERITANCE.lump + INHERITANCE.spouseMin)}까지, 자녀만이면{" "}
+          {formatKoreanUnit(INHERITANCE.lump)}까지는 세금이 없습니다. 위 산출세액은 신고세액이 아닙니다.
+        </Hint>
         <LawNote lines={[LAW_SOURCES.gift]} />
       </div>
     </CalcShell>
@@ -412,8 +526,8 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
           value={relation}
           onChange={setRelation}
           options={[
+            { value: "descendant", label: "자녀·손주" },
             { value: "spouse", label: "배우자" },
-            { value: "descendant", label: "직계비속" },
             { value: "other", label: "그 외" },
           ]}
         />
