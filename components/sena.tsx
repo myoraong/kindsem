@@ -65,7 +65,12 @@ export function SenaFigure({
   priority?: boolean
 }) {
   return (
-    <figure className="w-[5.5rem] shrink-0 -translate-x-1 bg-transparent sm:w-[6.75rem] sm:-translate-x-2 md:w-32 md:-translate-x-3 lg:w-[8.75rem]">
+    <figure
+      className={cn(
+        "w-[5.5rem] shrink-0 bg-transparent sm:w-[6.75rem] md:w-32 lg:w-[8.75rem]",
+        variant === "full" && "-translate-x-1 sm:-translate-x-2 md:-translate-x-3",
+      )}
+    >
       <Sena
         variant={variant}
         className={variant === "calc" ? "sena-calc" : "sena-bob"}

@@ -57,7 +57,7 @@ export function CalcShell({
         <ArrowLeft className="size-4" />
         {backLabel}
       </Link>
-      <div className="mb-4 flex items-start gap-3 pr-1 sm:gap-4 sm:pr-6 md:pr-10 lg:pr-14">
+      <div className="mb-4 flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <p className="text-sm text-primary">
             {realty
