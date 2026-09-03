@@ -57,8 +57,8 @@ export function CalcShell({
         <ArrowLeft className="size-4" />
         {backLabel}
       </Link>
-      <div className="mb-6 flex items-center justify-between gap-4 sm:gap-6">
-        <div className="min-w-0 flex-1 self-center">
+      <div className="mb-6 flex items-center gap-3 sm:gap-5">
+        <div className="min-w-0 flex-1 sm:flex-none sm:max-w-lg">
           <p className="text-sm text-primary">
             {realty
               ? `${realty.title} · ${item.when}`
