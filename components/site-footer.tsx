@@ -1,4 +1,6 @@
 import Link from "next/link"
+import { Sena } from "@/components/sena"
+import { MASCOT } from "@/lib/brand"
 import { calcSeo } from "@/lib/seo"
 import { calcFooterGroups } from "@/lib/site-urls"
 import { CONTACT_EMAIL } from "@/lib/site"
@@ -8,9 +10,14 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-border/70">
       <div className="mx-auto max-w-5xl px-4 py-10 text-sm text-muted-foreground">
-        <div className="mb-6">
-          <p className="text-[13px] font-semibold text-foreground">Kindsem 카인드셈</p>
-          <p className="mt-1 text-xs">생활·급여·부동산 계산기</p>
+        <div className="mb-6 flex items-center gap-3">
+          <Sena variant="icon" className="size-11 rounded-2xl ring-1 ring-primary/25" />
+          <div>
+            <p className="text-[13px] font-semibold text-foreground">Kindsem 카인드셈</p>
+            <p className="mt-0.5 text-xs">
+              {MASCOT.name} · {MASCOT.meaning}
+            </p>
+          </div>
         </div>
 
         <nav aria-label="계산기" className="grid gap-x-6 gap-y-7 sm:grid-cols-2 lg:grid-cols-4">

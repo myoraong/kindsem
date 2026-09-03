@@ -6,8 +6,8 @@ import { Sena } from "@/components/sena"
 export function BrandMark() {
   return (
     <span className="flex items-center gap-2 sm:gap-2.5">
-      <span className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-card ring-1 ring-primary sm:size-9">
-        <Sena variant="face" className="size-[2.15rem] object-contain sm:size-10" priority />
+      <span className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-card ring-1 ring-primary/40 sm:size-9">
+        <Sena variant="face" className="size-[2.35rem] object-cover sm:size-11" priority />
       </span>
       <span className="flex min-w-0 flex-col justify-center leading-none">
         <span className="flex items-baseline gap-1.5">

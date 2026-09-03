@@ -7,17 +7,30 @@ export function Sena({
   className,
   priority = false,
 }: {
-  variant?: "full" | "face"
+  variant?: "full" | "face" | "icon"
   className?: string
   priority?: boolean
 }) {
+  if (variant === "icon") {
+    return (
+      <Image
+        src="/kindsem-sena-icon.png"
+        alt={MASCOT.name}
+        width={512}
+        height={512}
+        className={cn("size-9 object-contain", className)}
+        priority={priority}
+      />
+    )
+  }
+
   if (variant === "face") {
     return (
       <Image
         src="/kindsem-sena-face.png"
         alt={MASCOT.name}
-        width={320}
-        height={320}
+        width={384}
+        height={384}
         className={cn("size-11 object-contain", className)}
         priority={priority}
       />
@@ -28,8 +41,8 @@ export function Sena({
     <Image
       src="/kindsem-sena.png"
       alt={MASCOT.alt}
-      width={614}
-      height={720}
+      width={640}
+      height={960}
       className={cn("h-auto w-full", className)}
       priority={priority}
     />

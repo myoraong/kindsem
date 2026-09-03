@@ -4,7 +4,6 @@ import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { RelatedCalcs } from "@/components/calc/related-calcs"
-import { Sena } from "@/components/sena"
 import type { CalcItem } from "@/lib/catalog"
 import { calcSeo } from "@/lib/seo"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
@@ -76,9 +75,7 @@ export function CalcShell({
             </p>
           ) : null}
         </div>
-        {/* 데스크톱 제목 옆 작은 칸. 모바일은 접어 입력칸이 위에 오게 합니다. */}
         <AdSenseInPage size="compact" />
-        <Sena className="hidden w-12 shrink-0 sm:block md:hidden" />
       </div>
       {guide ? (
         <div className="mb-5 flex gap-2">
