@@ -1,15 +1,9 @@
 import { RealtyCatalog } from "@/components/realty-catalog"
 import { JsonLd } from "@/components/json-ld"
 import { CALCULATORS } from "@/lib/catalog"
-import { calcSeo, calcUrl } from "@/lib/seo"
-import type { Metadata } from "next"
+import { REALTY_METADATA, calcSeo, calcUrl } from "@/lib/seo"
 
-export const metadata: Metadata = {
-  title: "부동산 계산기",
-  description:
-    "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
-  alternates: { canonical: "/realty/", languages: { "ko-KR": "/realty/" } },
-}
+export const metadata = REALTY_METADATA
 
 function realtyJsonLd() {
   const items = CALCULATORS.filter((item) => item.group !== "today" && item.group !== "work")

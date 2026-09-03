@@ -10,7 +10,9 @@ const HOT = new Set([
   "/calc/severance/",
   "/calc/brokerage/",
   "/calc/acquisition/",
+  "/calc/capital-gains/",
   "/calc/weekly-holiday/",
+  "/calc/dsr/",
 ])
 
 export default function sitemap(): MetadataRoute.Sitemap {

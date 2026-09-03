@@ -195,6 +195,17 @@ export function calcSearchText(slug: string) {
   return [seo.query, ...seo.also].join(" ")
 }
 
+function pageOpenGraph(title: string, description: string, url: string) {
+  return {
+    title,
+    description,
+    url,
+    locale: "ko_KR" as const,
+    type: "website" as const,
+    siteName: SITE_NAME,
+  }
+}
+
 export function calcMetadata(item: CalcItem): Metadata {
   const seo = calcSeo(item.slug)
   const title = seo.query
@@ -209,13 +220,7 @@ export function calcMetadata(item: CalcItem): Metadata {
       canonical: url,
       languages: { "ko-KR": url },
     },
-    openGraph: {
-      title: `${title} · ${SITE_NAME}`,
-      description,
-      url,
-      locale: "ko_KR",
-      type: "website",
-    },
+    openGraph: pageOpenGraph(`${title} · ${SITE_NAME}`, description, url),
     twitter: {
       card: "summary",
       title,
@@ -283,8 +288,7 @@ export function homeJsonLd() {
       alternateName: ["Kindsem", "카인드셈"],
       url: SITE_URL,
       inLanguage: "ko",
-      description:
-        "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 하루 두 번 법제처에서 세율을 다시 읽고, 표에 없는 공제는 넣지 않습니다.",
+      description: HOME_DESCRIPTION,
       publisher: {
         "@type": "Organization",
         name: SITE_NAME,
@@ -307,18 +311,55 @@ export function homeJsonLd() {
   ]
 }
 
+const HOME_TITLE = `생활·급여·부동산 계산기 · ${SITE_NAME}`
+const HOME_DESCRIPTION =
+  "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 하루 두 번 법제처에서 세율을 다시 읽고, 표에 없는 공제는 넣지 않습니다."
+
 export const HOME_METADATA: Metadata = {
-  title: { absolute: `생활·급여·부동산 계산기 · ${SITE_NAME}` },
-  description:
-    "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 하루 두 번 법제처에서 세율을 다시 읽고, 표에 없는 공제는 넣지 않습니다.",
-  keywords: ["카인드셈", "Kindsem", "실수령액 계산기", "퇴직금 계산기", "중개수수료 계산기", "취득세 계산기", "양도세 계산기", "주휴수당 계산기"],
+  title: { absolute: HOME_TITLE },
+  description: HOME_DESCRIPTION,
+  keywords: [
+    "카인드셈",
+    "Kindsem",
+    "실수령액 계산기",
+    "세후 월급 계산기",
+    "퇴직금 계산기",
+    "주휴수당 계산기",
+    "중개수수료 계산기",
+    "복비 계산기",
+    "취득세 계산기",
+    "양도세 계산기",
+    "자동차세 계산기",
+  ],
   robots: { index: true, follow: true },
   alternates: { canonical: "/", languages: { "ko-KR": "/" } },
+  openGraph: pageOpenGraph(HOME_TITLE, HOME_DESCRIPTION, "/"),
 }
 
 export const CALC_INDEX_METADATA: Metadata = {
   title: "계산기 목록",
   description:
     "카인드셈 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
-  alternates: { canonical: "/calc/" },
+  keywords: ["계산기 모음", "실수령액 계산기", "취득세 계산기", "카인드셈"],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/calc/", languages: { "ko-KR": "/calc/" } },
+  openGraph: pageOpenGraph(
+    `계산기 목록 · ${SITE_NAME}`,
+    "카인드셈 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
+    "/calc/",
+  ),
+}
+
+export const REALTY_METADATA: Metadata = {
+  title: "부동산 계산기",
+  description:
+    "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
+  keywords: ["부동산 계산기", "취득세 계산기", "양도세 계산기", "중개수수료 계산기", "DSR 계산기", "카인드셈"],
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/realty/", languages: { "ko-KR": "/realty/" } },
+  openGraph: pageOpenGraph(
+    `부동산 계산기 · ${SITE_NAME}`,
+    "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
+    "/realty/",
+  ),
 }

@@ -3,6 +3,8 @@ import test from "node:test"
 import { CALCULATORS } from "./catalog.ts"
 import {
   CALC_SEO,
+  HOME_METADATA,
+  REALTY_METADATA,
   calcDescription,
   calcJsonLd,
   calcMetadata,
@@ -71,4 +73,19 @@ test("홈 JSON-LD에 카인드셈 별칭이 있다", () => {
   const [site] = homeJsonLd()
   assert.equal(site["@type"], "WebSite")
   assert.deepEqual(site.alternateName, ["Kindsem", "카인드셈"])
+})
+
+test("홈·부동산 Open Graph에 사이트명과 설명이 있다", () => {
+  assert.equal(HOME_METADATA.openGraph?.siteName, "Kindsem 카인드셈")
+  assert.match(String(HOME_METADATA.openGraph?.description), /실수령액/)
+  assert.equal(REALTY_METADATA.openGraph?.url, "/realty/")
+  assert.match(String(REALTY_METADATA.keywords), /취득세 계산기/)
+})
+
+test("계산기 Open Graph에 사이트명이 있다", () => {
+  const item = CALCULATORS.find((row) => row.slug === "take-home")
+  assert.ok(item)
+  const meta = calcMetadata(item)
+  assert.equal(meta.openGraph?.siteName, "Kindsem 카인드셈")
+  assert.equal(meta.openGraph?.url, "/calc/take-home/")
 })

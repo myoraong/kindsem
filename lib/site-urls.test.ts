@@ -22,6 +22,13 @@ test("IndexNow 키가 사이트 루트에 있다", () => {
   assert.equal(body, INDEXNOW_KEY)
 })
 
+test("robots.txt가 네이버 Yeti를 허용하고 사이트맵을 가리킨다", () => {
+  const body = readFileSync(join(process.cwd(), "public", "robots.txt"), "utf8")
+  assert.match(body, /User-agent: Yeti/)
+  assert.match(body, /Sitemap: https:\/\/kindsem\.com\/sitemap\.xml/)
+  assert.doesNotMatch(body, /Disallow: \//)
+})
+
 test("llms.txt에 계산기 URL이 있다", () => {
   const body = readFileSync(join(process.cwd(), "public", "llms.txt"), "utf8")
   for (const item of CALCULATORS) {
