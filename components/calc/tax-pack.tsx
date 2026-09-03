@@ -349,8 +349,8 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
         <FaqList
           items={[
             {
-              q: "며느리·사위도 공제되나요?",
-              a: `자녀 공제 ${formatKoreanUnit(INHERITANCE.child)}은 피상속인의 자녀만입니다. 며느리·사위는 자녀도, 동거가족(직계존비속·형제자매)도 아닙니다. 자녀가 먼저 돌아가셔 그 배우자가 대습상속하면 상속인이 되므로, 65세 이상이면 아래 경로공제에 넣으면 됩니다. 장애인 공제는 기대여명 고시가 필요해 넣지 않았습니다.`,
+              q: "자녀가 결혼하면 공제가 늘어나나요?",
+              a: `아닙니다. 상속세 자녀 공제는 혼인 여부와 관계없이 1인 ${formatKoreanUnit(INHERITANCE.child)}입니다. 며느리·사위는 자녀 공제 대상이 아니고, 동거가족(직계존비속·형제자매)에도 들어가지 않습니다. 연말정산 부양가족 공제와는 다릅니다. 자녀가 먼저 돌아가셔 그 배우자가 대습상속하면 상속인이 되므로, 65세 이상이면 경로공제만 넣을 수 있습니다.`,
             },
             {
               q: "얼마까지 세금이 없나요?",
@@ -458,7 +458,8 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
               }))}
             />
             <Hint>
-              피상속인의 자녀만 넣습니다. 며느리·사위는 자녀 공제 대상이 아닙니다.
+              피상속인의 자녀만 넣습니다. 결혼 여부와 관계없이 1인{" "}
+              {formatKoreanUnit(INHERITANCE.child)}이고, 며느리·사위는 넣지 않습니다.
             </Hint>
           </div>
         ) : null}
