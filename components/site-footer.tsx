@@ -19,7 +19,7 @@ export function SiteFooter() {
               <p className="mb-2 text-xs font-semibold tracking-wide text-foreground/80 uppercase">
                 {group.title}
               </p>
-              <ul className="space-y-1.5">
+              <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:grid-cols-1">
                 {group.items.map((item) => (
                   <li key={item.slug}>
                     <Link

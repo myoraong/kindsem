@@ -165,7 +165,7 @@ export function HomeBrowse() {
           {results.length ? (
             <>
               <h2 className="mb-3 text-lg font-semibold">검색 {results.length}개</h2>
-              <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8">
                 {results.map((item) => (
                   <CalcDirRow key={item.slug} item={item} from={section} />
                 ))}
@@ -188,7 +188,7 @@ export function HomeBrowse() {
           {section === "all" || section === "today" ? (
             <section id="today" className={sectionClass}>
               <CatalogSectionHeading {...CATALOG_HEADINGS.today} />
-              <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8">
                 {CALCULATORS.filter((item) => item.group === "today").map((item) => (
                   <CalcDirRow key={item.slug} item={item} from={section} />
                 ))}
@@ -199,7 +199,7 @@ export function HomeBrowse() {
           {section === "all" || section === "work" ? (
             <section id="work" className={sectionClass}>
               <CatalogSectionHeading {...CATALOG_HEADINGS.work} />
-              <div className="grid gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8 sm:grid-cols-2">
+              <div className="grid grid-cols-2 gap-1 rounded-2xl bg-card p-2 ring-1 ring-foreground/8">
                 {CALCULATORS.filter((item) => item.group === "work").map((item) => (
                   <CalcDirRow key={item.slug} item={item} from={section} />
                 ))}
