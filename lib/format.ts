@@ -14,6 +14,20 @@ export function formatGroupedInput(raw: string) {
   return `${negative ? "-" : ""}${grouped}${withDot}`
 }
 
+/** 천 단위 쉼표를 넣은 뒤, 숫자 n개 다음에 커서가 오도록 위치를 셉니다. */
+export function caretIndexAfterGroup(raw: string, digitsBeforeCaret: number) {
+  const formatted = formatGroupedInput(raw)
+  if (digitsBeforeCaret <= 0) return 0
+  let seen = 0
+  for (let i = 0; i < formatted.length; i++) {
+    if (/[\d.]/.test(formatted[i] ?? "")) {
+      seen += 1
+      if (seen === digitsBeforeCaret) return i + 1
+    }
+  }
+  return formatted.length
+}
+
 export function parseAmount(raw: string): number | null {
   const cleaned = raw.replace(/[,\s원만원억]/g, "").trim()
   if (!cleaned) return null
