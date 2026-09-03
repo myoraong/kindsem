@@ -1,3 +1,4 @@
+import { JsonLd } from "@/components/json-ld"
 import { faqJsonLd } from "@/lib/seo"
 
 export type FaqItem = { q: string; a: string }
@@ -20,12 +21,7 @@ export function FaqList({ items }: { items: FaqItem[] }) {
           </details>
         ))}
       </div>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(faqJsonLd(items)).replace(/</g, "\\u003c"),
-        }}
-      />
+      <JsonLd data={faqJsonLd(items)} />
     </section>
   )
 }

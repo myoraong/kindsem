@@ -60,7 +60,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="ko" className={`${geistMono.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <meta name="naver-site-verification" content="79ca211d463e05777454b396bab507f8f9d824a9" />
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
+        <script
+          dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }}
+          suppressHydrationWarning
+        />
         <AdSenseScript />
       </head>
       <body className="flex min-h-full flex-col font-sans">
