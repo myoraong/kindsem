@@ -30,8 +30,12 @@ export function calcFooterGroups() {
       items: CALCULATORS.filter((item) => item.group === "work"),
     },
     {
-      title: "부동산",
-      items: CALCULATORS.filter((item) => item.group !== "today" && item.group !== "work"),
+      title: "전월세·대출",
+      items: CALCULATORS.filter((item) => item.group === "rent" || item.group === "loan"),
+    },
+    {
+      title: "매매·세금",
+      items: CALCULATORS.filter((item) => item.group === "buy"),
     },
   ] as const
 }
