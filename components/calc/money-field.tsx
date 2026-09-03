@@ -64,7 +64,8 @@ export function MoneyField({
           value={formatGroupedInput(value)}
           placeholder={placeholder}
           onChange={(event) => {
-            if (event.nativeEvent.isComposing) return
+            const native = event.nativeEvent
+            if (native instanceof InputEvent && native.isComposing) return
             const el = event.currentTarget
             const caret = el.selectionStart ?? el.value.length
             pendingDigits.current = el.value.slice(0, caret).replace(/[^\d.]/g, "").length

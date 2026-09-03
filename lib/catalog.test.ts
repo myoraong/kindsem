@@ -26,6 +26,12 @@ test("급여에서 연봉비교는 실수령 바로 다음이다", () => {
   assert.equal(work[takeHome + 1]?.slug, "offer-compare")
 })
 
+test("계산기마다 목록 두 번째 줄(언제)이 있다", () => {
+  for (const item of CALCULATORS) {
+    assert.ok(item.when.trim().length > 0, item.slug)
+  }
+})
+
 test("미리보기 계산기가 카탈로그에 있다", () => {
   assert.equal(getCalculator("overtime-pay")?.title, "연장·야간·휴일 수당")
   assert.equal(getCalculator("jeonse-vs-rent")?.title, "전세 vs 월세")

@@ -26,14 +26,19 @@ export function SiteFooter() {
               <p className="mb-2 text-xs font-semibold tracking-wide text-foreground/80 uppercase">
                 {group.title}
               </p>
-              <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5 sm:grid-cols-1">
+              <ul className="grid grid-cols-2 gap-x-3 gap-y-3 sm:grid-cols-1 sm:gap-y-2">
                 {group.items.map((item) => (
                   <li key={item.slug}>
                     <Link
                       href={`/calc/${item.slug}/`}
-                      className="text-xs leading-snug text-muted-foreground/80 underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                      className="block min-w-0 text-muted-foreground/80 underline-offset-2 transition-colors hover:text-foreground hover:underline"
                     >
-                      {calcSeo(item.slug).query}
+                      <span className="block text-xs font-medium leading-snug break-keep text-foreground/85">
+                        {calcSeo(item.slug).query}
+                      </span>
+                      <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground/70">
+                        {item.when}
+                      </span>
                     </Link>
                   </li>
                 ))}
