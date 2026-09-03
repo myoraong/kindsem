@@ -57,7 +57,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   "min-wage": {
     query: "최저임금 계산기",
-    also: ["최저시급 계산기", "최저임금 월급", "시급 최저임금", "2026 최저임금"],
+    also: ["최저시급 계산기", "시급 환산", "월급 시급 계산", "2026 최저임금"],
   },
   "part-time-month": {
     query: "알바 월급 계산기",

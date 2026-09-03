@@ -15,6 +15,21 @@ test("주 40시간 월 최저는 고시 209시간·월급과 같다", () => {
   assert.equal(result.dailyFull, MIN_WAGE.hourly * 8)
 })
 
+test("시급을 넣으면 월 환산이 나온다", () => {
+  const result = calcMinWage({ weeklyHours: 40, hourlyWage: 100_000 })
+  assert.ok(result)
+  assert.equal(result.userHourly, 100_000)
+  assert.equal(result.userMonthly, 20_900_000)
+})
+
+test("월급을 넣으면 시급 환산이 나온다", () => {
+  const result = calcMinWage({ weeklyHours: 40, monthlyWage: MIN_WAGE.monthly })
+  assert.ok(result)
+  assert.equal(result.userMonthly, MIN_WAGE.monthly)
+  assert.equal(Math.round(result.userHourly), MIN_WAGE.hourly)
+  assert.equal(result.meetsHourly, true)
+})
+
 test("고시 시급보다 낮으면 미달이다", () => {
   const result = calcMinWage({ weeklyHours: 40, hourlyWage: MIN_WAGE.hourly - 1 })
   assert.ok(result)

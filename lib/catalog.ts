@@ -128,7 +128,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "min-wage",
     title: "최저임금",
-    blurb: "고용노동부 고시 시급과 주 40시간 월 환산. 주휴 포함.",
+    blurb: "시급↔월급 환산, 고시 최저와 비교. 주휴 포함.",
     when: "시급·월급 계약이 최저인지",
     group: "work",
   },

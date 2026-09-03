@@ -20,6 +20,10 @@ const FAQ = [
     a: `고용노동부가 최저임금법 제10조로 고시합니다. ${MIN_WAGE.year}년은 시간급 ${MIN_WAGE.hourly.toLocaleString("ko-KR")}원, 주 40시간 월 환산 ${MIN_WAGE.monthly.toLocaleString("ko-KR")}원(기준시간 ${MIN_WAGE.monthlyHours}시간, 유급주휴 8시간 포함)입니다. 적용 기간은 ${MIN_WAGE.from}부터 ${MIN_WAGE.to}까지입니다.`,
   },
   {
+    q: "시급만 넣으면 월급이 나오나요?",
+    a: `시급×그 주의 월 환산 시간입니다. 주 40시간이면 고시 ${MIN_WAGE.monthlyHours}시간을 곱합니다. 월급을 넣으면 그 시간으로 나눠 시급이 나옵니다. 큰 숫자는 그 환산액이고, 고시 최저와의 비교는 아래에 있습니다.`,
+  },
+  {
     q: "주 40시간이 아니면요?",
     a: "고시 월 환산 209시간은 주 소정 40시간 기준입니다. 다른 주시간은 최저임금법 시행령 제5조 (주소정+유급주휴)×365/7÷12 로 월 시간을 셉니다. 주 15시간 미만은 주휴가 없습니다.",
   },
@@ -39,7 +43,18 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
     })
   }, [pay, hourly, monthly, weeklyHours])
 
-  const amount = result?.floorMonthly ?? null
+  const hasPay = Boolean(result && result.userHourly > 0)
+  const converted =
+    result && hasPay
+      ? pay === "hourly"
+        ? { title: "환산 월급", amount: result.userMonthly, note: `시급 ${formatWon(result.userHourly)}` }
+        : {
+            title: "환산 시급",
+            amount: Math.round(result.userHourly),
+            note: `월급 ${formatWon(result.userMonthly)}`,
+          }
+      : null
+  const amount = converted?.amount ?? result?.floorMonthly ?? null
   const caption = result
     ? result.meetsHourly == null && result.meetsMonthly == null
       ? `고시 시급 ${formatWon(result.hourly)}`
@@ -54,15 +69,17 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
       faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
-          title={`${result?.year ?? MIN_WAGE.year}년 월 최저`}
+          title={converted?.title ?? `${result?.year ?? MIN_WAGE.year}년 월 최저`}
           amount={amount}
           caption={caption}
           copyLine={
             result
               ? kakaoCopyLine(
-                  "최저임금",
-                  formatWon(result.floorMonthly),
-                  `시급 ${formatWon(result.hourly)} · 주 ${weeklyHours}시간`,
+                  converted?.title ?? "최저임금",
+                  formatWon(converted?.amount ?? result.floorMonthly),
+                  converted
+                    ? `${converted.note} · 주 ${weeklyHours}시간`
+                    : `시급 ${formatWon(result.hourly)} · 주 ${weeklyHours}시간`,
                 )
               : undefined
           }
@@ -70,13 +87,30 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
           rows={
             result
               ? [
+                  ...(result.userHourly > 0
+                    ? [
+                        {
+                          label: pay === "hourly" ? "넣은 시급" : "넣은 월급",
+                          value:
+                            pay === "hourly"
+                              ? formatWon(result.userHourly)
+                              : formatWon(result.userMonthly),
+                        },
+                        {
+                          label: pay === "hourly" ? "환산 월급" : "환산 시급",
+                          value:
+                            pay === "hourly"
+                              ? formatWon(result.userMonthly)
+                              : formatWon(Math.round(result.userHourly)),
+                        },
+                      ]
+                    : []),
                   { label: "고시 시급", value: formatWon(result.hourly) },
                   { label: "고시 일급(8시간)", value: formatWon(result.dailyFull) },
                   { label: "이 주의 월 시간", value: `${result.monthlyHours.toFixed(result.monthlyHours % 1 === 0 ? 0 : 2)}시간` },
                   { label: "이 주의 월 최저", value: formatWon(result.floorMonthly) },
                   ...(result.userHourly > 0
                     ? [
-                        { label: "넣은 시간급", value: formatWon(result.userHourly) },
                         {
                           label: "시급 차이",
                           value: formatWon(result.hourlyGap),
@@ -86,13 +120,13 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
                 ]
               : []
           }
-          empty="주 소정시간만 넣어도 고시 월 최저가 나옵니다."
+          empty="시급 또는 월급과 주 소정시간을 넣으면 환산액이 나옵니다."
         />
       }
     >
       <div className="space-y-5">
         <ChoiceGroup
-          label="비교할 임금"
+          label="넣을 임금"
           value={pay}
           onChange={setPay}
           options={[
@@ -113,8 +147,9 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
           onChange={setWeeklyHours}
         />
         <Hint>
-          주 40시간은 고시 월 {MIN_WAGE.monthlyHours}시간을 씁니다. 월급제 최저 여부는 월급÷그 시간 ≥ 고시
-          시급인지만 봅니다. 수습·감액 특례는 넣지 않았습니다.
+          시급을 넣으면 월 환산 시간을 곱한 월급이, 월급을 넣으면 그 시간으로 나눈 시급이 큰 숫자로 나옵니다. 주
+          40시간은 고시 월 {MIN_WAGE.monthlyHours}시간을 씁니다. 월급제 최저 여부는 월급÷그 시간 ≥ 고시 시급인지만
+          봅니다. 수습·감액 특례는 넣지 않았습니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.minWage]} />
       </div>
