@@ -67,8 +67,10 @@ export function SenaFigure({
   return (
     <figure
       className={cn(
-        "w-[5.5rem] shrink-0 bg-transparent sm:w-[6.75rem] md:w-32 lg:w-[8.75rem]",
-        variant === "full" && "-translate-x-1 sm:-translate-x-2 md:-translate-x-3",
+        "shrink-0 bg-transparent",
+        variant === "calc"
+          ? "w-24 sm:w-[6.5rem] md:w-28 lg:w-[7.5rem]"
+          : "w-[5.5rem] -translate-x-1 sm:w-[6.75rem] sm:-translate-x-2 md:w-32 md:-translate-x-3 lg:w-[8.75rem]",
       )}
     >
       <Sena
