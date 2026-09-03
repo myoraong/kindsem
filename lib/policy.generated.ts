@@ -154,6 +154,14 @@ export const POLICY_SOURCES = {
     "promulgated": "2026-06-30",
     "revision": "일부개정"
   },
+  "eiLaw": {
+    "query": "고용보험법",
+    "id": "001761",
+    "name": "고용보험법",
+    "enforced": "2026-08-20",
+    "promulgated": "2026-02-19",
+    "revision": "일부개정"
+  },
   "customsRule": {
     "query": "관세법 시행규칙",
     "id": "006392",
@@ -200,6 +208,22 @@ export const POLICY_SOURCES = {
     "name": "특송물품 수입통관 사무처리에 관한 고시",
     "enforced": "2025-12-22",
     "promulgated": "2025-12-22",
+    "revision": "일부개정"
+  },
+  "minWageNotice": {
+    "query": "2026년 적용 최저임금 고시",
+    "id": "2100000262710",
+    "name": "2026년 적용 최저임금 고시",
+    "enforced": "2026-01-01",
+    "promulgated": "2025-08-05",
+    "revision": "제정"
+  },
+  "maternityCapNotice": {
+    "query": "출산전후휴가 급여등 상한액 고시",
+    "id": "2100000271634",
+    "name": "출산전후휴가 급여등 상한액 고시",
+    "enforced": "2026-01-01",
+    "promulgated": "2025-12-30",
     "revision": "일부개정"
   }
 } as const
@@ -458,6 +482,52 @@ export const PARENTAL_LEAVE = {
     { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: 0.8, cap: 1600000 },
   ],
   bothCapsFirst6: [2500000, 2500000, 3000000, 3500000, 4000000, 4500000],
+} as const
+
+export const MIN_WAGE = {
+  "hourly": 10320,
+  "monthly": 2156880,
+  "monthlyHours": 209,
+  "weeklyHours": 40,
+  "weeklyHolidayHours": 8,
+  "year": 2026,
+  "from": "2026-01-01",
+  "to": "2026-12-31"
+} as const
+
+export const MATERNITY_LEAVE = {
+  "days": {
+    "standard": 90,
+    "preterm": 100,
+    "multiple": 120
+  },
+  "employerPaidDays": {
+    "standard": 60,
+    "multiple": 75
+  },
+  "afterBirthMinDays": {
+    "standard": 45,
+    "multiple": 60
+  },
+  "nonPriorityPaidDays": {
+    "standard": 60,
+    "multiple": 75
+  },
+  "eiExtraCapDays": {
+    "standard": 30,
+    "preterm": 40,
+    "multiple": 45
+  },
+  "cap": {
+    "standard": 6600000,
+    "preterm": 7333330,
+    "multiple": 8800000
+  },
+  "capDays": {
+    "standard": 90,
+    "preterm": 100,
+    "multiple": 120
+  }
 } as const
 
 export const IMPORT_CLEARANCE = {

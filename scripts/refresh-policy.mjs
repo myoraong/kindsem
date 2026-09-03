@@ -41,6 +41,11 @@ import {
   parseDeMinimisUsd,
   parseListClearance,
   parseParentalLeave,
+  extractType3PdfText,
+  parseMinWageNotice,
+  parseLaborMaternity,
+  parseEiMaternity,
+  parseMaternityCapNotice,
 } from "./policy-fields.mjs"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
@@ -70,6 +75,7 @@ const LAWS = [
     id: "009842",
   },
   { key: "eiLeaveDecree", query: "고용보험법 시행령", id: "002249" },
+  { key: "eiLaw", query: "고용보험법", id: "001761" },
   { key: "customsRule", query: "관세법 시행규칙", id: "006392" },
   { key: "severanceLaw", query: "근로자퇴직급여 보장법", id: "009883" },
 ]
@@ -448,6 +454,37 @@ async function fetchAdmBody(id) {
   return getJson(url)
 }
 
+function admAttachmentUrl(body, prefer) {
+  const files = body?.AdmRulService?.첨부파일 || {}
+  const links = [].concat(files.첨부파일링크 || [])
+  const names = [].concat(files.첨부파일명 || [])
+  const idx = names.findIndex((name) => prefer(String(name)))
+  return links[idx >= 0 ? idx : 0] || ""
+}
+
+async function fetchPdfText(url) {
+  const urls = lawUrlFallbacks(url)
+  let lastError
+  for (const candidate of urls) {
+    try {
+      const res = await fetch(candidate, {
+        headers: LAW_FETCH_HEADERS,
+        signal: AbortSignal.timeout(25_000),
+      })
+      if (!res.ok) {
+        lastError = new TransientFetchError(`PDF ${res.status} ${candidate}`, { status: res.status })
+        continue
+      }
+      const buf = Buffer.from(await res.arrayBuffer())
+      if (buf.length < 100) throw new TransientFetchError(`빈 PDF ${candidate}`)
+      return extractType3PdfText(buf)
+    } catch (error) {
+      lastError = wrapFetchError(error, candidate)
+    }
+  }
+  throw lastError ?? new TransientFetchError(`PDF 실패 ${url}`)
+}
+
 function loadPrevious() {
   try {
     return JSON.parse(readFileSync(join(root, "public/policy.json"), "utf8"))
@@ -593,6 +630,17 @@ export async function refreshPolicy() {
   const healthCapBody = sources.healthCap.id ? await fetchAdmBody(sources.healthCap.id) : null
   sources.expressNotice = await fetchAdmMeta("특송물품 수입통관 사무처리에 관한 고시")
   const expressBody = sources.expressNotice.id ? await fetchAdmBody(sources.expressNotice.id) : null
+  const yearStamp = fetchedAt.slice(0, 4)
+  sources.minWageNotice = await fetchAdmMeta(`${yearStamp}년 적용 최저임금 고시`)
+  if (sources.minWageNotice.enforced && sources.minWageNotice.enforced > fetchedAt) {
+    sources.minWageNotice = await fetchAdmMeta(`${Number(yearStamp) - 1}년 적용 최저임금 고시`)
+  }
+  const minWageBody = sources.minWageNotice.id ? await fetchAdmBody(sources.minWageNotice.id) : null
+  sources.maternityCapNotice = await fetchAdmMeta("출산전후휴가 급여등 상한액 고시")
+  const maternityCapBody = sources.maternityCapNotice.id
+    ? await fetchAdmBody(sources.maternityCapNotice.id)
+    : null
+  const eiLawBody = await fetchLawBody(sources.eiLaw.id)
 
   const vatRate =
     parseVatRate(articleText(findArticle(vatBody.법령.조문.조문단위, "30", "세율"))) ??
@@ -982,6 +1030,64 @@ export async function refreshPolicy() {
     bothCapsFirst6: [2_500_000, 2_500_000, 3_000_000, 3_500_000, 4_000_000, 4_500_000],
   }
 
+  let minWageText = admText(minWageBody)
+  if (!parseMinWageNotice(minWageText)) {
+    const pdfUrl = admAttachmentUrl(
+      minWageBody,
+      (name) => name.includes("고시") && name.toLowerCase().endsWith(".pdf") && !name.includes("이유"),
+    )
+    if (pdfUrl) {
+      try {
+        minWageText = await fetchPdfText(pdfUrl)
+      } catch (error) {
+        if (!isTransientFetchError(error)) throw error
+      }
+    }
+  }
+  const minWage =
+    parseMinWageNotice(minWageText) ??
+    prev.minWage ?? {
+      year: 2026,
+      hourly: 10_320,
+      monthly: 2_156_880,
+      monthlyHours: 209,
+      weeklyHours: 40,
+      weeklyHolidayHours: 8,
+      from: "2026-01-01",
+      to: "2026-12-31",
+    }
+
+  const laborMaternity =
+    parseLaborMaternity(articleText(findArticle(laborBody.법령.조문.조문단위, "74"))) ?? prev.maternityLeave
+  const eiMaternity =
+    parseEiMaternity(articleText(findArticle(eiLawBody.법령.조문.조문단위, "76"))) ?? prev.maternityLeave
+  const maternityCap =
+    parseMaternityCapNotice(admText(maternityCapBody)) ?? prev.maternityLeave
+  const maternityLeave = {
+    days: laborMaternity?.days ?? prev.maternityLeave?.days ?? { standard: 90, preterm: 100, multiple: 120 },
+    employerPaidDays:
+      laborMaternity?.employerPaidDays ?? prev.maternityLeave?.employerPaidDays ?? { standard: 60, multiple: 75 },
+    afterBirthMinDays:
+      laborMaternity?.afterBirthMinDays ??
+      prev.maternityLeave?.afterBirthMinDays ?? { standard: 45, multiple: 60 },
+    nonPriorityPaidDays:
+      eiMaternity?.nonPriorityPaidDays ??
+      prev.maternityLeave?.nonPriorityPaidDays ?? { standard: 60, multiple: 75 },
+    eiExtraCapDays:
+      eiMaternity?.eiExtraCapDays ??
+      prev.maternityLeave?.eiExtraCapDays ?? { standard: 30, preterm: 40, multiple: 45 },
+    cap: maternityCap?.cap ?? prev.maternityLeave?.cap ?? {
+      standard: 6_600_000,
+      preterm: 7_333_330,
+      multiple: 8_800_000,
+    },
+    capDays: maternityCap?.capDays ?? prev.maternityLeave?.capDays ?? {
+      standard: 90,
+      preterm: 100,
+      multiple: 120,
+    },
+  }
+
   const deMinimisUsd =
     parseDeMinimisUsd(articleText(findArticle(customsRuleBody.법령.조문.조문단위, "45"))) ??
     prev.importClearance?.deMinimisUsd ??
@@ -1024,6 +1130,10 @@ export async function refreshPolicy() {
       throw new Error("퇴직금 일수 파싱 실패")
     }
     if (!parentalParsed?.floor) throw new Error("육아휴직 급여 파싱 실패")
+    if (!parseMinWageNotice(minWageText)) throw new Error("최저임금 고시 파싱 실패")
+    if (!laborMaternity?.days || !eiMaternity?.eiExtraCapDays || !maternityCap?.cap) {
+      throw new Error("출산전후휴가 일수·상한 파싱 실패")
+    }
     if (!listParsed?.listUsd || deMinimisUsd == null) throw new Error("목록통관·소액면세 파싱 실패")
   }
 
@@ -1095,6 +1205,8 @@ export async function refreshPolicy() {
         toMonth: row.toMonth === Number.POSITIVE_INFINITY ? null : row.toMonth,
       })),
     },
+    minWage,
+    maternityLeave,
     importClearance,
   }
 
@@ -1226,6 +1338,10 @@ export const PAYROLL_DEDUCTIONS = ${JSON.stringify(payrollDeductions, null, 2)} 
 
 export const PARENTAL_LEAVE = ${tsParental(parentalLeave)} as const
 
+export const MIN_WAGE = ${JSON.stringify(minWage, null, 2)} as const
+
+export const MATERNITY_LEAVE = ${JSON.stringify(maternityLeave, null, 2)} as const
+
 export const IMPORT_CLEARANCE = ${JSON.stringify(importClearance, null, 2)} as const
 `
   writeFileSync(join(root, "lib/policy.generated.ts"), ts)
@@ -1278,6 +1394,8 @@ export const IMPORT_CLEARANCE = ${JSON.stringify(importClearance, null, 2)} as c
     payrollDeductions.earnedDeductionCap,
   )
   console.log("육아", parentalLeave.floor, parentalLeave.general.map((r) => r.cap).join("/"), "맞돌봄", parentalLeave.bothCapsFirst6.join("/"))
+  console.log("최저임금", minWage.year, minWage.hourly, minWage.monthly, minWage.monthlyHours)
+  console.log("출산", maternityLeave.days.standard, maternityLeave.cap.standard, maternityLeave.eiExtraCapDays.standard)
   console.log("직구", importClearance.listUsd, importClearance.listUsUsd, importClearance.deMinimisUsd)
   return json
 }

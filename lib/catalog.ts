@@ -16,7 +16,7 @@ export const CATALOG_HEADINGS = {
   },
   work: {
     title: "급여",
-    blurb: "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.",
+    blurb: "실수령, 최저임금, 주휴·연차·퇴직금. 근로기준법·세법 기준.",
   },
   realty: {
     title: "부동산",
@@ -126,6 +126,13 @@ export const CALCULATORS: CalcItem[] = [
     group: "work",
   },
   {
+    slug: "min-wage",
+    title: "최저임금",
+    blurb: "고용노동부 고시 시급과 주 40시간 월 환산. 주휴 포함.",
+    when: "시급·월급 계약이 최저인지",
+    group: "work",
+  },
+  {
     slug: "part-time-month",
     title: "알바 월급",
     blurb: "시급×시간, 주휴 포함 월 환산. 시행령 제5조 시간.",
@@ -165,6 +172,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "육아휴직 급여",
     blurb: "고용보험 시행령 상한·하한·지급률.",
     when: "육아휴직 기간을 정할 때",
+    group: "work",
+  },
+  {
+    slug: "maternity-leave",
+    title: "출산전후휴가 급여",
+    blurb: "고용보험 상한과 근로기준법 유급 일수. 우선지원 여부로 나눕니다.",
+    when: "출산전후휴가 기간을 정할 때",
     group: "work",
   },
   {
@@ -305,6 +319,13 @@ export const CALCULATORS: CalcItem[] = [
     title: "DSR",
     blurb: "은행 40%·비은행 50% 한도.",
     when: "소득 대비 원리금 한도",
+    group: "loan",
+  },
+  {
+    slug: "loan-interest",
+    title: "대출 이자",
+    blurb: "원리금균등·원금균등·만기일시. 넣은 금리로 월 납입.",
+    when: "신용·담보 대출 월 납입",
     group: "loan",
   },
   {

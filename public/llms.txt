@@ -21,12 +21,14 @@
 - 예적금 이자 계산기: https://kindsem.com/calc/deposit/
 - 실수령액 계산기: https://kindsem.com/calc/take-home/
 - 주휴수당 계산기: https://kindsem.com/calc/weekly-holiday/
+- 최저임금 계산기: https://kindsem.com/calc/min-wage/
 - 알바 월급 계산기: https://kindsem.com/calc/part-time-month/
 - 월급 일할 계산기: https://kindsem.com/calc/prorate-pay/
 - 연장수당 계산기: https://kindsem.com/calc/overtime-pay/
 - 연차수당 계산기: https://kindsem.com/calc/annual-leave/
 - 퇴직금 계산기: https://kindsem.com/calc/severance/
 - 육아휴직 급여 계산기: https://kindsem.com/calc/parental-leave/
+- 출산전후휴가 급여 계산기: https://kindsem.com/calc/maternity-leave/
 - 연봉 비교 계산기: https://kindsem.com/calc/offer-compare/
 - 알바 3.3% 계산기: https://kindsem.com/calc/side-job-tax/
 - 실업급여 계산기: https://kindsem.com/calc/benefit-net/
@@ -48,5 +50,6 @@
 - 부동산 취득 총비용 계산기: https://kindsem.com/calc/closing-cost/
 - LTV 계산기: https://kindsem.com/calc/ltv/
 - DSR 계산기: https://kindsem.com/calc/dsr/
+- 대출 이자 계산기: https://kindsem.com/calc/loan-interest/
 - 주택담보대출 계산기: https://kindsem.com/calc/mortgage/
 - 임대수익률 계산기: https://kindsem.com/calc/yield/

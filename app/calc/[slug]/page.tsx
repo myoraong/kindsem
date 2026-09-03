@@ -17,6 +17,9 @@ import { MovingCost } from "@/components/calc/moving-cost"
 import { OfferCompareCalc } from "@/components/calc/offer-compare-calc"
 import { OvertimePay } from "@/components/calc/overtime-pay"
 import { ParentalLeave } from "@/components/calc/parental-leave"
+import { MaternityLeave } from "@/components/calc/maternity-leave"
+import { MinWageCalc } from "@/components/calc/min-wage-calc"
+import { LoanInterestCalc } from "@/components/calc/loan-interest-calc"
 import { QuickCalc } from "@/components/calc/quick-calc"
 import { RentConvert } from "@/components/calc/rent-convert"
 import { SaleVat } from "@/components/calc/sale-vat"
@@ -102,6 +105,8 @@ function calcBody(slug: string, item: CalcItem): ReactNode {
       return <TakeHomeCalc item={item} />
     case "weekly-holiday":
       return <WeeklyHoliday item={item} />
+    case "min-wage":
+      return <MinWageCalc item={item} />
     case "part-time-month":
       return <PartTimeMonth item={item} />
     case "prorate-pay":
@@ -114,6 +119,8 @@ function calcBody(slug: string, item: CalcItem): ReactNode {
       return <Severance item={item} />
     case "parental-leave":
       return <ParentalLeave item={item} />
+    case "maternity-leave":
+      return <MaternityLeave item={item} />
     case "offer-compare":
       return <OfferCompareCalc item={item} />
     case "side-job-tax":
@@ -156,6 +163,8 @@ function calcBody(slug: string, item: CalcItem): ReactNode {
       return <LtvCalc item={item} />
     case "dsr":
       return <DsrCalc item={item} />
+    case "loan-interest":
+      return <LoanInterestCalc item={item} />
     case "mortgage":
       return <MortgageCalc item={item} />
     case "yield":

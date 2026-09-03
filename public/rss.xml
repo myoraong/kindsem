@@ -98,6 +98,13 @@
 <description>주 15시간 이상, 개근한 주의 유급 주휴. 주휴수당 계산기. 주휴 계산기, 주휴일수당, 알바 주휴수당, 주휴일</description>
 </item>
 <item>
+<title>최저임금 계산기</title>
+<link>https://kindsem.com/calc/min-wage/</link>
+<guid isPermaLink="true">https://kindsem.com/calc/min-wage/</guid>
+<pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
+<description>고용노동부 고시 시급과 주 40시간 월 환산. 주휴 포함. 최저임금 계산기. 최저시급 계산기, 최저임금 월급, 시급 최저임금, 2026 최저임금</description>
+</item>
+<item>
 <title>알바 월급 계산기</title>
 <link>https://kindsem.com/calc/part-time-month/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/part-time-month/</guid>
@@ -138,6 +145,13 @@
 <guid isPermaLink="true">https://kindsem.com/calc/parental-leave/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
 <description>고용보험 시행령 상한·하한·지급률. 육아휴직 급여 계산기. 육아휴직 계산기, 육휴 급여, 고용보험 육아휴직</description>
+</item>
+<item>
+<title>출산전후휴가 급여 계산기</title>
+<link>https://kindsem.com/calc/maternity-leave/</link>
+<guid isPermaLink="true">https://kindsem.com/calc/maternity-leave/</guid>
+<pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
+<description>고용보험 상한과 근로기준법 유급 일수. 우선지원 여부로 나눕니다. 출산전후휴가 급여 계산기. 출산휴가 급여 계산기, 출산휴가 계산기, 고용보험 출산전후휴가</description>
 </item>
 <item>
 <title>알바 3.3% 계산기</title>
@@ -278,6 +292,13 @@
 <guid isPermaLink="true">https://kindsem.com/calc/dsr/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
 <description>은행 40%·비은행 50% 한도. DSR 계산기. 디에스알 계산기, 총부채원리금상환비율, DSR 40%</description>
+</item>
+<item>
+<title>대출 이자 계산기</title>
+<link>https://kindsem.com/calc/loan-interest/</link>
+<guid isPermaLink="true">https://kindsem.com/calc/loan-interest/</guid>
+<pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
+<description>원리금균등·원금균등·만기일시. 넣은 금리로 월 납입. 대출 이자 계산기. 대출이자 계산기, 원리금균등 상환 계산기, 원금균등 계산기</description>
 </item>
 <item>
 <title>주택담보대출 계산기</title>

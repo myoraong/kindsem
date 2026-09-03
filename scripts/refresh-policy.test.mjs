@@ -40,6 +40,10 @@ import {
   parseDeMinimisUsd,
   parseListClearance,
   parseParentalLeave,
+  parseMinWageNotice,
+  parseLaborMaternity,
+  parseEiMaternity,
+  parseMaternityCapNotice,
 } from "./policy-fields.mjs"
 
 const INCOME_GRID = `┌────────┬──────────────────────────┐│1,400만원 이하  │과세표준의 6퍼센트                                  │├────────┼──────────────────────────┤│1,400만원 초과  │84만원 + (1,400만원을 초과하는 금액의 15퍼센트)     ││5,000만원 이하  │                                                    │├────────┼──────────────────────────┤│5,000만원 초과  │624만원 + (5,000만원을 초과하는 금액의 24퍼센트)    ││8,800만원 이하  │                                                    │├────────┼──────────────────────────┤│8,800만원 초과  │1,536만원 + (8,800만원을 초과하는 금액의 35퍼센트)  ││1억5천만원 이하 │                                                    │└────────┴──────────────────────────┘`
@@ -249,6 +253,37 @@ test("취득세·연장수당·이자·육아·관세·급여공제 표기를 �
   assert.deepEqual(parental?.bothCapsFirst6, [
     2_500_000, 2_500_000, 3_000_000, 3_500_000, 4_000_000, 4_500_000,
   ])
+
+  const minWage = parseMinWageNotice(
+    "모든 산업 10,320원 월 환산액 2,156,880 원 주소정근로 40시간 월환산기준시간 수209시간 주당유급주휴 8시간 2026년 1월 1일부터 2026년 12월 31일까지",
+  )
+  assert.equal(minWage?.hourly, 10_320)
+  assert.equal(minWage?.monthly, 2_156_880)
+  assert.equal(minWage?.monthlyHours, 209)
+  assert.equal(minWage?.year, 2026)
+
+  const laborMat = parseLaborMaternity(
+    "출산 전과 출산 후를 통하여 90일(미숙아를 출산한 경우에는 100일, 한 번에 둘 이상 자녀를 임신한 경우에는 120일)의 출산전후휴가를 주어야 한다. 이 경우 휴가 기간의 배정은 출산 후에 45일(한 번에 둘 이상 자녀를 임신한 경우에는 60일) 이상이 되어야 하고, 휴가 중 최초 60일(한 번에 둘 이상 자녀를 임신한 경우에는 75일)은 유급으로 한다.",
+  )
+  assert.equal(laborMat?.days.standard, 90)
+  assert.equal(laborMat?.days.preterm, 100)
+  assert.equal(laborMat?.days.multiple, 120)
+  assert.equal(laborMat?.employerPaidDays.standard, 60)
+  assert.equal(laborMat?.employerPaidDays.multiple, 75)
+
+  const eiMat = parseEiMaternity(
+    "우선지원 대상기업이 아닌 경우에는 휴가 기간 중 60일(한 번에 둘 이상의 자녀를 임신한 경우에는 75일)을 초과한 일수(30일을 한도로 하되, 미숙아를 출산한 경우에는 40일을 한도로 하고, 한 번에 둘 이상의 자녀를 임신한 경우에는 45일을 한도로 한다)로 한정한다.",
+  )
+  assert.equal(eiMat?.eiExtraCapDays.standard, 30)
+  assert.equal(eiMat?.eiExtraCapDays.preterm, 40)
+  assert.equal(eiMat?.eiExtraCapDays.multiple, 45)
+
+  const matCap = parseMaternityCapNotice(
+    "출산전후휴가기간 또는 유산ㆍ사산휴가기간 90일에 대한 통상임금에 상당하는 금액이 660만원을 초과하는 경우: 660만원 미숙아를 출산한 경우의 출산전후휴가기간 100일에 대한 통상임금에 상당하는 금액이 7,333,330원을 초과하는 경우: 7,333,330원 한 번에 둘 이상의 자녀를 임신한 경우의 출산전후휴가기간 120일에 대한 통상임금에 상당하는 금액이 880만원을 초과하는 경우: 880만원",
+  )
+  assert.equal(matCap?.cap.standard, 6_600_000)
+  assert.equal(matCap?.cap.preterm, 7_333_330)
+  assert.equal(matCap?.cap.multiple, 8_800_000)
 })
 
 async function withMockFetch(impl, fn) {

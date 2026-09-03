@@ -33,7 +33,7 @@ export const REALTY_CATEGORIES: RealtyCategory[] = [
   {
     id: "loan",
     title: "대출 금융",
-    slugs: ["ltv", "dsr", "mortgage", "jeonse"],
+    slugs: ["loan-interest", "ltv", "dsr", "mortgage", "jeonse"],
   },
   {
     id: "youth",

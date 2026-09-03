@@ -1,3 +1,5 @@
+import { inflateSync } from "node:zlib"
+
 export function parseKoreanWon(raw) {
   const s = String(raw).replace(/,/g, "").replace(/원/g, "").replace(/\s/g, "")
   if (!s) return null
@@ -509,5 +511,241 @@ export function parseParentalLeave(generalText, specialText) {
       { fromMonth: 7, toMonth: Number.POSITIVE_INFINITY, rate: singleLast.rate, cap: singleLast.cap },
     ],
     bothCapsFirst6: bothCaps,
+  }
+}
+
+function pdfObjectSlice(src, num) {
+  const re = new RegExp(`(?:^|[\\n\\r])${num}\\s+0\\s+obj\\b`)
+  const m = src.match(re)
+  if (!m || m.index == null) return ""
+  const start = m.index + (src[m.index] === "\n" || src[m.index] === "\r" ? 1 : 0)
+  const end = src.indexOf("endobj", start)
+  return end > start ? src.slice(start, end) : src.slice(start, start + 80_000)
+}
+
+function inflatePdfStream(objSlice) {
+  const m = objSlice.match(/stream\r?\n([\s\S]*?)endstream/)
+  if (!m) return ""
+  try {
+    return inflateSync(Buffer.from(m[1], "latin1")).toString("latin1")
+  } catch {
+    return ""
+  }
+}
+
+function parsePdfCmap(cmapText) {
+  const map = new Map()
+  const bfchar = cmapText.match(/beginbfchar([\s\S]*?)endbfchar/g) || []
+  for (const block of bfchar) {
+    for (const row of block.matchAll(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g)) {
+      map.set(row[1].toLowerCase(), String.fromCharCode(parseInt(row[2], 16)))
+    }
+  }
+  const bfrange = cmapText.match(/beginbfrange([\s\S]*?)endbfrange/g) || []
+  for (const block of bfrange) {
+    for (const row of block.matchAll(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g)) {
+      const from = parseInt(row[1], 16)
+      const to = parseInt(row[2], 16)
+      const base = parseInt(row[3], 16)
+      const width = row[1].length
+      for (let i = from; i <= to; i++) {
+        map.set(i.toString(16).padStart(width, "0"), String.fromCharCode(base + (i - from)))
+      }
+    }
+  }
+  return map
+}
+
+function decodePdfHex(hex, cmap, unit) {
+  const h = hex.replace(/\s/g, "")
+  let out = ""
+  for (let i = 0; i < h.length; i += unit) {
+    const key = h.slice(i, i + unit).toLowerCase()
+    out += cmap.get(key) ?? cmap.get(key.slice(-2)) ?? ""
+  }
+  return out
+}
+
+function inflateAllPdfStreams(src) {
+  const out = []
+  for (const m of src.matchAll(/stream\r?\n([\s\S]*?)endstream/g)) {
+    try {
+      out.push(inflateSync(Buffer.from(m[1], "latin1")).toString("latin1"))
+    } catch {
+      /* 이미지나 이미 압축 해제된 스트림 */
+    }
+  }
+  return out
+}
+
+function cmapUnit(cmap) {
+  return [...cmap.keys()].reduce((max, key) => Math.max(max, key.length), 2)
+}
+
+function scoreDecoded(text) {
+  return (String(text).match(/[가-힣0-9]/g) || []).length
+}
+
+function decodeHexWithCmaps(hex, preferred, cmaps) {
+  if (preferred) {
+    const text = decodePdfHex(hex, preferred, cmapUnit(preferred))
+    if (scoreDecoded(text) > 0 || text.trim()) return text
+  }
+  let best = ""
+  let bestScore = -1
+  for (const cmap of cmaps) {
+    if (!cmap || cmap === preferred) continue
+    const text = decodePdfHex(hex, cmap, cmapUnit(cmap))
+    const score = scoreDecoded(text)
+    if (score > bestScore) {
+      best = text
+      bestScore = score
+    }
+  }
+  return best
+}
+
+function collectType3Fonts(src) {
+  const fonts = new Map()
+  const scan = (text) => {
+    for (const m of text.matchAll(/\/Name\s*\/(T\d+)\b[\s\S]{0,400}?\/ToUnicode\s+(\d+)\s+0\s+R/g)) {
+      const cmapText = inflatePdfStream(pdfObjectSlice(src, m[2]))
+      if (cmapText) fonts.set(m[1], parsePdfCmap(cmapText))
+    }
+  }
+  scan(src)
+  for (const inf of inflateAllPdfStreams(src)) {
+    if (inf.includes("/ToUnicode") && inf.includes("/Name")) scan(inf)
+  }
+  return fonts
+}
+
+/**
+ * 고용노동부 고시처럼 Type3 + ToUnicode 인 PDF에서 글자를 읽습니다.
+ * 최저임금 고시는 JSON 조문내용이 비어 첨부 PDF만 있습니다.
+ */
+export function extractType3PdfText(buffer) {
+  const src = Buffer.from(buffer).toString("latin1")
+  const inflated = inflateAllPdfStreams(src)
+  const cmaps = inflated.filter((t) => t.includes("beginbfchar") || t.includes("beginbfrange")).map(parsePdfCmap)
+  const fonts = collectType3Fonts(src)
+  const contents = inflated.filter((t) => t.includes(" Tf") && (t.includes("Tj") || t.includes("TJ")))
+  if (contents.length === 0) {
+    for (const m of src.matchAll(/\/Contents\s+(\d+)\s+0\s+R/g)) {
+      const text = inflatePdfStream(pdfObjectSlice(src, m[1]))
+      if (text.includes("Tj") || text.includes("TJ")) contents.push(text)
+    }
+  }
+  const parts = []
+  for (const content of contents) {
+    let cmap = fonts.size ? fonts.values().next().value : null
+    const tokens = content.matchAll(/\/(T\d+)\s+[\d.]+\s+Tf|\[(.*?)\]\s*TJ|\((.*?)\)\s*Tj|<([0-9A-Fa-f\s]+)>\s*Tj/g)
+    for (const tok of tokens) {
+      if (tok[1]) {
+        cmap = fonts.get(tok[1]) ?? (fonts.size ? cmap : null)
+        continue
+      }
+      if (tok[2] != null) {
+        let chunk = ""
+        for (const hex of tok[2].matchAll(/<([0-9A-Fa-f\s]+)>/g)) {
+          chunk += decodeHexWithCmaps(hex[1], cmap, cmaps)
+        }
+        parts.push(chunk)
+        continue
+      }
+      if (tok[3] != null) {
+        parts.push(tok[3])
+        continue
+      }
+      if (tok[4] != null) parts.push(decodeHexWithCmaps(tok[4], cmap, cmaps))
+    }
+  }
+  return parts.join(" ").replace(/\s+/g, " ").trim()
+}
+
+export function parseMinWageNotice(text) {
+  const compact = stripTags(text).replace(/\s+/g, "")
+  const hourly =
+    compact.match(/모든산업(\d{1,3}(?:,\d{3})+)원/) ||
+    compact.match(/시간급(\d{1,3}(?:,\d{3})+)원/)
+  const monthly = compact.match(/월환산액(\d{1,3}(?:,\d{3})+)원/)
+  const monthHours = compact.match(/월환산기준시간수(\d+)시간/)
+  const weekly = compact.match(/주소정근로(\d+)시간/)
+  const holiday = compact.match(/유급주휴(\d+)시간/)
+  const fromTo =
+    compact.match(/(\d{4})\.(\d{1,2})\.(\d{1,2})\.~(\d{4})\.(\d{1,2})\.(\d{1,2})/) ||
+    compact.match(/(\d{4})년(\d{1,2})월(\d{1,2})일부터(\d{4})년(\d{1,2})월(\d{1,2})일까지/)
+  if (!hourly || !monthly || !monthHours || !weekly || !holiday || !fromTo) return null
+  const pad = (v) => String(Number(v)).padStart(2, "0")
+  return {
+    hourly: Number(hourly[1].replace(/,/g, "")),
+    monthly: Number(monthly[1].replace(/,/g, "")),
+    monthlyHours: Number(monthHours[1]),
+    weeklyHours: Number(weekly[1]),
+    weeklyHolidayHours: Number(holiday[1]),
+    year: Number(fromTo[1]),
+    from: `${fromTo[1]}-${pad(fromTo[2])}-${pad(fromTo[3])}`,
+    to: `${fromTo[4]}-${pad(fromTo[5])}-${pad(fromTo[6])}`,
+  }
+}
+
+export function parseLaborMaternity(text) {
+  const t = stripTags(text)
+  const days = t.match(
+    /출산 전과 출산 후를 통하여\s*(\d+)일\(미숙아를 출산한 경우에는\s*(\d+)일, 한 번에 둘 이상 자녀를 임신한 경우에는\s*(\d+)일\)/,
+  )
+  const paid = t.match(
+    /휴가 중 최초\s*(\d+)일\(한 번에 둘 이상 자녀를 임신한 경우에는\s*(\d+)일\)은 유급/,
+  )
+  const after = t.match(
+    /출산 후에\s*(\d+)일\(한 번에 둘 이상 자녀를 임신한 경우에는\s*(\d+)일\) 이상/,
+  )
+  if (!days || !paid || !after) return null
+  return {
+    days: { standard: Number(days[1]), preterm: Number(days[2]), multiple: Number(days[3]) },
+    employerPaidDays: { standard: Number(paid[1]), multiple: Number(paid[2]) },
+    afterBirthMinDays: { standard: Number(after[1]), multiple: Number(after[2]) },
+  }
+}
+
+export function parseEiMaternity(text) {
+  const t = stripTags(text)
+  const extra = t.match(
+    /휴가 기간 중\s*(\d+)일\(한 번에 둘 이상의 자녀를 임신한 경우에는\s*(\d+)일\)을 초과한 일수\((\d+)일을 한도로 하되, 미숙아를 출산한 경우에는\s*(\d+)일을 한도로 하고, 한 번에 둘 이상의 자녀를 임신한 경우에는\s*(\d+)일을 한도로 한다\)/,
+  )
+  if (!extra) return null
+  return {
+    nonPriorityPaidDays: { standard: Number(extra[1]), multiple: Number(extra[2]) },
+    eiExtraCapDays: {
+      standard: Number(extra[3]),
+      preterm: Number(extra[4]),
+      multiple: Number(extra[5]),
+    },
+  }
+}
+
+function noticeWon(raw) {
+  const s = String(raw).replace(/\s/g, "")
+  if (s.includes("만원")) return parseKoreanWon(s)
+  return parseLawWon(s)
+}
+
+export function parseMaternityCapNotice(text) {
+  const t = stripTags(text).replace(/\s+/g, "")
+  const standard = t.match(/유산ㆍ사산휴가기간(\d+)일에대한통상임금에상당하는금액이([0-9,만]+)원을초과하는경우:([0-9,만]+)원/)
+  const preterm = t.match(/미숙아를출산한경우의출산전후휴가기간(\d+)일에대한통상임금에상당하는금액이([0-9,만]+)원을초과하는경우:([0-9,만]+)원/)
+  const multiple = t.match(/둘이상의자녀를임신한경우의출산전후휴가기간(\d+)일에대한통상임금에상당하는금액이([0-9,만]+)원을초과하는경우:([0-9,만]+)원/)
+  if (!standard || !preterm || !multiple) return null
+  const standardCap = noticeWon(standard[3])
+  const pretermCap = noticeWon(preterm[3])
+  const multipleCap = noticeWon(multiple[3])
+  if (!standardCap || !pretermCap || !multipleCap) return null
+  return {
+    cap: { standard: standardCap, preterm: pretermCap, multiple: multipleCap },
+    capDays: {
+      standard: Number(standard[1]),
+      preterm: Number(preterm[1]),
+      multiple: Number(multiple[1]),
+    },
   }
 }

@@ -66,6 +66,46 @@ export function interestOnly(principal: number, annualPercent: number, months: n
   return { monthly, totalInterest, totalPay: principal + totalInterest }
 }
 
+export function calcLoanInterest(input: {
+  principal: number
+  annualPercent: number
+  months: number
+  method: Repayment
+}) {
+  if (input.principal <= 0 || input.months <= 0 || !Number.isFinite(input.annualPercent)) return null
+  if (input.method === "equal-principal") {
+    const calc = equalPrincipal(input.principal, input.annualPercent, input.months)
+    return {
+      method: input.method,
+      monthly: calc.first,
+      first: calc.first,
+      last: calc.last,
+      totalInterest: calc.totalInterest,
+      totalPay: calc.totalPay,
+    }
+  }
+  if (input.method === "interest-only") {
+    const calc = interestOnly(input.principal, input.annualPercent, input.months)
+    return {
+      method: input.method,
+      monthly: calc.monthly,
+      first: calc.monthly,
+      last: calc.monthly,
+      totalInterest: calc.totalInterest,
+      totalPay: calc.totalPay,
+    }
+  }
+  const calc = equalPayment(input.principal, input.annualPercent, input.months)
+  return {
+    method: input.method,
+    monthly: calc.monthly,
+    first: calc.monthly,
+    last: calc.monthly,
+    totalInterest: calc.totalInterest,
+    totalPay: calc.totalPay,
+  }
+}
+
 export function dsrLimit(annualIncome: number, existingAnnual: number, ratio = DSR_POLICY.bank) {
   const cap = annualIncome * ratio
   const remain = Math.max(0, cap - existingAnnual)

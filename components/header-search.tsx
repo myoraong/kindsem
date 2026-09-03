@@ -90,7 +90,7 @@ export function HeaderSearch() {
               <Input
                 ref={inputRef}
                 id="header-search"
-                type="text"
+                type="search"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="실수령액, 복비, 취득세…"

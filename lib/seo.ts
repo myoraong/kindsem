@@ -55,6 +55,10 @@ export const CALC_SEO: Record<string, CalcSeo> = {
     query: "주휴수당 계산기",
     also: ["주휴 계산기", "주휴일수당", "알바 주휴수당", "주휴일"],
   },
+  "min-wage": {
+    query: "최저임금 계산기",
+    also: ["최저시급 계산기", "최저임금 월급", "시급 최저임금", "2026 최저임금"],
+  },
   "part-time-month": {
     query: "알바 월급 계산기",
     also: ["시급 월급 계산기", "알바비 계산기", "시급 주휴 월급"],
@@ -78,6 +82,10 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   "parental-leave": {
     query: "육아휴직 급여 계산기",
     also: ["육아휴직 계산기", "육휴 급여", "고용보험 육아휴직"],
+  },
+  "maternity-leave": {
+    query: "출산전후휴가 급여 계산기",
+    also: ["출산휴가 급여 계산기", "출산휴가 계산기", "고용보험 출산전후휴가"],
   },
   "offer-compare": {
     query: "연봉 비교 계산기",
@@ -162,6 +170,10 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   dsr: {
     query: "DSR 계산기",
     also: ["디에스알 계산기", "총부채원리금상환비율", "DSR 40%"],
+  },
+  "loan-interest": {
+    query: "대출 이자 계산기",
+    also: ["대출이자 계산기", "원리금균등 상환 계산기", "원금균등 계산기"],
   },
   mortgage: {
     query: "주택담보대출 계산기",

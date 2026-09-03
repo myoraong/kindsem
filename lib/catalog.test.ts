@@ -15,7 +15,7 @@ test("홈 섹션 설명은 사실만 적고 슬로건 말을 쓰지 않는다", 
     assert.doesNotMatch(section.blurb, forbidden)
   }
   assert.equal(CATALOG_HEADINGS.today.blurb, "더치페이, 사다리타기, 자동차 취득세.")
-  assert.equal(CATALOG_HEADINGS.work.blurb, "실수령, 주휴·연차·퇴직금. 근로기준법·세법 기준.")
+  assert.equal(CATALOG_HEADINGS.work.blurb, "실수령, 최저임금, 주휴·연차·퇴직금. 근로기준법·세법 기준.")
   assert.equal(CATALOG_HEADINGS.realty.blurb, "취득·보유·양도, 전월세, 대출 한도. 법령·고시.")
 })
 
@@ -31,6 +31,10 @@ test("미리보기 계산기가 카탈로그에 있다", () => {
   assert.equal(getCalculator("jeonse-vs-rent")?.title, "전세 vs 월세")
   assert.equal(getCalculator("import-duty")?.title, "해외직구 관세·부가세")
   assert.equal(getCalculator("parental-leave")?.title, "육아휴직 급여")
+  assert.equal(getCalculator("min-wage")?.title, "최저임금")
+  assert.equal(getCalculator("maternity-leave")?.title, "출산전후휴가 급여")
+  assert.equal(getCalculator("loan-interest")?.title, "대출 이자")
+  assert.equal(getCalculator("loan-interest")?.group, "loan")
   assert.equal(getCalculator("car-tax")?.title, "자동차세")
   assert.equal(getCalculator("part-time-month")?.title, "알바 월급")
   assert.equal(getCalculator("prorate-pay")?.title, "월급 일할")

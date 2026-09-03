@@ -122,6 +122,18 @@ export const LAW_SOURCES = {
     "https://www.law.go.kr/법령/고용보험법 시행령",
     "일반 1~3개월 100% 상한 250만, 4~6개월 200만, 7개월부터 80% 160만. 하한 70만.",
   ),
+  minWage: fromPolicy(
+    "minWageNotice",
+    "최저임금법 제10조, 최저임금법 시행령 제5조, 해당 연도 적용 최저임금 고시",
+    "https://www.law.go.kr/법령/최저임금법",
+    "시급·주 40시간 월 환산(209시간, 유급주휴 8시간 포함)은 고용노동부 고시. 다른 주시간은 시행령 제5조.",
+  ),
+  maternityLeave: fromPolicy(
+    "maternityCapNotice",
+    "근로기준법 제74조, 고용보험법 제76조, 출산전후휴가 급여등 상한액 고시",
+    "https://www.law.go.kr/법령/고용보험법",
+    "단태아 90일·상한 660만, 미숙아 100일, 다태아 120일. 대기업은 최초 유급 일수를 뺀 잔여만 고용보험.",
+  ),
   importDuty: fromPolicy(
     "expressNotice",
     "관세법 시행규칙 제45조, 특송물품 수입통관 사무처리에 관한 고시, 부가가치세법 제20조·제30조",
