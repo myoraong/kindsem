@@ -284,7 +284,7 @@ export function homeJsonLd() {
       url: SITE_URL,
       inLanguage: "ko",
       description:
-        "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세 등 생활·급여·부동산 계산기. 법령·고시 현행본. 빠진 공제는 넣지 않습니다.",
+        "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 하루 두 번 법제처에서 세율을 다시 읽고, 표에 없는 공제는 넣지 않습니다.",
       publisher: {
         "@type": "Organization",
         name: SITE_NAME,
@@ -310,8 +310,8 @@ export function homeJsonLd() {
 export const HOME_METADATA: Metadata = {
   title: { absolute: `생활·급여·부동산 계산기 · ${SITE_NAME}` },
   description:
-    "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 계산기. 법령·고시 현행본. 빠진 공제는 넣지 않습니다.",
-  keywords: ["카인드셈", "Kindsem", "실수령액 계산기", "퇴직금 계산기", "중개수수료 계산기"],
+    "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 하루 두 번 법제처에서 세율을 다시 읽고, 표에 없는 공제는 넣지 않습니다.",
+  keywords: ["카인드셈", "Kindsem", "실수령액 계산기", "퇴직금 계산기", "중개수수료 계산기", "취득세 계산기", "양도세 계산기", "주휴수당 계산기"],
   robots: { index: true, follow: true },
   alternates: { canonical: "/", languages: { "ko-KR": "/" } },
 }

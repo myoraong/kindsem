@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     template: "%s · Kindsem 카인드셈",
   },
   description:
-    "실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 계산기. 법령·고시 기준.",
+    "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다.",
   robots: { index: true, follow: true },
   other: { "google-adsense-account": ADSENSE_CLIENT },
   alternates: { languages: { "ko-KR": "/" } },
