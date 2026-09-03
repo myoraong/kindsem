@@ -42,8 +42,8 @@ function CategoryJump({
       data-home-jump
       aria-label="계산 분류"
       className={cn(
-        "sticky top-[var(--site-header-h)] z-20 flex flex-wrap gap-2 bg-background/90 backdrop-blur-md",
-        flush ? "py-1" : "-mx-4 mt-6 px-4 pt-4 pb-3",
+        "sticky top-[var(--site-header-h)] z-20 flex flex-wrap gap-2 md:bg-background/90 md:backdrop-blur-md",
+        flush ? "py-1" : "mt-6 pt-4 pb-3 md:-mx-4 md:px-4",
       )}
     >
       {JUMP.map((item) => (
