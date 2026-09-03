@@ -48,6 +48,8 @@ import {
   parseMaternityCapNotice,
   parseKoreanWon,
   parseRetirementDeductions,
+  parseInheritancePersonal,
+  parseInheritanceFinance,
 } from "./policy-fields.mjs"
 
 export { parseKoreanWon }
@@ -809,14 +811,41 @@ export async function refreshPolicy() {
     specialOneHouseMax: 0.8,
   }
 
-  const gift18 = findArticle(giftBody.법령.조문.조문단위, "18", "기초공제")
-  const gift21 = findArticle(giftBody.법령.조문.조문단위, "21", "일괄공제")
-  const gift19 = findArticle(giftBody.법령.조문.조문단위, "19", "배우자 상속공제")
+  const giftUnits = giftBody.법령.조문.조문단위
+  const gift18 = findArticle(giftUnits, "18", "기초공제")
+  const gift21 = findArticle(giftUnits, "21", "일괄공제")
+  const gift19 = findArticle(giftUnits, "19", "배우자 상속공제")
+  const gift20 =
+    findArticle(giftUnits, "20", "인적공제") ??
+    (Array.isArray(giftUnits)
+      ? giftUnits.find((unit) => String(unit.조문번호) === "20" && !unit.조문가지번호)
+      : null)
+  const gift22 =
+    findArticle(giftUnits, "22", "금융재산 상속공제") ??
+    findArticle(giftUnits, "22", "금융재산공제") ??
+    (Array.isArray(giftUnits)
+      ? giftUnits.find((unit) => String(unit.조문번호) === "22" && !unit.조문가지번호)
+      : null)
   const lump = parseWonAfter(articleText(gift21), "5억원") ?? 500_000_000
   const spouseMin = parseWonAfter(articleText(gift19), "5억원") ?? 500_000_000
   const spouseMax = parseWonAfter(articleText(gift19), "30억원") ?? prev.inheritance?.spouseMax ?? 3_000_000_000
   const basic = parseWonAfter(articleText(gift18), "2억원") ?? prev.inheritance?.basic ?? 200_000_000
-  const inheritance = { lump, spouseMin, spouseMax, basic }
+  const personal = parseInheritancePersonal(articleText(gift20))
+  const finance = parseInheritanceFinance(articleText(gift22))
+  const inheritance = {
+    lump,
+    spouseMin,
+    spouseMax,
+    basic,
+    child: personal.child ?? prev.inheritance?.child ?? 50_000_000,
+    minorPerYear: personal.minorPerYear ?? prev.inheritance?.minorPerYear ?? 10_000_000,
+    minorAgeCap: personal.minorAgeCap ?? prev.inheritance?.minorAgeCap ?? 19,
+    elderly: personal.elderly ?? prev.inheritance?.elderly ?? 50_000_000,
+    financeFull: finance.full ?? prev.inheritance?.financeFull ?? 20_000_000,
+    financeRate: finance.rate ?? prev.inheritance?.financeRate ?? 0.2,
+    financeFloor: finance.floor ?? prev.inheritance?.financeFloor ?? 20_000_000,
+    financeCap: finance.cap ?? prev.inheritance?.financeCap ?? 200_000_000,
+  }
 
   const income48 = findArticle(incomeBody.법령.조문.조문단위, "48", "퇴직소득공제")
   const retirement = reviveRetirement(parseRetirementDeductions(articleText(income48)), prev.retirement)

@@ -15,7 +15,7 @@ export function MoneyField({
   id: string
   label: string
   hint?: string
-  unit?: "만원" | "원" | "%" | "명" | "개월" | "년" | "시간" | "일" | "시간/주" | "일/주" | "달러" | "원/달러" | "cc"
+  unit?: "만원" | "원" | "%" | "명" | "개월" | "년" | "세" | "시간" | "일" | "시간/주" | "일/주" | "달러" | "원/달러" | "cc"
   value: string
   onChange: (value: string) => void
   placeholder?: string

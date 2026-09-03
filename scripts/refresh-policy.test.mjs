@@ -45,6 +45,8 @@ import {
   parseEiMaternity,
   parseMaternityCapNotice,
   parseRetirementDeductions,
+  parseInheritancePersonal,
+  parseInheritanceFinance,
 } from "./policy-fields.mjs"
 
 const INCOME_GRID = `┌────────┬──────────────────────────┐│1,400만원 이하  │과세표준의 6퍼센트                                  │├────────┼──────────────────────────┤│1,400만원 초과  │84만원 + (1,400만원을 초과하는 금액의 15퍼센트)     ││5,000만원 이하  │                                                    │├────────┼──────────────────────────┤│5,000만원 초과  │624만원 + (5,000만원을 초과하는 금액의 24퍼센트)    ││8,800만원 이하  │                                                    │├────────┼──────────────────────────┤│8,800만원 초과  │1,536만원 + (8,800만원을 초과하는 금액의 35퍼센트)  ││1억5천만원 이하 │                                                    │└────────┴──────────────────────────┘`
@@ -406,4 +408,24 @@ test("parseRetirementDeductions reads 소득세법 제48조 표", () => {
   assert.equal(parsed.converted[2].intercept, 45_200_000)
   assert.equal(parsed.converted[4].intercept, 151_700_000)
   assert.equal(parsed.converted[4].rate, 0.35)
+})
+
+test("parseInheritancePersonal reads 상증세법 제20조 금액", () => {
+  const text =
+    "1. 자녀: 1인당 5천만원 2. 상속인(피상속인의 배우자는 제외한다) 및 동거가족 중 미성년자: 1천만원에 19세가 될 때까지의 연수를 곱하여 계산한 금액 3. 상속인(피상속인의 배우자는 제외한다) 및 동거가족 중 65세 이상인 자: 1인당 5천만원"
+  const parsed = parseInheritancePersonal(text)
+  assert.equal(parsed.child, 50_000_000)
+  assert.equal(parsed.minorPerYear, 10_000_000)
+  assert.equal(parsed.minorAgeCap, 19)
+  assert.equal(parsed.elderly, 50_000_000)
+})
+
+test("parseInheritanceFinance reads 상증세법 제22조 한도", () => {
+  const text =
+    "1. 순금융재산의 가액이 2천만원 이하인 경우에는 그 순금융재산의 가액 2. 순금융재산의 가액이 2천만원을 초과하는 경우에는 그 순금융재산의 가액의 100분의 20. 다만, 그 금액이 2천만원에 미달하는 경우에는 2천만원을 공제하고, 2억원을 한도로 한다."
+  const parsed = parseInheritanceFinance(text)
+  assert.equal(parsed.full, 20_000_000)
+  assert.equal(parsed.rate, 0.2)
+  assert.equal(parsed.floor, 20_000_000)
+  assert.equal(parsed.cap, 200_000_000)
 })

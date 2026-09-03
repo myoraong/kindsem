@@ -3,8 +3,7 @@ import { FaqList } from "@/components/calc/faq-list"
 import { HomeBrowse } from "@/components/home-browse"
 import { HomeWhy } from "@/components/home-why"
 import { JsonLd } from "@/components/json-ld"
-import { Sena } from "@/components/sena"
-import { MASCOT } from "@/lib/brand"
+import { SenaFigure } from "@/components/sena"
 import { HOME_METADATA, homeJsonLd } from "@/lib/seo"
 
 const HOME_FAQ = [
@@ -46,17 +45,7 @@ export default function HomePage() {
             실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR.
           </p>
         </div>
-        <figure className="w-[5.25rem] shrink-0 sm:w-24 md:w-28 lg:w-[7.25rem]">
-          <Sena className="sena-bob" priority />
-          <figcaption className="mt-1.5 text-center">
-            <span className="block text-[11px] font-semibold tracking-tight text-foreground">
-              {MASCOT.name}
-            </span>
-            <span className="mt-0.5 hidden text-[10px] leading-4 text-muted-foreground sm:block">
-              {MASCOT.meaning}
-            </span>
-          </figcaption>
-        </figure>
+        <SenaFigure priority />
       </section>
 
       <HomeBrowse />

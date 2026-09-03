@@ -339,7 +339,15 @@ export const INHERITANCE = {
   "lump": 500000000,
   "spouseMin": 500000000,
   "spouseMax": 3000000000,
-  "basic": 200000000
+  "basic": 200000000,
+  "child": 50000000,
+  "minorPerYear": 10000000,
+  "minorAgeCap": 19,
+  "elderly": 50000000,
+  "financeFull": 20000000,
+  "financeRate": 0.2,
+  "financeFloor": 20000000,
+  "financeCap": 200000000
 } as const
 
 export const HOLDING = {

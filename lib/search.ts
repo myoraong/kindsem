@@ -68,7 +68,7 @@ const ALIASES: Record<string, string[]> = {
   "holding-tax": ["재산세", "종부세", "보유"],
   "license-tax": ["등록세", "등록면허"],
   "gift-tax": ["증여", "증여세", "자녀증여"],
-  inheritance: ["상속", "상속세", "일괄공제"],
+  inheritance: ["상속", "상속세", "일괄공제", "인적공제", "금융재산공제", "며느리"],
   "encumbered-gift": ["부담부", "채무증여"],
   "closing-cost": ["총비용", "잔금", "살때"],
   ltv: ["엘티비", "주택담보비율"],

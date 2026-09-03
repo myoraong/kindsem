@@ -836,3 +836,36 @@ export function parseMaternityCapNotice(text) {
     },
   }
 }
+
+/** 상증세법 제20조 자녀·미성년·경로 인적공제. 장애인 기대여명은 고시 표가 없어 빼 둡니다. */
+export function parseInheritancePersonal(text) {
+  const t = stripTags(text).replace(/\s+/g, " ")
+  const child = t.match(/자녀[\s\S]{0,48}1인당\s*([0-9,천백만억]+원)/)
+  const minor = t.match(
+    /([0-9,천백만억]+원)에\s*(\d+)\s*세(?:가 될 때까지|에 달하기까지)/,
+  )
+  const elderly = t.match(/65세 이상[\s\S]{0,48}1인당\s*([0-9,천백만억]+원)/)
+  return {
+    child: child ? parseKoreanWon(child[1]) : null,
+    minorPerYear: minor ? parseKoreanWon(minor[1]) : null,
+    minorAgeCap: minor ? Number(minor[2]) : null,
+    elderly: elderly ? parseKoreanWon(elderly[1]) : null,
+  }
+}
+
+/** 상증세법 제22조 금융재산 상속공제. */
+export function parseInheritanceFinance(text) {
+  const t = stripTags(text).replace(/\s+/g, " ")
+  const full = t.match(/순금융재산의 가액이\s*([0-9,천백만억]+원)\s*이하/)
+  const rate = t.match(/순금융재산의 가액의\s*100분의\s*(\d+)/)
+  const floor = t.match(/그 금액이\s*([0-9,천백만억]+원)에 미달/)
+  const cap = t.match(/([0-9,천백만억]+원)을 초과하는 경우에는\s*\1을 한도/)
+    || t.match(/공제할 금액이\s*([0-9,천백만억]+원)을 초과하는 경우에는\s*\1/)
+    || t.match(/([0-9,천백만억]+원)을 한도로/)
+  return {
+    full: full ? parseKoreanWon(full[1]) : null,
+    rate: rate ? Number(rate[1]) / 100 : null,
+    floor: floor ? parseKoreanWon(floor[1]) : null,
+    cap: cap ? parseKoreanWon(cap[1]) : null,
+  }
+}

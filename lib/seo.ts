@@ -157,7 +157,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   inheritance: {
     query: "상속세 계산기",
-    also: ["상속세 얼마나", "일괄공제", "배우자공제 상속세"],
+    also: ["상속세 얼마나", "일괄공제", "상속세 인적공제", "금융재산공제"],
   },
   "encumbered-gift": {
     query: "부담부증여 계산기",

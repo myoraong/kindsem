@@ -13,6 +13,7 @@ import { isTodaySlug } from "@/lib/today"
 import { isWorkSlug } from "@/lib/work"
 import { AdSenseInPage } from "@/components/adsense-inpage"
 import { PolicyStamp } from "@/components/policy-stamp"
+import { SenaFigure } from "@/components/sena"
 import { cn } from "@/lib/utils"
 
 export function CalcShell({
@@ -75,7 +76,7 @@ export function CalcShell({
             </p>
           ) : null}
         </div>
-        <AdSenseInPage size="compact" />
+        <SenaFigure variant="calc" />
       </div>
       {guide ? (
         <div className="mb-5 flex gap-2">

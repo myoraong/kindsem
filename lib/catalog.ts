@@ -296,8 +296,8 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "inheritance",
     title: "상속세",
-    blurb: "누가 받는지와 재산만 넣으면 일괄·배우자 공제.",
-    when: "상속 재산 가늠",
+    blurb: "자녀·미성년·경로 인적공제와 일괄·배우자·금융재산 공제.",
+    when: "상속세가 나올지 가늠",
     group: "buy",
   },
   {

@@ -5,7 +5,7 @@ import { MASCOT } from "@/lib/brand"
 export default function NotFound() {
   return (
     <div className="mx-auto flex w-full max-w-lg flex-1 flex-col items-start justify-center px-4 py-16">
-      <Sena className="mb-4 w-24" />
+      <Sena className="sena-bob mb-4 w-24 bg-transparent" />
       <p className="text-sm font-medium text-primary">
         {MASCOT.name} · {MASCOT.meaning}
       </p>

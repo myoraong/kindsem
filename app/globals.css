@@ -154,15 +154,34 @@
 @keyframes sena-bob {
   0%,
   100% {
-    transform: translateY(0);
+    transform: translateY(0) rotate(-0.6deg);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translateY(-6px) rotate(1.4deg);
   }
 }
 
 .sena-bob {
-  animation: sena-bob 3.8s ease-in-out infinite;
+  transform-origin: 50% 92%;
+  animation: sena-bob 3.4s ease-in-out infinite;
+}
+
+@keyframes sena-calc {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  40% {
+    transform: translateY(-5px) rotate(-5.5deg);
+  }
+  70% {
+    transform: translateY(-2px) rotate(-1.8deg);
+  }
+}
+
+.sena-calc {
+  transform-origin: 50% 92%;
+  animation: sena-calc 2.9s ease-in-out infinite;
 }
 
 @keyframes ladder-trace {
@@ -181,7 +200,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sena-bob {
+  .sena-bob,
+  .sena-calc {
     animation: none;
   }
   .ladder-trace {

@@ -317,18 +317,30 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
   )
 }
 
+const CHILD_COUNTS = ["0", "1", "2", "3", "4", "5", "6", "7", "8"] as const
+
 export function InheritanceCalc({ item }: { item: CalcItem }) {
   const [estate, setEstate] = useState("150000")
   const [debts, setDebts] = useState("")
   const [heirs, setHeirs] = useState<InheritanceHeirs>("spouse-children")
+  const [children, setChildren] = useState<(typeof CHILD_COUNTS)[number]>("2")
+  const [minorCount, setMinorCount] = useState("0")
+  const [minorAge, setMinorAge] = useState("10")
+  const [elderlyCount, setElderlyCount] = useState("0")
+  const [finance, setFinance] = useState("")
 
   const result = useMemo(() => {
     return calcInheritance({
       estate: manwonToWon(Number(estate) || 0),
       debts: manwonToWon(Number(debts) || 0),
       heirs,
+      children: heirs === "spouse-only" ? 0 : Number(children) || 0,
+      minorCount: Number(minorCount) || 0,
+      minorAge: Number(minorAge) || 0,
+      elderlyCount: Number(elderlyCount) || 0,
+      finance: manwonToWon(Number(finance) || 0),
     })
-  }, [estate, debts, heirs])
+  }, [estate, debts, heirs, children, minorCount, minorAge, elderlyCount, finance])
 
   return (
     <CalcShell
@@ -337,12 +349,20 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
         <FaqList
           items={[
             {
+              q: "며느리·사위도 공제되나요?",
+              a: `자녀 공제 ${formatKoreanUnit(INHERITANCE.child)}은 피상속인의 자녀만입니다. 며느리·사위는 자녀도, 동거가족(직계존비속·형제자매)도 아닙니다. 자녀가 먼저 돌아가셔 그 배우자가 대습상속하면 상속인이 되므로, 65세 이상이면 아래 경로공제에 넣으면 됩니다. 장애인 공제는 기대여명 고시가 필요해 넣지 않았습니다.`,
+            },
+            {
               q: "얼마까지 세금이 없나요?",
-              a: `배우자·자녀가 함께 받으면 일괄공제 ${formatKoreanUnit(INHERITANCE.lump)}과 배우자공제 최소 ${formatKoreanUnit(INHERITANCE.spouseMin)}을 더해 보통 ${formatKoreanUnit(INHERITANCE.lump + INHERITANCE.spouseMin)}까지는 없습니다. 자녀만 받으면 일괄공제 ${formatKoreanUnit(INHERITANCE.lump)}입니다. 배우자만 받으면 일괄공제를 쓰지 못하고 기초공제 ${formatKoreanUnit(INHERITANCE.basic)}과 배우자공제 최소를 더합니다.`,
+              a: `배우자·자녀가 함께 받으면 일괄공제 ${formatKoreanUnit(INHERITANCE.lump)}과 배우자공제 최소 ${formatKoreanUnit(INHERITANCE.spouseMin)}을 더해 보통 ${formatKoreanUnit(INHERITANCE.lump + INHERITANCE.spouseMin)}까지는 없습니다. 자녀가 많거나 미성년·65세 공제가 크면 일괄 대신 인적공제 합계를 씁니다. 자녀만이면 일괄 ${formatKoreanUnit(INHERITANCE.lump)}과 인적공제 중 큰 금액입니다. 배우자만 받으면 일괄을 쓰지 못하고 기초 ${formatKoreanUnit(INHERITANCE.basic)}과 배우자공제 최소를 더합니다.`,
+            },
+            {
+              q: "금융재산공제는요?",
+              a: `예금·보험 등에서 금융빚을 뺀 순금융재산입니다. ${formatKoreanUnit(INHERITANCE.financeFull)} 이하면 전액, 넘으면 20%와 ${formatKoreanUnit(INHERITANCE.financeFloor)} 중 큰 금액이며 한도는 ${formatKoreanUnit(INHERITANCE.financeCap)}입니다. 일괄공제와는 별도로 더합니다.`,
             },
             {
               q: "집값만 넣으면 되나요?",
-              a: "상속재산은 부동산·예금·보험 등을 더한 가액입니다. 대출 등 빚이 있으면 빼는 칸에 넣습니다. 감정가·사전증여 합산·금융재산공제는 넣지 않았습니다.",
+              a: "상속재산은 부동산·예금·보험 등을 더한 가액입니다. 대출 등 빚이 있으면 빼는 칸에 넣습니다. 감정가·사전증여 합산·동거주택 공제는 넣지 않았습니다.",
             },
             {
               q: "배우자가 더 받으면요?",
@@ -376,10 +396,34 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
             result
               ? [
                   { label: "순상속재산", value: formatWon(result.net) },
-                  ...(result.lump ? [{ label: "일괄공제", value: formatWon(result.lump) }] : []),
-                  ...(result.basic ? [{ label: "기초공제", value: formatWon(result.basic) }] : []),
+                  ...(result.usedLump
+                    ? [
+                        { label: "일괄공제", value: formatWon(result.lump) },
+                        {
+                          label: "인적공제 합계(비교)",
+                          value: formatWon(result.itemized),
+                          mute: true,
+                        },
+                      ]
+                    : [
+                        ...(result.basic
+                          ? [{ label: "기초공제", value: formatWon(result.basic) }]
+                          : []),
+                        ...(result.childDeduction
+                          ? [{ label: "자녀공제", value: formatWon(result.childDeduction) }]
+                          : []),
+                        ...(result.minorDeduction
+                          ? [{ label: "미성년공제", value: formatWon(result.minorDeduction) }]
+                          : []),
+                        ...(result.elderlyDeduction
+                          ? [{ label: "65세 이상 공제", value: formatWon(result.elderlyDeduction) }]
+                          : []),
+                      ]),
                   ...(result.spouseDeduction
                     ? [{ label: "배우자공제(최소)", value: formatWon(result.spouseDeduction) }]
+                    : []),
+                  ...(result.financeDeduction
+                    ? [{ label: "금융재산공제", value: formatWon(result.financeDeduction) }]
                     : []),
                   { label: "이 금액까지 0원", value: formatWon(result.deduction) },
                   { label: "과세표준", value: formatWon(result.taxable) },
@@ -402,6 +446,22 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
             { value: "spouse-only", label: "배우자만" },
           ]}
         />
+        {heirs !== "spouse-only" ? (
+          <div className="space-y-2">
+            <ChoiceGroup
+              label="자녀 수"
+              value={children}
+              onChange={setChildren}
+              options={CHILD_COUNTS.map((value) => ({
+                value,
+                label: value === "0" ? "없음" : `${value}명`,
+              }))}
+            />
+            <Hint>
+              피상속인의 자녀만 넣습니다. 며느리·사위는 자녀 공제 대상이 아닙니다.
+            </Hint>
+          </div>
+        ) : null}
         <div className="space-y-2">
           <MoneyField id="est" label="상속재산" value={estate} onChange={setEstate} />
           <AmountChips
@@ -422,10 +482,55 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
           value={debts}
           onChange={setDebts}
         />
+        <details className="rounded-xl bg-secondary/60 px-3 py-2">
+          <summary className="cursor-pointer text-sm font-medium">
+            미성년·65세 이상·금융재산
+          </summary>
+          <div className="mt-3 space-y-4">
+            <MoneyField
+              id="minors"
+              label="미성년 상속인·동거가족"
+              hint="배우자 제외"
+              unit="명"
+              value={minorCount}
+              onChange={setMinorCount}
+            />
+            {Number(minorCount) > 0 ? (
+              <MoneyField
+                id="minor-age"
+                label="그 사람 만나이"
+                hint={`19세까지 ${formatKoreanUnit(INHERITANCE.minorPerYear)}×연수`}
+                unit="세"
+                value={minorAge}
+                onChange={setMinorAge}
+              />
+            ) : null}
+            <MoneyField
+              id="elderly"
+              label="65세 이상 상속인·동거가족"
+              hint="배우자 제외. 대습한 며느리·사위면 여기"
+              unit="명"
+              value={elderlyCount}
+              onChange={setElderlyCount}
+            />
+            <MoneyField
+              id="finance"
+              label="순금융재산"
+              hint="예금·보험 − 금융빚"
+              value={finance}
+              onChange={setFinance}
+            />
+            <Hint>
+              미성년·65세 이상은 자녀 공제와 겹쳐도 됩니다. 동거가족은 피상속인이 부양한
+              직계존비속(배우자의 부모 포함)과 형제자매입니다.
+            </Hint>
+          </div>
+        </details>
         <Hint>
           집·예금·보험을 더한 가액을 넣으면 됩니다. 배우자·자녀면 보통{" "}
           {formatKoreanUnit(INHERITANCE.lump + INHERITANCE.spouseMin)}까지, 자녀만이면{" "}
-          {formatKoreanUnit(INHERITANCE.lump)}까지는 세금이 없습니다. 위 산출세액은 신고세액이 아닙니다.
+          {formatKoreanUnit(INHERITANCE.lump)}까지는 세금이 없습니다. 위 산출세액은 신고세액이
+          아닙니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.gift]} />
       </div>

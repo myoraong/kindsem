@@ -186,29 +186,71 @@ export function calcGiftTax(input: { amount: number; relation: GiftRelation; pri
   }
 }
 
+/** 상증세법 제22조. 순금융재산 2천만 이하 전액, 초과 시 max(2천만, 20%) 한도 2억. */
+export function financeInheritanceDeduction(netFinance: number) {
+  const amount = Math.max(0, netFinance)
+  if (amount <= 0) return 0
+  if (amount <= INHERITANCE.financeFull) return amount
+  return Math.min(
+    INHERITANCE.financeCap,
+    Math.max(INHERITANCE.financeFloor, truncWon(amount * INHERITANCE.financeRate)),
+  )
+}
+
 export function calcInheritance(input: {
   estate: number
   debts?: number
   heirs?: InheritanceHeirs
   spouse?: boolean
+  /** 피상속인의 자녀 수. 며느리·사위는 넣지 않습니다. */
+  children?: number
+  /** 상속인(배우자 제외)·동거가족 중 미성년 인원. 자녀와 겹치면 자녀공제와 함께 갑니다. */
+  minorCount?: number
+  /** 미성년 대표 만나이. 남은 연수는 19세 − 나이입니다. */
+  minorAge?: number
+  /** 상속인(배우자 제외)·동거가족 중 65세 이상. 대습한 며느리·사위가 65세이면 여기. */
+  elderlyCount?: number
+  /** 순금융재산(금융재산 − 금융채무). */
+  finance?: number
 }) {
   if (input.estate <= 0) return null
   const heirs: InheritanceHeirs =
     input.heirs ?? (input.spouse === false ? "children" : "spouse-children")
   const debts = Math.max(0, input.debts ?? 0)
   const net = Math.max(0, input.estate - debts)
-  const lump = heirs === "spouse-only" ? 0 : INHERITANCE.lump
-  const basic = heirs === "spouse-only" ? INHERITANCE.basic : 0
+  const children = heirs === "spouse-only" ? 0 : Math.max(0, Math.floor(input.children ?? 0))
+  const childrenGiven = input.children !== undefined
+  const hasNonSpouseHeir =
+    heirs === "children" || (heirs === "spouse-children" && (!childrenGiven || children > 0))
+  const minorCount = Math.max(0, Math.floor(input.minorCount ?? 0))
+  const minorAge = Math.max(0, Math.floor(input.minorAge ?? 0))
+  const minorYears = minorCount * Math.max(0, INHERITANCE.minorAgeCap - minorAge)
+  const elderlyCount = Math.max(0, Math.floor(input.elderlyCount ?? 0))
+  const childDeduction = children * INHERITANCE.child
+  const minorDeduction = minorYears * INHERITANCE.minorPerYear
+  const elderlyDeduction = elderlyCount * INHERITANCE.elderly
+  const itemized =
+    INHERITANCE.basic + childDeduction + minorDeduction + elderlyDeduction
+  const usedLump = hasNonSpouseHeir && INHERITANCE.lump >= itemized
+  const familyDeduction = usedLump ? INHERITANCE.lump : itemized
   const spouseDeduction = heirs === "children" ? 0 : INHERITANCE.spouseMin
-  const deduction = lump + basic + spouseDeduction
+  const financeDeduction = financeInheritanceDeduction(input.finance ?? 0)
+  const deduction = familyDeduction + spouseDeduction + financeDeduction
   const taxable = Math.max(0, net - deduction)
   const { tax, rate } = progressiveTax(taxable, GIFT_BRACKETS)
   return {
     heirs,
     net,
-    lump,
-    basic,
+    children,
+    lump: usedLump ? INHERITANCE.lump : 0,
+    basic: usedLump ? 0 : INHERITANCE.basic,
+    childDeduction: usedLump ? 0 : childDeduction,
+    minorDeduction: usedLump ? 0 : minorDeduction,
+    elderlyDeduction: usedLump ? 0 : elderlyDeduction,
+    itemized,
+    usedLump,
     spouseDeduction,
+    financeDeduction,
     deduction,
     taxable,
     tax,

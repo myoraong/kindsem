@@ -8,6 +8,7 @@ test("세나 이름과 뜻이 카인드셈 얼굴이다", () => {
   assert.equal(MASCOT.name, "세나")
   assert.equal(MASCOT.meaning, "내가 세어 줄게요")
   assert.match(MASCOT.alt, /계산기/)
+  assert.match(MASCOT.altCalc, /버튼을 누르며/)
 })
 
 test("세나 그림 파일이 공개 폴더에 있다", () => {
@@ -15,5 +16,6 @@ test("세나 그림 파일이 공개 폴더에 있다", () => {
   assert.equal(existsSync(join(root, "kindsem-sena.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-face.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-icon.png")), true)
+  assert.equal(existsSync(join(root, "kindsem-sena-calc.png")), true)
   assert.equal(existsSync(join(root, "favicon.ico")), true)
 })
