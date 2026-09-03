@@ -65,13 +65,13 @@ export function SenaFigure({
   priority?: boolean
 }) {
   return (
-    <figure className="w-[5.25rem] shrink-0 bg-transparent sm:w-24 md:w-28 lg:w-[7.25rem]">
+    <figure className="w-[5.5rem] shrink-0 -translate-x-1 bg-transparent sm:w-[6.75rem] sm:-translate-x-2 md:w-32 md:-translate-x-3 lg:w-[8.75rem]">
       <Sena
         variant={variant}
         className={variant === "calc" ? "sena-calc" : "sena-bob"}
         priority={priority}
       />
-      <figcaption className="mt-1.5 text-center">
+      <figcaption className="mt-1 text-center">
         <span className="block text-[11px] font-semibold tracking-tight text-foreground">
           {MASCOT.name}
         </span>

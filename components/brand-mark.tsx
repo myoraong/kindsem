@@ -8,7 +8,7 @@ export function BrandMark() {
     <span className="flex items-center gap-2 sm:gap-2.5">
       <Sena
         variant="face"
-        className="size-9 shrink-0 overflow-hidden rounded-full object-cover sm:size-10"
+        className="-ml-0.5 size-8 shrink-0 overflow-hidden rounded-full object-cover sm:size-9"
         priority
       />
       <span className="flex min-w-0 flex-col justify-center leading-none">

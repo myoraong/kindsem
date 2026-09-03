@@ -14,7 +14,7 @@ export function SiteHeader() {
       data-site-header
       className="sticky top-0 z-30 overflow-visible border-b border-border bg-background/90 backdrop-blur-md"
     >
-      <div className="mx-auto flex h-[var(--site-header-h)] max-w-5xl items-center gap-0.5 overflow-visible px-3 sm:gap-2 sm:px-4">
+      <div className="mx-auto flex h-[var(--site-header-h)] max-w-5xl items-center gap-0.5 overflow-visible px-2.5 sm:gap-2 sm:px-4">
         <BrandLink />
         <nav aria-label="계산 분류" className="ml-auto flex min-w-0 items-center gap-0 text-sm sm:gap-0.5">
           <TodayMenu />
