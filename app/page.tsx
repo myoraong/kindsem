@@ -50,8 +50,8 @@ export default function HomePage() {
         </figure>
       </section>
 
-      <HomeWhy />
       <HomeBrowse />
+      <HomeWhy />
       <FaqList items={HOME_FAQ} />
       <AdSenseInPage />
     </div>

@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react"
 import { toast } from "sonner"
+import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
@@ -71,14 +72,15 @@ function Frame({
           {caption ? <p className="mt-1 text-sm text-muted-foreground">{caption}</p> : null}
           {children}
           {copyValue ? (
-            <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy} aria-label="복사">
-              복사
+            <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
+              결과 복사
             </Button>
           ) : null}
         </>
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
+      {headline ? <ResultDock title={title} display={headline} onCopy={copy} /> : null}
     </aside>
   )
 }

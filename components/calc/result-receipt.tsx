@@ -1,6 +1,7 @@
 "use client"
 
 import { toast } from "sonner"
+import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
 import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
 
@@ -88,13 +89,14 @@ export function ResultReceipt({
           {lawLine ? (
             <p className="mt-4 text-xs leading-5 text-muted-foreground">{lawLine}</p>
           ) : null}
-          <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy} aria-label="복사">
-            복사
+          <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
+            결과 복사
           </Button>
         </>
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
+      {hasResult ? <ResultDock title={title} display={display} onCopy={copy} /> : null}
     </aside>
   )
 }

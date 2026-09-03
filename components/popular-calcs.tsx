@@ -2,7 +2,7 @@ import Link from "next/link"
 import { popularCalculators } from "@/lib/popular-calcs"
 import { rememberBackSection } from "@/lib/home-back"
 import type { HomeSection } from "@/lib/home-section"
-import { calcSeo } from "@/lib/seo"
+import { calcPath, calcSeo } from "@/lib/seo"
 
 export function PopularCalcs({ from }: { from?: HomeSection }) {
   const items = popularCalculators()
@@ -15,7 +15,7 @@ export function PopularCalcs({ from }: { from?: HomeSection }) {
         {items.map((item) => (
           <li key={item.slug}>
             <Link
-              href={`/calc/${item.slug}`}
+              href={calcPath(item.slug)}
               onClick={() => {
                 if (from) rememberBackSection(from)
               }}

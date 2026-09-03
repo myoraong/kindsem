@@ -35,7 +35,7 @@ import {
 import type { CalcItem } from "@/lib/catalog"
 import { rememberBackSection } from "@/lib/home-back"
 import type { HomeSection } from "@/lib/home-section"
-import { calcSeo } from "@/lib/seo"
+import { calcPath, calcSeo } from "@/lib/seo"
 
 const ICONS: Record<string, ComponentType<{ className?: string }>> = {
   quick: Calculator,
@@ -74,7 +74,7 @@ export function CalcDirRow({ item, from }: { item: CalcItem; from?: HomeSection 
   const Icon = ICONS[item.slug] ?? Calculator
   return (
     <Link
-      href={`/calc/${item.slug}`}
+      href={calcPath(item.slug)}
       onClick={() => {
         if (from) rememberBackSection(from)
       }}

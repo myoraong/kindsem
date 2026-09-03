@@ -4,6 +4,16 @@ export function truncWon(value: number) {
   return value > 0 ? Math.floor(value) : Math.ceil(value)
 }
 
+export function formatGroupedInput(raw: string) {
+  if (!raw) return ""
+  const negative = raw.startsWith("-")
+  const body = negative ? raw.slice(1) : raw
+  const [intPart, frac = null] = body.split(".", 2)
+  const grouped = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  const withDot = frac !== null ? `.${frac}` : ""
+  return `${negative ? "-" : ""}${grouped}${withDot}`
+}
+
 export function parseAmount(raw: string): number | null {
   const cleaned = raw.replace(/[,\s원만원억]/g, "").trim()
   if (!cleaned) return null

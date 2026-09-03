@@ -1,7 +1,7 @@
 "use client"
 
 import { Label } from "@/components/ui/label"
-import { formatKoreanUnit, manwonToWon } from "@/lib/format"
+import { formatGroupedInput, formatKoreanUnit, manwonToWon } from "@/lib/format"
 
 export function MoneyField({
   id,
@@ -40,7 +40,7 @@ export function MoneyField({
         <input
           id={id}
           inputMode="decimal"
-          value={value}
+          value={formatGroupedInput(value)}
           placeholder={placeholder}
           onChange={(event) => onChange(event.target.value.replace(/[^\d.]/g, ""))}
           className="h-12 w-full rounded-xl border border-input bg-transparent pr-14 pl-3 text-lg tabular outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"

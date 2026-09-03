@@ -13,6 +13,7 @@ import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
 import { searchCalculators } from "@/lib/search"
 import { rememberBackSection } from "@/lib/home-back"
 import { homeChipClass } from "@/lib/home-section"
+import { calcPath } from "@/lib/seo"
 import {
   HOME_SECTION_SCROLL_MARGIN_CLASS,
   goHomeSection,
@@ -107,7 +108,7 @@ export function HomeBrowse() {
         onSubmit={(event) => {
           event.preventDefault()
           const first = results[0]
-          if (first) router.push(`/calc/${first.slug}/`)
+          if (first) router.push(calcPath(first.slug))
         }}
       >
         <label htmlFor="home-search" className="sr-only">

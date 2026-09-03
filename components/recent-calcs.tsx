@@ -6,6 +6,7 @@ import { getCalculator } from "@/lib/catalog"
 import { rememberBackSection } from "@/lib/home-back"
 import type { HomeSection } from "@/lib/home-section"
 import { forgetRecentCalc, readRecentCalcs } from "@/lib/recent-calcs"
+import { calcPath, calcSeo } from "@/lib/seo"
 
 export function RecentCalcs({ from }: { from?: HomeSection }) {
   const [slugs, setSlugs] = useState<string[]>([])
@@ -33,18 +34,18 @@ export function RecentCalcs({ from }: { from?: HomeSection }) {
               className="inline-flex h-8 items-center rounded-full bg-card pl-3 pr-1 ring-1 ring-foreground/8 hover:bg-accent"
             >
               <Link
-                href={`/calc/${item.slug}`}
+                href={calcPath(item.slug)}
                 className="text-sm"
                 onClick={() => {
                   if (from) rememberBackSection(from)
                 }}
               >
-                {item.title}
+                {calcSeo(item.slug).query}
               </Link>
               <button
                 type="button"
                 className="-mr-0.5 grid size-6 shrink-0 place-items-center text-muted-foreground hover:text-foreground"
-                aria-label={`${item.title} 삭제`}
+                aria-label={`${calcSeo(item.slug).query} 삭제`}
                 onClick={() => remove(item.slug)}
               >
                 <span aria-hidden="true" className="text-[15px] leading-none">

@@ -5,6 +5,7 @@ import { createPortal } from "react-dom"
 import Link from "next/link"
 import { interceptHomeSectionClick } from "@/lib/home-section-snap"
 import { closeNavMenu, getOpenNavMenu, openNavMenu, subscribeNavMenu } from "@/lib/nav-menu-open"
+import { calcPath } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 
 type Item = { slug: string; title: string; blurb: string }
@@ -136,7 +137,7 @@ export function NavMenu({
                 {items.map((item) => (
                   <li key={item.slug}>
                     <Link
-                      href={`/calc/${item.slug}`}
+                      href={calcPath(item.slug)}
                       onClick={() => {
                         onNavigate?.()
                         hideNow()

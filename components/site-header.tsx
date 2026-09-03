@@ -1,5 +1,6 @@
 "use client"
 
+import { HeaderSearch } from "@/components/header-search"
 import { Moon, Sun } from "lucide-react"
 import { BrandLink } from "@/components/brand-mark"
 import { RealtyMenu } from "@/components/realty-menu"
@@ -20,6 +21,7 @@ export function SiteHeader() {
           <WorkMenu />
           <RealtyMenu />
         </nav>
+        <HeaderSearch />
         <button
           type="button"
           aria-label="색감 바꾸기"
