@@ -51,10 +51,18 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   trailingSlash: true,
   basePath,
-  // Preview and local browsers often open http://127.0.0.1, while Next's
-  // default allowlist is only localhost. Cross-origin script tags then 403
-  // and the calculators never hydrate.
-  allowedDevOrigins: ["127.0.0.1"],
+  // Preview iframe often sends Origin: null (opaque). Next then 403s /_next
+  // scripts and the local site looks blank even though HTML 200s.
+  allowedDevOrigins: [
+    "127.0.0.1",
+    "localhost",
+    "::1",
+    "null",
+    "cursor.com",
+    "*.cursor.com",
+    "cursor.sh",
+    "*.cursor.sh",
+  ],
 }
 
 export default nextConfig
