@@ -1,9 +1,12 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
+import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calcAcquisition, stampDuty, type HomeCount } from "@/lib/acquisition"
@@ -46,6 +49,20 @@ export function ClosingCost({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "집값 말고 뭐가 들어가나요?",
+              a: "취득세(지방교육세·농특세 포함), 중개보수 법정 상한(부가세 포함), 인지세입니다. 국민주택채권 할인료, 이사비, 화재보험, 법무사 보수는 빠집니다.",
+            },
+            {
+              q: "복비는 꼭 이 금액인가요?",
+              a: "법정 상한에 부가세를 더한 값입니다. 실제 복비는 이 안에서 낮출 수 있습니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="매수 시 필요 비용"
@@ -66,6 +83,15 @@ export function ClosingCost({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <MoneyField id="price" label="매매가" value={price} onChange={setPrice} />
+        <AmountChips
+          options={[
+            { label: "3억", value: "30000" },
+            { label: "6억 5천", value: "65000" },
+            { label: "9억", value: "90000" },
+            { label: "12억", value: "120000" },
+          ]}
+          onPick={setPrice}
+        />
         <ChoiceGroup
           label="취득 후 주택 수"
           value={homes}
@@ -97,10 +123,10 @@ export function ClosingCost({ item }: { item: CalcItem }) {
             ) : null}
           </>
         ) : null}
-        <p className="text-sm leading-6 text-muted-foreground">
+        <Hint>
           국민주택채권 할인료, 이사비, 화재보험, 법무사 보수는 빠져 있습니다. 법무사 금액은 법령
           상한이 아니라 합계에 넣지 않습니다.
-        </p>
+        </Hint>
         <LawNote
           lines={[
             LAW_SOURCES.acquisition,

@@ -1,7 +1,9 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -30,6 +32,20 @@ export function CertPayback({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "세전으로 나누나요?",
+              a: "아닙니다. 지금 연봉과 자격 후 연봉의 세후 실수령 차이로 비용을 나눕니다. 식대 비과세는 실수령·이직과 같습니다.",
+            },
+            {
+              q: "합격·이직을 보장하나요?",
+              a: "아닙니다. 적어 주신 연봉 상승이 실제로 나온다고 가정한 회수 기간입니다.",
+            },
+          ]}
+        />
+      }
       guide={
         <div className="space-y-4 text-foreground">
           <p>
@@ -62,9 +78,40 @@ export function CertPayback({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="cost" label="자격·수강 비용" value={cost} onChange={setCost} />
-        <MoneyField id="now" label="지금 연봉" value={now} onChange={setNow} />
-        <MoneyField id="after" label="자격 후 연봉" value={after} onChange={setAfter} />
+        <div className="space-y-2">
+          <MoneyField id="cost" label="자격·수강 비용" value={cost} onChange={setCost} />
+          <AmountChips
+            options={[
+              { label: "50만", value: "50" },
+              { label: "80만", value: "80" },
+              { label: "150만", value: "150" },
+              { label: "300만", value: "300" },
+            ]}
+            onPick={setCost}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="now" label="지금 연봉" value={now} onChange={setNow} />
+          <AmountChips
+            options={[
+              { label: "3천만", value: "3000" },
+              { label: "4천만", value: "4000" },
+              { label: "5천만", value: "5000" },
+            ]}
+            onPick={setNow}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="after" label="자격 후 연봉" value={after} onChange={setAfter} />
+          <AmountChips
+            options={[
+              { label: "4천만", value: "4000" },
+              { label: "5천만", value: "5000" },
+              { label: "6천만", value: "6000" },
+            ]}
+            onPick={setAfter}
+          />
+        </div>
         <Hint>실수령은 이직 계산과 같은 4대보험 고시·소득세법 공제입니다. 식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}을 넣습니다.</Hint>
       </div>
     </CalcShell>

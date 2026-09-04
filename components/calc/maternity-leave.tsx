@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -85,12 +86,23 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField
-          id="ordinary"
-          label="월 통상임금"
-          value={monthly}
-          onChange={setMonthly}
-        />
+        <div className="space-y-2">
+          <MoneyField
+            id="ordinary"
+            label="월 통상임금"
+            value={monthly}
+            onChange={setMonthly}
+          />
+          <AmountChips
+            options={[
+              { label: "200만", value: "200" },
+              { label: "250만", value: "250" },
+              { label: "300만", value: "300" },
+              { label: "400만", value: "400" },
+            ]}
+            onPick={setMonthly}
+          />
+        </div>
         <ChoiceGroup
           label="출산"
           value={kind}

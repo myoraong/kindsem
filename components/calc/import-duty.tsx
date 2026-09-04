@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -126,13 +127,24 @@ export function ImportDuty({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField
-          id="usd"
-          label="물품가격"
-          unit="달러"
-          value={priceUsd}
-          onChange={setPriceUsd}
-        />
+        <div className="space-y-2">
+          <MoneyField
+            id="usd"
+            label="물품가격"
+            unit="달러"
+            value={priceUsd}
+            onChange={setPriceUsd}
+          />
+          <AmountChips
+            options={[
+              { label: "50달러", value: "50" },
+              { label: "140달러", value: "140" },
+              { label: `${LIST_CLEARANCE_USD}달러`, value: String(LIST_CLEARANCE_USD) },
+              { label: `${LIST_CLEARANCE_US_USD}달러`, value: String(LIST_CLEARANCE_US_USD) },
+            ]}
+            onPick={setPriceUsd}
+          />
+        </div>
         <MoneyField
           id="fx"
           label="적용 환율"

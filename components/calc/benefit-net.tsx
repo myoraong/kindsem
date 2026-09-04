@@ -1,8 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -58,6 +60,20 @@ export function BenefitNet({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "실업급여는 세금을 떼나요?",
+              a: "구직급여는 소득세 비과세입니다. 받은 금액이 실수령입니다. 구직촉진수당 등 다른 지원금은 안내문을 확인하세요.",
+            },
+            {
+              q: "내일배움카드는요?",
+              a: "훈련기관에 지급되는 훈련비는 보통 통장에 안 들어옵니다. 본인 부담만 넣으세요. 과세 여부를 모르면 세금을 빼지 않습니다.",
+            },
+          ]}
+        />
+      }
       guide={
         <div className="space-y-4 text-foreground">
           <p>
@@ -96,8 +112,30 @@ export function BenefitNet({ item }: { item: CalcItem }) {
           }))}
         />
         <Hint>{spec.note}</Hint>
-        <MoneyField id="b" label="월 금액" value={monthly} onChange={setMonthly} />
-        <MoneyField id="m" label="받는 기간" unit="개월" value={months} onChange={setMonths} />
+        <div className="space-y-2">
+          <MoneyField id="b" label="월 금액" value={monthly} onChange={setMonthly} />
+          <AmountChips
+            options={[
+              { label: "150만", value: "150" },
+              { label: "180만", value: "180" },
+              { label: "200만", value: "200" },
+              { label: "250만", value: "250" },
+            ]}
+            onPick={setMonthly}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="m" label="받는 기간" unit="개월" value={months} onChange={setMonths} />
+          <AmountChips
+            options={[
+              { label: "3개월", value: "3" },
+              { label: "4개월", value: "4" },
+              { label: "6개월", value: "6" },
+              { label: "9개월", value: "9" },
+            ]}
+            onPick={setMonths}
+          />
+        </div>
       </div>
     </CalcShell>
   )

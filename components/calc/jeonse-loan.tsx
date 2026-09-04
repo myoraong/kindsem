@@ -1,12 +1,26 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
+import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { interestOnly } from "@/lib/loan"
 import { formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
+
+const FAQ = [
+  {
+    q: "왜 이자만 나오나요?",
+    a: "전세자금대출은 보통 만기까지 이자만 내고, 만기에 원금을 갚거나 연장합니다. 원리금균등은 대출 이자 계산기를 보세요.",
+  },
+  {
+    q: "보증료·중도상환은요?",
+    a: "주택금융공사·서울보증 보증료와 중도상환 수수료는 상품·보증비율마다 달라 넣지 않았습니다. 적어 주신 금리로 이자만 셉니다.",
+  },
+]
 
 export function JeonseLoan({ item }: { item: CalcItem }) {
   const [principal, setPrincipal] = useState("15000")
@@ -24,6 +38,7 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
           title="매달 이자"
@@ -44,11 +59,31 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
     >
       <div className="space-y-4">
         <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
+        <AmountChips
+          options={[
+            { label: "1억", value: "10000" },
+            { label: "1.5억", value: "15000" },
+            { label: "2억", value: "20000" },
+            { label: "3억", value: "30000" },
+          ]}
+          onPick={setPrincipal}
+        />
         <MoneyField id="r" label="연 금리" unit="%" value={rate} onChange={setRate} />
-        <MoneyField id="y" label="기간" unit="년" value={years} onChange={setYears} />
-        <p className="text-sm leading-6 text-muted-foreground">
+        <div className="space-y-2">
+          <MoneyField id="y" label="기간" unit="년" value={years} onChange={setYears} />
+          <AmountChips
+            options={[
+              { label: "1년", value: "1" },
+              { label: "2년", value: "2" },
+              { label: "3년", value: "3" },
+              { label: "4년", value: "4" },
+            ]}
+            onPick={setYears}
+          />
+        </div>
+        <Hint>
           만기일시상환(이자만) 기준입니다. 실제 금리는 은행·보증기관 조건에 따라 달라집니다.
-        </p>
+        </Hint>
       </div>
     </CalcShell>
   )

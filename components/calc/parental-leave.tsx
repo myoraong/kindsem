@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -78,13 +79,34 @@ export function ParentalLeave({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField
-          id="ordinary"
-          label="월 통상임금"
-          value={monthly}
-          onChange={setMonthly}
-        />
-        <MoneyField id="months" label="사용 개월" unit="개월" value={months} onChange={setMonths} />
+        <div className="space-y-2">
+          <MoneyField
+            id="ordinary"
+            label="월 통상임금"
+            value={monthly}
+            onChange={setMonthly}
+          />
+          <AmountChips
+            options={[
+              { label: "200만", value: "200" },
+              { label: "250만", value: "250" },
+              { label: "300만", value: "300" },
+              { label: "400만", value: "400" },
+            ]}
+            onPick={setMonthly}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="months" label="사용 개월" unit="개월" value={months} onChange={setMonths} />
+          <AmountChips
+            options={[
+              { label: "3개월", value: "3" },
+              { label: "6개월", value: "6" },
+              { label: "12개월", value: "12" },
+            ]}
+            onPick={setMonths}
+          />
+        </div>
         <ChoiceGroup
           label="특례"
           value={mode}

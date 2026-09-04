@@ -51,6 +51,20 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "1주택이면 비과세인가요?",
+              a: "2년 이상 보유하고 양도가액 12억 이하면 비과세입니다. 조정대상지역은 2년 거주도 필요합니다. 12억을 넘으면 넘는 분에만 과세합니다.",
+            },
+            {
+              q: "다주택 중과는요?",
+              a: "2026년 5월 10일 이후 양도분부터 다시 적용합니다. 중과 때는 장기보유특별공제를 적용하지 않습니다. 일시적 2주택 특례는 요건이 달라 넣지 않았습니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 양도세"
@@ -83,7 +97,27 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <MoneyField id="buy" label="취득가액" value={buy} onChange={setBuy} />
-        <MoneyField id="sell" label="양도가액" value={sell} onChange={setSell} />
+        <AmountChips
+          options={[
+            { label: "3억", value: "30000" },
+            { label: "5억", value: "50000" },
+            { label: "8억", value: "80000" },
+            { label: "12억", value: "120000" },
+          ]}
+          onPick={setBuy}
+        />
+        <div className="space-y-2">
+          <MoneyField id="sell" label="양도가액" value={sell} onChange={setSell} />
+          <AmountChips
+            options={[
+              { label: "6억", value: "60000" },
+              { label: "8억", value: "80000" },
+              { label: "12억", value: "120000" },
+              { label: "15억", value: "150000" },
+            ]}
+            onPick={setSell}
+          />
+        </div>
         <MoneyField id="cost" label="필요경비" value={costs} onChange={setCosts} />
         <MoneyField id="yr" label="보유기간" unit="년" value={years} onChange={setYears} />
         <CheckRow id="live" checked={lived2y} onChange={setLived2y}>
@@ -92,10 +126,10 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
         <CheckRow id="adj" checked={adjusted} onChange={setAdjusted}>
           조정대상지역
         </CheckRow>
-        <p className="text-sm leading-6 text-muted-foreground">
+        <Hint>
           1주택·2년 보유·12억 이하는 비과세입니다. 조정대상지역은 2년 거주도 필요합니다. 다주택
           중과는 2026년 5월 10일 이후 양도분이며, 중과 때는 장기보유특별공제를 적용하지 않습니다.
-        </p>
+        </Hint>
         <LawNote lines={[LAW_SOURCES.income]} />
       </div>
     </CalcShell>
@@ -120,6 +154,16 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "개인 양도세와 같나요?",
+              a: "아닙니다. 법인이 부동산을 팔면 법인세에 토지 등 양도소득 추가과세가 붙을 수 있습니다. 1주택 비과세는 없습니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 법인세"
@@ -139,12 +183,35 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="cbuy" label="취득가액" value={buy} onChange={setBuy} />
-        <MoneyField id="csell" label="양도가액" value={sell} onChange={setSell} />
+        <div className="space-y-2">
+          <MoneyField id="cbuy" label="취득가액" value={buy} onChange={setBuy} />
+          <AmountChips
+            options={[
+              { label: "3억", value: "30000" },
+              { label: "5억", value: "50000" },
+              { label: "8억", value: "80000" },
+              { label: "12억", value: "120000" },
+            ]}
+            onPick={setBuy}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="csell" label="양도가액" value={sell} onChange={setSell} />
+          <AmountChips
+            options={[
+              { label: "6억", value: "60000" },
+              { label: "8억", value: "80000" },
+              { label: "12억", value: "120000" },
+              { label: "15억", value: "150000" },
+            ]}
+            onPick={setSell}
+          />
+        </div>
         <MoneyField id="ccost" label="소요경비" value={costs} onChange={setCosts} />
         <CheckRow id="land" checked={land} onChange={setLand}>
           비사업용토지
         </CheckRow>
+        <Hint>1주택 비과세는 없습니다. 비사업용토지면 추가과세가 붙습니다.</Hint>
         <LawNote lines={[LAW_SOURCES.corp]} />
       </div>
     </CalcShell>
@@ -165,6 +232,16 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "재산세와 종부세를 같이 보나요?",
+              a: "공시가격에 공정시장가액비율 60%를 곱한 뒤 재산세·도시지역분·지방교육세와 종부세·농특세를 한 장으로 보여 줍니다. 세부담상한과 특례주택은 넣지 않았습니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 보유세"
@@ -198,9 +275,18 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <MoneyField id="pub" label="공시가격" value={price} onChange={setPrice} />
-        <p className="text-sm leading-6 text-muted-foreground">
+        <AmountChips
+          options={[
+            { label: "6억", value: "60000" },
+            { label: "9억", value: "90000" },
+            { label: "12억", value: "120000" },
+            { label: "18억", value: "180000" },
+          ]}
+          onPick={setPrice}
+        />
+        <Hint>
           공정시장가액비율 60%로 봅니다. 세부담상한과 특례주택은 넣지 않았습니다.
-        </p>
+        </Hint>
         <LawNote lines={[LAW_SOURCES.holding]} />
       </div>
     </CalcShell>
@@ -553,6 +639,16 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "상속과 증여 세율이 다른가요?",
+              a: "등록면허세는 상속 0.8%, 증여 1.5%입니다. 지방교육세가 붙습니다. 취득세 중과와는 별개입니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 등록면허세"
@@ -581,6 +677,16 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <MoneyField id="lic" label="시가표준액" value={value} onChange={setValue} />
+        <AmountChips
+          options={[
+            { label: "2억", value: "20000" },
+            { label: "4억", value: "40000" },
+            { label: "8억", value: "80000" },
+            { label: "12억", value: "120000" },
+          ]}
+          onPick={setValue}
+        />
+        <Hint>상속 0.8%, 증여 1.5%입니다. 취득세 중과는 여기 없습니다.</Hint>
         <LawNote lines={[LAW_SOURCES.license]} />
       </div>
     </CalcShell>
@@ -607,6 +713,16 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "왜 세금이 두 개인가요?",
+              a: "채무를 넘기면 그 부분은 증여자 양도, 나머지가 수증자 증여입니다. 1주택 비과세는 넣지 않았습니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 세금 합계"
@@ -637,13 +753,35 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
             { value: "other", label: "그 외" },
           ]}
         />
-        <MoneyField id="prop" label="증여재산가액" value={property} onChange={setProperty} />
-        <MoneyField id="debt" label="승계 채무" value={debt} onChange={setDebt} />
+        <div className="space-y-2">
+          <MoneyField id="prop" label="증여재산가액" value={property} onChange={setProperty} />
+          <AmountChips
+            options={[
+              { label: "5억", value: "50000" },
+              { label: "8억", value: "80000" },
+              { label: "12억", value: "120000" },
+              { label: "15억", value: "150000" },
+            ]}
+            onPick={setProperty}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="debt" label="승계 채무" value={debt} onChange={setDebt} />
+          <AmountChips
+            options={[
+              { label: "1억", value: "10000" },
+              { label: "2억", value: "20000" },
+              { label: "3억", value: "30000" },
+              { label: "5억", value: "50000" },
+            ]}
+            onPick={setDebt}
+          />
+        </div>
         <MoneyField id="orig" label="원 취득가액" value={buy} onChange={setBuy} />
         <MoneyField id="ey" label="보유기간" unit="년" value={years} onChange={setYears} />
-        <p className="text-sm leading-6 text-muted-foreground">
+        <Hint>
           채무 부분은 증여자 양도, 나머지가 수증자 증여입니다. 1주택 비과세는 넣지 않았습니다.
-        </p>
+        </Hint>
         <LawNote lines={[LAW_SOURCES.gift, LAW_SOURCES.income]} />
       </div>
     </CalcShell>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -95,9 +96,31 @@ export function DepositCalc({ item }: { item: CalcItem }) {
           ]}
         />
         {kind === "savings" ? (
-          <MoneyField id="principal" label="원금" unit="원" value={principal} onChange={setPrincipal} />
+          <div className="space-y-2">
+            <MoneyField id="principal" label="원금" unit="원" value={principal} onChange={setPrincipal} />
+            <AmountChips
+              options={[
+                { label: "100만", value: "1000000" },
+                { label: "500만", value: "5000000" },
+                { label: "1천만", value: "10000000" },
+                { label: "3천만", value: "30000000" },
+              ]}
+              onPick={setPrincipal}
+            />
+          </div>
         ) : (
-          <MoneyField id="monthly" label="월 납입" unit="원" value={monthly} onChange={setMonthly} />
+          <div className="space-y-2">
+            <MoneyField id="monthly" label="월 납입" unit="원" value={monthly} onChange={setMonthly} />
+            <AmountChips
+              options={[
+                { label: "10만", value: "100000" },
+                { label: "30만", value: "300000" },
+                { label: "50만", value: "500000" },
+                { label: "100만", value: "1000000" },
+              ]}
+              onPick={setMonthly}
+            />
+          </div>
         )}
         <MoneyField id="rate" label="연이율" unit="%" value={rate} onChange={setRate} />
         <MoneyField id="months" label="기간" unit="개월" value={months} onChange={setMonths} />

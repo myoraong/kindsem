@@ -1,6 +1,8 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
+import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
@@ -9,6 +11,7 @@ import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
+import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcAnnualLeave } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
 
@@ -28,7 +31,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
   const [months, setMonths] = useState("6")
   const [weeklyHours, setWeeklyHours] = useState("40")
   const [weeklyDays, setWeeklyDays] = useState("5")
-  const [monthly, setMonthly] = useState("2091420")
+  const [monthly, setMonthly] = useState(String(MIN_WAGE.monthly))
   const [unused, setUnused] = useState("0")
 
   const result = useMemo(() => {
@@ -77,7 +80,18 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="years" label="계속근로 연수" unit="년" value={years} onChange={setYears} />
+        <div className="space-y-2">
+          <MoneyField id="years" label="계속근로 연수" unit="년" value={years} onChange={setYears} />
+          <AmountChips
+            options={[
+              { label: "1년", value: "1" },
+              { label: "3년", value: "3" },
+              { label: "5년", value: "5" },
+              { label: "10년", value: "10" },
+            ]}
+            onPick={setYears}
+          />
+        </div>
         {Number(years) < 1 ? (
           <MoneyField
             id="months"
@@ -87,28 +101,63 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
             onChange={setMonths}
           />
         ) : null}
-        <MoneyField
-          id="hours"
-          label="1주 소정근로시간"
-          unit="시간/주"
-          value={weeklyHours}
-          onChange={setWeeklyHours}
-        />
-        <MoneyField
-          id="days"
+        <div className="space-y-2">
+          <MoneyField
+            id="hours"
+            label="1주 소정근로시간"
+            unit="시간/주"
+            value={weeklyHours}
+            onChange={setWeeklyHours}
+          />
+          <AmountChips
+            options={[
+              { label: "15시간", value: "15" },
+              { label: "20시간", value: "20" },
+              { label: "30시간", value: "30" },
+              { label: "40시간", value: "40" },
+            ]}
+            onPick={setWeeklyHours}
+          />
+        </div>
+        <ChoiceGroup
           label="1주 소정근로일"
-          unit="일/주"
           value={weeklyDays}
           onChange={setWeeklyDays}
+          options={[
+            { value: "5", label: "5일" },
+            { value: "6", label: "6일" },
+          ]}
         />
-        <MoneyField
-          id="monthly"
-          label="월 통상임금"
-          unit="원"
-          value={monthly}
-          onChange={setMonthly}
-        />
-        <MoneyField id="unused" label="미사용 일수" unit="일" value={unused} onChange={setUnused} />
+        <div className="space-y-2">
+          <MoneyField
+            id="monthly"
+            label="월 통상임금"
+            unit="원"
+            value={monthly}
+            onChange={setMonthly}
+          />
+          <AmountChips
+            options={[
+              { label: "고시", value: String(MIN_WAGE.monthly) },
+              { label: "250만", value: "2500000" },
+              { label: "300만", value: "3000000" },
+              { label: "350만", value: "3500000" },
+            ]}
+            onPick={setMonthly}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="unused" label="미사용 일수" unit="일" value={unused} onChange={setUnused} />
+          <AmountChips
+            options={[
+              { label: "0일", value: "0" },
+              { label: "5일", value: "5" },
+              { label: "10일", value: "10" },
+              { label: "15일", value: "15" },
+            ]}
+            onPick={setUnused}
+          />
+        </div>
         <Hint>
           1년 미만은 개근 개월만 셉니다. 1년 도래 때의 15일과 겹쳐 더하지 않습니다. 출근율 80% 미만이면
           제60조 제2항(월 1일)만 해당하는데, 그 달은 개근 개월에 넣어 주세요.

@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -10,6 +11,7 @@ import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
+import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcPartTimeMonth } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
 
@@ -25,7 +27,7 @@ const FAQ = [
 ]
 
 export function PartTimeMonth({ item }: { item: CalcItem }) {
-  const [hourly, setHourly] = useState("10030")
+  const [hourly, setHourly] = useState(String(MIN_WAGE.hourly))
   const [weeklyHours, setWeeklyHours] = useState("20")
   const [attended, setAttended] = useState(true)
 
@@ -74,14 +76,36 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="hourly" label="시급" unit="원" value={hourly} onChange={setHourly} />
-        <MoneyField
-          id="hours"
-          label="1주 소정근로시간"
-          unit="시간/주"
-          value={weeklyHours}
-          onChange={setWeeklyHours}
-        />
+        <div className="space-y-2">
+          <MoneyField id="hourly" label="시급" unit="원" value={hourly} onChange={setHourly} />
+          <AmountChips
+            options={[
+              { label: "고시", value: String(MIN_WAGE.hourly) },
+              { label: "1.2만", value: "12000" },
+              { label: "1.5만", value: "15000" },
+              { label: "2만", value: "20000" },
+            ]}
+            onPick={setHourly}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField
+            id="hours"
+            label="1주 소정근로시간"
+            unit="시간/주"
+            value={weeklyHours}
+            onChange={setWeeklyHours}
+          />
+          <AmountChips
+            options={[
+              { label: "15시간", value: "15" },
+              { label: "20시간", value: "20" },
+              { label: "30시간", value: "30" },
+              { label: "40시간", value: "40" },
+            ]}
+            onPick={setWeeklyHours}
+          />
+        </div>
         <CheckRow id="attended" checked={attended} onChange={setAttended}>
           주휴수당 포함
         </CheckRow>

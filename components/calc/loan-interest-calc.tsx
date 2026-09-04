@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -75,8 +76,26 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
+        <AmountChips
+          options={[
+            { label: "1천만", value: "1000" },
+            { label: "3천만", value: "3000" },
+            { label: "5천만", value: "5000" },
+            { label: "1억", value: "10000" },
+          ]}
+          onPick={setPrincipal}
+        />
         <MoneyField id="r" label="연 금리" unit="%" value={rate} onChange={setRate} />
         <MoneyField id="m" label="기간" unit="개월" value={months} onChange={setMonths} />
+        <AmountChips
+          options={[
+            { label: "12개월", value: "12" },
+            { label: "24개월", value: "24" },
+            { label: "36개월", value: "36" },
+            { label: "60개월", value: "60" },
+          ]}
+          onPick={setMonths}
+        />
         <ChoiceGroup
           label="상환 방식"
           value={method}

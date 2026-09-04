@@ -1,12 +1,15 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calcAcquisition, type HomeCount } from "@/lib/acquisition"
+import { FaqList } from "@/components/calc/faq-list"
+import { Hint } from "@/components/calc/hint"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
@@ -36,6 +39,20 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "생애최초 감면이 자동인가요?",
+              a: "1주택·12억 이하일 때 200만 원 한도를 넣습니다. 인구감소지역 주택은 300만 원 한도를 켤 수 있습니다. 요건은 직접 확인하세요.",
+            },
+            {
+              q: "조정대상지역이면요?",
+              a: "2주택 이상이면 중과 세율이 붙을 수 있습니다. 1주택은 조정지역이어도 일반 세율입니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="예상 취득세 합계"
@@ -58,7 +75,19 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="price" label="취득가액" value={price} onChange={setPrice} />
+        <div className="space-y-2">
+          <MoneyField id="price" label="취득가액" value={price} onChange={setPrice} />
+          <AmountChips
+            options={[
+              { label: "3억", value: "30000" },
+              { label: "6억 5천", value: "65000" },
+              { label: "9억", value: "90000" },
+              { label: "12억", value: "120000" },
+              { label: "15억", value: "150000" },
+            ]}
+            onPick={setPrice}
+          />
+        </div>
         <ChoiceGroup
           label="취득 후 주택 수"
           value={homes}
@@ -90,10 +119,10 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
             ) : null}
           </>
         ) : null}
-        <p className="text-sm leading-6 text-muted-foreground">
+        <Hint>
           주택 유상취득만 계산합니다. 생애최초 감면 뒤 납부 취득세액의 10%가 지방교육세입니다.
           취득세가 전액 면제면 지방교육세도 없습니다. 중과 주택은 과세표준의 0.4%입니다.
-        </p>
+        </Hint>
         <LawNote
           lines={[LAW_SOURCES.acquisition, LAW_SOURCES.firstHome, LAW_SOURCES.rural]}
         />

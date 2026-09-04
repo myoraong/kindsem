@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
@@ -120,6 +121,15 @@ export function Severance({ item }: { item: CalcItem }) {
           label="퇴직일 전 3개월 임금 총액"
           value={wage3m}
           onChange={setWage3m}
+        />
+        <AmountChips
+          options={[
+            { label: "600만", value: "600" },
+            { label: "900만", value: "900" },
+            { label: "1,200만", value: "1200" },
+            { label: "1,500만", value: "1500" },
+          ]}
+          onPick={setWage3m}
         />
         <MoneyField
           id="days3m"

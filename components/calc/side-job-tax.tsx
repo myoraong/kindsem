@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -120,7 +121,18 @@ export function SideJobTax({ item }: { item: CalcItem }) {
           ]}
         />
         <Hint>{preset.note}</Hint>
-        <MoneyField id="rev" label="연 수입" value={revenue} onChange={setRevenue} />
+        <div className="space-y-2">
+          <MoneyField id="rev" label="연 수입" value={revenue} onChange={setRevenue} />
+          <AmountChips
+            options={[
+              { label: "1,200만", value: "1200" },
+              { label: "2,400만", value: "2400" },
+              { label: "3,600만", value: "3600" },
+              { label: "5,000만", value: "5000" },
+            ]}
+            onPick={setRevenue}
+          />
+        </div>
         <ChoiceGroup
           label="필요경비"
           value={expenseMode}

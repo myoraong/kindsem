@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -78,10 +79,32 @@ export function CarTax({ item }: { item: CalcItem }) {
           ]}
         />
         {kind === "ev" ? null : (
-          <MoneyField id="cc" label="배기량" unit="cc" value={cc} onChange={setCc} />
+          <div className="space-y-2">
+            <MoneyField id="cc" label="배기량" unit="cc" value={cc} onChange={setCc} />
+            <AmountChips
+              options={[
+                { label: "1000cc", value: "999" },
+                { label: "1600cc", value: "1598" },
+                { label: "2000cc", value: "1999" },
+                { label: "2500cc", value: "2499" },
+              ]}
+              onPick={setCc}
+            />
+          </div>
         )}
         {kind === "private" ? (
-          <MoneyField id="age" label="차령" unit="년" value={age} onChange={setAge} />
+          <div className="space-y-2">
+            <MoneyField id="age" label="차령" unit="년" value={age} onChange={setAge} />
+            <AmountChips
+              options={[
+                { label: "1년", value: "1" },
+                { label: "3년", value: "3" },
+                { label: "5년", value: "5" },
+                { label: "12년", value: "12" },
+              ]}
+              onPick={setAge}
+            />
+          </div>
         ) : null}
         <Hint>
           비영업 승용은 1,000cc 이하 80원, 1,600cc 이하 140원, 초과 200원입니다. 차령 3년부터 매년 5%, 12년

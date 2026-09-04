@@ -4,10 +4,12 @@ import { getCalculator, type CalcItem } from "./catalog.ts"
 export const POPULAR_SLUGS = [
   "take-home",
   "weekly-holiday",
+  "severance",
   "acquisition",
   "brokerage",
   "dutch",
   "dsr",
+  "gift-tax",
 ] as const
 
 export function popularCalculators(): CalcItem[] {

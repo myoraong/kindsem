@@ -29,6 +29,8 @@ applyDotenv(".env")
 applyDotenv(".env.local")
 
 function writePublicAdsTxt() {
+  // Dev must not rewrite ads.txt — that dirties git and keeps showing Commit & Push.
+  if (process.env.NODE_ENV !== "production") return
   const path = join(process.cwd(), "public", "ads.txt")
   let existing = ""
   try {
@@ -51,17 +53,32 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   trailingSlash: true,
   basePath,
-  // Preview iframe often sends Origin: null (opaque). Next then 403s /_next
-  // scripts and the local site looks blank even though HTML 200s.
+  // Preview / in-IDE browser can send Origin/Referer that is not the page URL.
+  // Next 16 then 403s /_next scripts and CSS; HTML still 200s so the viewport
+  // looks solid black (especially in a dark webview) after hydration fails.
+  // `*.host` is one DNS label; `**.host` covers nested hosts like
+  // abc.cloud.cursor.sh. `cursor` is the hostname of vscode-webview://cursor.
   allowedDevOrigins: [
     "127.0.0.1",
     "localhost",
     "::1",
     "null",
+    "cursor",
     "cursor.com",
     "*.cursor.com",
+    "**.cursor.com",
     "cursor.sh",
     "*.cursor.sh",
+    "**.cursor.sh",
+    "vscode.dev",
+    "*.vscode.dev",
+    "**.vscode.dev",
+    "vscode-cdn.net",
+    "*.vscode-cdn.net",
+    "**.vscode-cdn.net",
+    "cursorusercontent.com",
+    "*.cursorusercontent.com",
+    "**.cursorusercontent.com",
   ],
 }
 

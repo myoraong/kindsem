@@ -1,8 +1,11 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
+import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon } from "@/lib/format"
@@ -33,6 +36,16 @@ export function DutchPay({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={
+        <FaqList
+          items={[
+            {
+              q: "남은 돈은 어떻게 하나요?",
+              a: "먼저 낸 사람이 가져가거나, 다음 모임에 적립하면 됩니다. 원 단위 올림을 켜면 거둔 금액이 총액보다 조금 많습니다.",
+            },
+          ]}
+        />
+      }
       result={
         <ResultReceipt
           title="1인 부담"
@@ -52,15 +65,38 @@ export function DutchPay({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-4">
-        <MoneyField id="bill" label="총액" unit="원" value={total} onChange={setTotal} />
-        <MoneyField id="people" label="인원" unit="명" value={people} onChange={setPeople} />
+        <div className="space-y-2">
+          <MoneyField id="bill" label="총액" unit="원" value={total} onChange={setTotal} />
+          <AmountChips
+            options={[
+              { label: "3만", value: "30000" },
+              { label: "5만", value: "50000" },
+              { label: "8만", value: "80000" },
+              { label: "10만", value: "100000" },
+              { label: "15만", value: "150000" },
+            ]}
+            onPick={setTotal}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="people" label="인원" unit="명" value={people} onChange={setPeople} />
+          <AmountChips
+            options={[
+              { label: "2명", value: "2" },
+              { label: "3명", value: "3" },
+              { label: "4명", value: "4" },
+              { label: "5명", value: "5" },
+              { label: "6명", value: "6" },
+              { label: "8명", value: "8" },
+            ]}
+            onPick={setPeople}
+          />
+        </div>
         <MoneyField id="tip" label="팁·봉사료" unit="%" value={tip} onChange={setTip} />
         <CheckRow id="ceil" checked={ceil} onChange={setCeil}>
           원 단위 올림
         </CheckRow>
-        <p className="text-sm leading-6 text-muted-foreground">
-          남는 돈은 먼저 낸 사람이 가져가거나, 다음 모임 적립으로 두면 됩니다.
-        </p>
+        <Hint>남는 돈은 먼저 낸 사람이 가져가거나, 다음 모임 적립으로 두면 됩니다.</Hint>
       </div>
     </CalcShell>
   )

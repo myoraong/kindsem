@@ -1,13 +1,27 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
+import { FaqList } from "@/components/calc/faq-list"
+import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatPercent, formatWon } from "@/lib/format"
 import { VAT_RATE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
+
+const FAQ = [
+  {
+    q: "부가세는 몇 %인가요?",
+    a: `부가가치세법 제30조 기본세율 ${formatPercent(VAT_RATE * 100, 0)}입니다. 면세·영세율 품목은 여기 없습니다.`,
+  },
+  {
+    q: "포함 금액과 공급가는요?",
+    a: `부가세 포함 금액을 넣으면 공급가 = 포함금액 ÷ 1.1 입니다. 공급가를 넣으면 부가세 ${formatPercent(VAT_RATE * 100, 0)}를 더합니다.`,
+  },
+]
 
 export function SaleVat({ item }: { item: CalcItem }) {
   const [mode, setMode] = useState<"sale" | "vat">("sale")
@@ -55,6 +69,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
   return (
     <CalcShell
       item={item}
+      faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
           title={mode === "sale" ? "할인된 가격" : vatMode === "add" ? "부가세 포함" : "공급가액"}
@@ -74,15 +89,38 @@ export function SaleVat({ item }: { item: CalcItem }) {
             { value: "vat", label: "부가세" },
           ]}
         />
-        <MoneyField
-          id="price"
-          label={mode === "sale" ? "정가" : vatMode === "add" ? "공급가액" : "부가세 포함 금액"}
-          unit="원"
-          value={price}
-          onChange={setPrice}
-        />
+        <div className="space-y-2">
+          <MoneyField
+            id="price"
+            label={mode === "sale" ? "정가" : vatMode === "add" ? "공급가액" : "부가세 포함 금액"}
+            unit="원"
+            value={price}
+            onChange={setPrice}
+          />
+          <AmountChips
+            options={[
+              { label: "1만", value: "10000" },
+              { label: "5만", value: "50000" },
+              { label: "8.9만", value: "89000" },
+              { label: "10만", value: "100000" },
+              { label: "50만", value: "500000" },
+            ]}
+            onPick={setPrice}
+          />
+        </div>
         {mode === "sale" ? (
-          <MoneyField id="rate" label="할인율" unit="%" value={rate} onChange={setRate} />
+          <div className="space-y-2">
+            <MoneyField id="rate" label="할인율" unit="%" value={rate} onChange={setRate} />
+            <AmountChips
+              options={[
+                { label: "10%", value: "10" },
+                { label: "20%", value: "20" },
+                { label: "30%", value: "30" },
+                { label: "50%", value: "50" },
+              ]}
+              onPick={setRate}
+            />
+          </div>
         ) : (
           <ChoiceGroup
             label="부가세 방향"
@@ -94,6 +132,9 @@ export function SaleVat({ item }: { item: CalcItem }) {
             ]}
           />
         )}
+        <Hint>
+          할인과 부가세는 따로 셉니다. 면세·영세율, 개별소비세는 없습니다.
+        </Hint>
       </div>
     </CalcShell>
   )

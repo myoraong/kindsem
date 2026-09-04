@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -124,9 +125,31 @@ export function MovingCost({ item }: { item: CalcItem }) {
             { value: "wolse", label: "월세" },
           ]}
         />
-        <MoneyField id="deposit" label="보증금" value={deposit} onChange={setDeposit} />
+        <div className="space-y-2">
+          <MoneyField id="deposit" label="보증금" value={deposit} onChange={setDeposit} />
+          <AmountChips
+            options={[
+              { label: "5천", value: "5000" },
+              { label: "1억", value: "10000" },
+              { label: "2억", value: "20000" },
+              { label: "3억", value: "30000" },
+            ]}
+            onPick={setDeposit}
+          />
+        </div>
         {deal === "wolse" ? (
-          <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+          <div className="space-y-2">
+            <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+            <AmountChips
+              options={[
+                { label: "50만", value: "50" },
+                { label: "70만", value: "70" },
+                { label: "100만", value: "100" },
+                { label: "150만", value: "150" },
+              ]}
+              onPick={setMonthly}
+            />
+          </div>
         ) : null}
         <MoneyField id="move" label="이삿짐 견적" value={move} onChange={setMove} />
         <MoneyField id="stuff" label="가구·생필품" value={stuff} onChange={setStuff} />

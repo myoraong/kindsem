@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -153,12 +154,34 @@ export function PayCompare({ item }: { item: CalcItem }) {
             <MoneyField id="off" label="이직 제안 연봉" value={offer} onChange={setOffer} />
           </div>
         ) : (
-          <MoneyField
-            id="cur"
-            label={period === "month" ? "세전 월급" : "세전 연봉"}
-            value={current}
-            onChange={setCurrent}
-          />
+          <div className="space-y-2">
+            <MoneyField
+              id="cur"
+              label={period === "month" ? "세전 월급" : "세전 연봉"}
+              value={current}
+              onChange={setCurrent}
+            />
+            <AmountChips
+              options={
+                period === "month"
+                  ? [
+                      { label: "250만", value: "250" },
+                      { label: "300만", value: "300" },
+                      { label: "350만", value: "350" },
+                      { label: "400만", value: "400" },
+                      { label: "500만", value: "500" },
+                    ]
+                  : [
+                      { label: "3천만", value: "3000" },
+                      { label: "4천만", value: "4000" },
+                      { label: "5천만", value: "5000" },
+                      { label: "6천만", value: "6000" },
+                      { label: "8천만", value: "8000" },
+                    ]
+              }
+              onPick={setCurrent}
+            />
+          </div>
         )}
         {compare ? (
           <div className="grid gap-4 sm:grid-cols-2">

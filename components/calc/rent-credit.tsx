@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -78,8 +79,30 @@ export function RentCredit({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="rent" label="월세" value={monthly} onChange={setMonthly} />
-        <MoneyField id="salary" label="총급여" value={salary} onChange={setSalary} />
+        <div className="space-y-2">
+          <MoneyField id="rent" label="월세" value={monthly} onChange={setMonthly} />
+          <AmountChips
+            options={[
+              { label: "40만", value: "40" },
+              { label: "50만", value: "50" },
+              { label: "70만", value: "70" },
+              { label: "100만", value: "100" },
+            ]}
+            onPick={setMonthly}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="salary" label="총급여" value={salary} onChange={setSalary} />
+          <AmountChips
+            options={[
+              { label: "3천만", value: "3000" },
+              { label: "4,500만", value: "4500" },
+              { label: "5,500만", value: "5500" },
+              { label: "7천만", value: "7000" },
+            ]}
+            onPick={setSalary}
+          />
+        </div>
         <CheckRow id="home" checked={noHome} onChange={setNoHome}>
           과세기간 종료일 무주택
         </CheckRow>

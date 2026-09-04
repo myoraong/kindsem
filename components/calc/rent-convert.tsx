@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -98,16 +99,49 @@ export function RentConvert({ item }: { item: CalcItem }) {
           ]}
         />
         {mode === "to-monthly" ? (
-          <MoneyField id="jeonse" label="지금 전세 보증금" value={jeonse} onChange={setJeonse} />
+          <div className="space-y-2">
+            <MoneyField id="jeonse" label="지금 전세 보증금" value={jeonse} onChange={setJeonse} />
+            <AmountChips
+              options={[
+                { label: "1억", value: "10000" },
+                { label: "2억", value: "20000" },
+                { label: "3억", value: "30000" },
+                { label: "5억", value: "50000" },
+              ]}
+              onPick={setJeonse}
+            />
+          </div>
         ) : (
-          <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+          <div className="space-y-2">
+            <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+            <AmountChips
+              options={[
+                { label: "50만", value: "50" },
+                { label: "70만", value: "70" },
+                { label: "100만", value: "100" },
+                { label: "150만", value: "150" },
+              ]}
+              onPick={setMonthly}
+            />
+          </div>
         )}
-        <MoneyField
-          id="deposit"
-          label={mode === "to-monthly" ? "바꿀 월세 보증금" : "남는 보증금"}
-          value={deposit}
-          onChange={setDeposit}
-        />
+        <div className="space-y-2">
+          <MoneyField
+            id="deposit"
+            label={mode === "to-monthly" ? "바꿀 월세 보증금" : "남는 보증금"}
+            value={deposit}
+            onChange={setDeposit}
+          />
+          <AmountChips
+            options={[
+              { label: "1천", value: "1000" },
+              { label: "3천", value: "3000" },
+              { label: "5천", value: "5000" },
+              { label: "1억", value: "10000" },
+            ]}
+            onPick={setDeposit}
+          />
+        </div>
         <MoneyField
           id="base"
           label="한국은행 기준금리"

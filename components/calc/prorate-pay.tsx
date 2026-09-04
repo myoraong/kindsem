@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -59,8 +60,30 @@ export function ProratePay({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="monthly" label="월급" unit="원" value={monthly} onChange={setMonthly} />
-        <MoneyField id="work-days" label="근무일" unit="일" value={workDays} onChange={setWorkDays} />
+        <div className="space-y-2">
+          <MoneyField id="monthly" label="월급" unit="원" value={monthly} onChange={setMonthly} />
+          <AmountChips
+            options={[
+              { label: "250만", value: "2500000" },
+              { label: "300만", value: "3000000" },
+              { label: "350만", value: "3500000" },
+              { label: "400만", value: "4000000" },
+            ]}
+            onPick={setMonthly}
+          />
+        </div>
+        <div className="space-y-2">
+          <MoneyField id="work-days" label="근무일" unit="일" value={workDays} onChange={setWorkDays} />
+          <AmountChips
+            options={[
+              { label: "5일", value: "5" },
+              { label: "10일", value: "10" },
+              { label: "15일", value: "15" },
+              { label: "20일", value: "20" },
+            ]}
+            onPick={setWorkDays}
+          />
+        </div>
         <ChoiceGroup
           label="나눌 일수"
           value={method}

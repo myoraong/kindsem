@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -152,6 +153,15 @@ export function LtvCalc({ item }: { item: CalcItem }) {
           hint="KB시세·감정가"
           value={collateral}
           onChange={setCollateral}
+        />
+        <AmountChips
+          options={[
+            { label: "5억", value: "50000" },
+            { label: "8억", value: "80000" },
+            { label: "10억", value: "100000" },
+            { label: "15억", value: "150000" },
+          ]}
+          onPick={setCollateral}
         />
         <MoneyField
           id="want"

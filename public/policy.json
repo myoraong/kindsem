@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-04",
+  "fetchedAt": "2026-09-03",
   "source": "법제처 국가법령정보 공동활용",
   "sources": {
     "income": {
@@ -470,62 +470,17 @@
   },
   "retirement": {
     "years": [
-      {
-        "maxYears": 5,
-        "base": 0,
-        "perYear": 1000000,
-        "offsetYears": 0
-      },
-      {
-        "maxYears": 10,
-        "base": 5000000,
-        "perYear": 2000000,
-        "offsetYears": 5
-      },
-      {
-        "maxYears": 20,
-        "base": 15000000,
-        "perYear": 2500000,
-        "offsetYears": 10
-      },
-      {
-        "maxYears": null,
-        "base": 40000000,
-        "perYear": 3000000,
-        "offsetYears": 20
-      }
+      { "maxYears": 5, "base": 0, "perYear": 1000000, "offsetYears": 0 },
+      { "maxYears": 10, "base": 5000000, "perYear": 2000000, "offsetYears": 5 },
+      { "maxYears": 20, "base": 15000000, "perYear": 2500000, "offsetYears": 10 },
+      { "maxYears": null, "base": 40000000, "perYear": 3000000, "offsetYears": 20 }
     ],
     "converted": [
-      {
-        "upTo": 8000000,
-        "floor": 0,
-        "intercept": 0,
-        "rate": 1
-      },
-      {
-        "upTo": 70000000,
-        "floor": 8000000,
-        "intercept": 8000000,
-        "rate": 0.6
-      },
-      {
-        "upTo": 100000000,
-        "floor": 70000000,
-        "intercept": 45200000,
-        "rate": 0.55
-      },
-      {
-        "upTo": 300000000,
-        "floor": 100000000,
-        "intercept": 61700000,
-        "rate": 0.45
-      },
-      {
-        "upTo": null,
-        "floor": 300000000,
-        "intercept": 151700000,
-        "rate": 0.35
-      }
+      { "upTo": 8000000, "floor": 0, "intercept": 0, "rate": 1 },
+      { "upTo": 70000000, "floor": 8000000, "intercept": 8000000, "rate": 0.6 },
+      { "upTo": 100000000, "floor": 70000000, "intercept": 45200000, "rate": 0.55 },
+      { "upTo": 300000000, "floor": 100000000, "intercept": 61700000, "rate": 0.45 },
+      { "upTo": null, "floor": 300000000, "intercept": 151700000, "rate": 0.35 }
     ]
   },
   "holding": {

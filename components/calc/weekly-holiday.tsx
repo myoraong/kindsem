@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -11,6 +12,7 @@ import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
+import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcWeeklyHoliday, monthlyContractHours } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
 
@@ -27,8 +29,8 @@ const FAQ = [
 
 export function WeeklyHoliday({ item }: { item: CalcItem }) {
   const [pay, setPay] = useState<"hourly" | "monthly">("hourly")
-  const [hourly, setHourly] = useState("10030")
-  const [monthly, setMonthly] = useState("2091420")
+  const [hourly, setHourly] = useState(String(MIN_WAGE.hourly))
+  const [monthly, setMonthly] = useState(String(MIN_WAGE.monthly))
   const [weeklyHours, setWeeklyHours] = useState("40")
   const [attended, setAttended] = useState(true)
 
@@ -100,15 +102,37 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           ]}
         />
         {pay === "hourly" ? (
-          <MoneyField id="hourly" label="시급" unit="원" value={hourly} onChange={setHourly} />
+          <div className="space-y-2">
+            <MoneyField id="hourly" label="시급" unit="원" value={hourly} onChange={setHourly} />
+            <AmountChips
+              options={[
+                { label: "고시", value: String(MIN_WAGE.hourly) },
+                { label: "1.2만", value: "12000" },
+                { label: "1.5만", value: "15000" },
+                { label: "2만", value: "20000" },
+              ]}
+              onPick={setHourly}
+            />
+          </div>
         ) : (
-          <MoneyField
-            id="monthly"
-            label="월 통상임금"
-            unit="원"
-            value={monthly}
-            onChange={setMonthly}
-          />
+          <div className="space-y-2">
+            <MoneyField
+              id="monthly"
+              label="월 통상임금"
+              unit="원"
+              value={monthly}
+              onChange={setMonthly}
+            />
+            <AmountChips
+              options={[
+                { label: "고시", value: String(MIN_WAGE.monthly) },
+                { label: "250만", value: "2500000" },
+                { label: "300만", value: "3000000" },
+                { label: "350만", value: "3500000" },
+              ]}
+              onPick={setMonthly}
+            />
+          </div>
         )}
         <MoneyField
           id="hours"
@@ -116,6 +140,15 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           unit="시간/주"
           value={weeklyHours}
           onChange={setWeeklyHours}
+        />
+        <AmountChips
+          options={[
+            { label: "15시간", value: "15" },
+            { label: "20시간", value: "20" },
+            { label: "30시간", value: "30" },
+            { label: "40시간", value: "40" },
+          ]}
+          onPick={setWeeklyHours}
         />
         <CheckRow id="attended" checked={attended} onChange={setAttended}>
           그 주 소정근로일 개근

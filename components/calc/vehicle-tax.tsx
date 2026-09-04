@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -65,6 +66,15 @@ export function VehicleTax({ item }: { item: CalcItem }) {
           hint="신차는 부가세 제외 공급가"
           value={base}
           onChange={setBase}
+        />
+        <AmountChips
+          options={[
+            { label: "2천만", value: "2000" },
+            { label: "3천만", value: "3000" },
+            { label: "4천만", value: "4000" },
+            { label: "5천만", value: "5000" },
+          ]}
+          onPick={setBase}
         />
         <ChoiceGroup
           label="차종"

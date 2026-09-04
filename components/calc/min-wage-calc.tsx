@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -135,9 +136,31 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
           ]}
         />
         {pay === "hourly" ? (
-          <MoneyField id="hourly" label="내 시급" unit="원" value={hourly} onChange={setHourly} />
+          <div className="space-y-2">
+            <MoneyField id="hourly" label="내 시급" unit="원" value={hourly} onChange={setHourly} />
+            <AmountChips
+              options={[
+                { label: "고시", value: String(MIN_WAGE.hourly) },
+                { label: "1.2만", value: "12000" },
+                { label: "1.5만", value: "15000" },
+                { label: "2만", value: "20000" },
+              ]}
+              onPick={setHourly}
+            />
+          </div>
         ) : (
-          <MoneyField id="monthly" label="내 월급" unit="원" value={monthly} onChange={setMonthly} />
+          <div className="space-y-2">
+            <MoneyField id="monthly" label="내 월급" unit="원" value={monthly} onChange={setMonthly} />
+            <AmountChips
+              options={[
+                { label: "고시", value: String(MIN_WAGE.monthly) },
+                { label: "250만", value: "2500000" },
+                { label: "300만", value: "3000000" },
+                { label: "350만", value: "3500000" },
+              ]}
+              onPick={setMonthly}
+            />
+          </div>
         )}
         <MoneyField
           id="hours"
@@ -145,6 +168,15 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
           unit="시간/주"
           value={weeklyHours}
           onChange={setWeeklyHours}
+        />
+        <AmountChips
+          options={[
+            { label: "15시간", value: "15" },
+            { label: "20시간", value: "20" },
+            { label: "30시간", value: "30" },
+            { label: "40시간", value: "40" },
+          ]}
+          onPick={setWeeklyHours}
         />
         <Hint>
           시급을 넣으면 월 환산 시간을 곱한 월급이, 월급을 넣으면 그 시간으로 나눈 시급이 큰 숫자로 나옵니다. 주

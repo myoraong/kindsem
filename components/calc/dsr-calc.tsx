@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -95,7 +96,25 @@ export function DsrCalc({ item }: { item: CalcItem }) {
             : `2금융은 ${Math.round(DSR_POLICY.nonbank * 100)}%까지입니다. 같은 연봉이면 은행보다 한도가 조금 더 나옵니다.`}
         </Hint>
         <MoneyField id="inc" label="연소득" value={income} onChange={setIncome} />
+        <AmountChips
+          options={[
+            { label: "3천만", value: "3000" },
+            { label: "5천만", value: "5000" },
+            { label: "7천만", value: "7000" },
+            { label: "1억", value: "10000" },
+          ]}
+          onPick={setIncome}
+        />
         <MoneyField id="m" label="주담대 월 상환액" value={mortgage} onChange={setMortgage} />
+        <AmountChips
+          options={[
+            { label: "80만", value: "80" },
+            { label: "120만", value: "120" },
+            { label: "150만", value: "150" },
+            { label: "200만", value: "200" },
+          ]}
+          onPick={setMortgage}
+        />
         <MoneyField id="o" label="기타 대출 월 상환액" value={other} onChange={setOther} />
       </div>
     </CalcShell>
