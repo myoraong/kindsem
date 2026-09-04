@@ -35,6 +35,9 @@ test("실수령·퇴직금·복비는 사람들이 넣는 말로 제목을 단�
   assert.equal(calcSeo("ladder").query, "사다리타기 계산기")
   assert.ok(calcSeo("ladder").also.includes("사다리게임"))
   assert.ok(calcSeo("ladder").also.includes("제비뽑기"))
+  assert.ok(calcSeo("overtime-pay").also.includes("야근수당 계산기"))
+  assert.ok(calcSeo("mortgage").also.includes("주담대 이자 계산기"))
+  assert.ok(calcSeo("benefit-net").also.includes("구직급여 계산기"))
 })
 
 test("페이지 메타에 홈 canonical을 쓰지 않는다", () => {

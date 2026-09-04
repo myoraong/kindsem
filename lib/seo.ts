@@ -29,7 +29,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   "sale-vat": {
     query: "부가세 계산기",
-    also: ["부가가치세 계산기", "할인 계산기", "VAT 계산기", "세일 부가세"],
+    also: ["부가가치세 계산기", "할인 계산기", "부가세 포함 계산기", "부가세 별도"],
   },
   "vehicle-tax": {
     query: "자동차 취득세 계산기",
@@ -37,7 +37,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   "car-tax": {
     query: "자동차세 계산기",
-    also: ["자동차세 조회", "배기량 자동차세", "전기차 자동차세", "차령 자동차세"],
+    also: ["자동차세 조회", "자동차세 연납", "배기량 자동차세", "차령 자동차세"],
   },
   "import-duty": {
     query: "해외직구 관세 계산기",
@@ -69,11 +69,11 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   "overtime-pay": {
     query: "연장수당 계산기",
-    also: ["야간수당 계산기", "휴일수당 계산기", "특근 수당", "연장 야간 휴일"],
+    also: ["야근수당 계산기", "야간수당 계산기", "잔업수당 계산기", "휴일수당 계산기"],
   },
   "annual-leave": {
     query: "연차수당 계산기",
-    also: ["연차 일수 계산기", "연차 계산기", "미사용 연차수당"],
+    also: ["연차 발생 계산기", "연차 일수 계산기", "미사용 연차수당"],
   },
   severance: {
     query: "퇴직금 계산기",
@@ -101,7 +101,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   "benefit-net": {
     query: "실업급여 계산기",
-    also: ["내일배움카드 계산", "지원금 실수령", "구직급여"],
+    also: ["구직급여 계산기", "내일배움카드 계산", "지원금 실수령"],
   },
   "cert-payback": {
     query: "자격증 회수 계산기",
@@ -117,7 +117,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   jeonse: {
     query: "전세대출 이자 계산기",
-    also: ["전세자금대출 이자", "전세 이자 계산", "전세대출 월이자"],
+    also: ["전세자금대출 계산기", "전세자금대출 이자", "전세대출 월이자"],
   },
   "rent-convert": {
     query: "전월세 전환율 계산기",
@@ -181,7 +181,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
   mortgage: {
     query: "주택담보대출 계산기",
-    also: ["주담대 계산기", "원리금균등 계산기", "주택담보 월납입"],
+    also: ["주담대 계산기", "주담대 이자 계산기", "주택담보 월납입"],
   },
   yield: {
     query: "임대수익률 계산기",

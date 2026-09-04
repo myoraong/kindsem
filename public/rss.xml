@@ -46,7 +46,7 @@
 <link>https://kindsem.com/calc/sale-vat/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/sale-vat/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>세일가와 10% 부가세를 한 화면에서. 부가세 계산기. 부가가치세 계산기, 할인 계산기, VAT 계산기, 세일 부가세</description>
+<description>세일가와 10% 부가세를 한 화면에서. 부가세 계산기. 부가가치세 계산기, 할인 계산기, 부가세 포함 계산기, 부가세 별도</description>
 </item>
 <item>
 <title>자동차 취득세 계산기</title>
@@ -60,7 +60,7 @@
 <link>https://kindsem.com/calc/car-tax/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/car-tax/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>비영업 승용 배기량·차령, 전기 정액. 지방교육세 30%. 자동차세 계산기. 자동차세 조회, 배기량 자동차세, 전기차 자동차세, 차령 자동차세</description>
+<description>비영업 승용 배기량·차령, 전기 정액. 지방교육세 30%. 자동차세 계산기. 자동차세 조회, 자동차세 연납, 배기량 자동차세, 차령 자동차세</description>
 </item>
 <item>
 <title>해외직구 관세 계산기</title>
@@ -123,14 +123,14 @@
 <link>https://kindsem.com/calc/overtime-pay/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/overtime-pay/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>통상시급에 제56조 가산. 연장 1.5, 야간 0.5, 휴일 1.5·2.0. 연장수당 계산기. 야간수당 계산기, 휴일수당 계산기, 특근 수당, 연장 야간 휴일</description>
+<description>통상시급에 제56조 가산. 연장 1.5, 야간 0.5, 휴일 1.5·2.0. 연장수당 계산기. 야근수당 계산기, 야간수당 계산기, 잔업수당 계산기, 휴일수당 계산기</description>
 </item>
 <item>
 <title>연차수당 계산기</title>
 <link>https://kindsem.com/calc/annual-leave/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/annual-leave/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>제60조 일수와 미사용 통상임금. 연차수당 계산기. 연차 일수 계산기, 연차 계산기, 미사용 연차수당</description>
+<description>제60조 일수와 미사용 통상임금. 연차수당 계산기. 연차 발생 계산기, 연차 일수 계산기, 미사용 연차수당</description>
 </item>
 <item>
 <title>퇴직금 계산기</title>
@@ -172,7 +172,7 @@
 <link>https://kindsem.com/calc/benefit-net/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/benefit-net/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>실업급여·내일배움이 실수령에 얼마나 붙는지. 실업급여 계산기. 내일배움카드 계산, 지원금 실수령, 구직급여</description>
+<description>실업급여·내일배움이 실수령에 얼마나 붙는지. 실업급여 계산기. 구직급여 계산기, 내일배움카드 계산, 지원금 실수령</description>
 </item>
 <item>
 <title>자격증 회수 계산기</title>
@@ -200,7 +200,7 @@
 <link>https://kindsem.com/calc/jeonse/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/jeonse/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>이자만 내는 전세자금의 월 부담. 전세대출 이자 계산기. 전세자금대출 이자, 전세 이자 계산, 전세대출 월이자</description>
+<description>이자만 내는 전세자금의 월 부담. 전세대출 이자 계산기. 전세자금대출 계산기, 전세자금대출 이자, 전세대출 월이자</description>
 </item>
 <item>
 <title>전월세 전환율 계산기</title>
@@ -312,7 +312,7 @@
 <link>https://kindsem.com/calc/mortgage/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/mortgage/</guid>
 <pubDate>Thu, 03 Sep 2026 00:00:00 GMT</pubDate>
-<description>원리금균등·원금균등 월 납입을 비교. 주택담보대출 계산기. 주담대 계산기, 원리금균등 계산기, 주택담보 월납입</description>
+<description>원리금균등·원금균등 월 납입을 비교. 주택담보대출 계산기. 주담대 계산기, 주담대 이자 계산기, 주택담보 월납입</description>
 </item>
 <item>
 <title>임대수익률 계산기</title>
