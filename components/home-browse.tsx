@@ -10,7 +10,7 @@ import { RecentCalcs } from "@/components/recent-calcs"
 import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
 import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
-import { searchCalculators } from "@/lib/search"
+import { searchCalculatorsVisible } from "@/lib/search"
 import { rememberBackSection } from "@/lib/home-back"
 import { homeChipClass } from "@/lib/home-section"
 import { calcPath } from "@/lib/seo"
@@ -82,7 +82,7 @@ export function HomeBrowse() {
   const router = useRouter()
   const section = useHomeSection()
   const [query, setQuery] = useState("")
-  const results = useMemo(() => searchCalculators(query, section), [query, section])
+  const results = useMemo(() => searchCalculatorsVisible(query, section), [query, section])
   const searching = query.trim().length > 0
   const sectionClass = cn(
     HOME_SECTION_SCROLL_MARGIN_CLASS,

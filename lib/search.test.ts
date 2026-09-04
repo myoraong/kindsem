@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { searchCalculators } from "./search.ts"
+import { searchCalculators, searchCalculatorsVisible } from "./search.ts"
 
 test("빈 검색은 결과를 내지 않는다", () => {
   assert.deepEqual(searchCalculators(""), [])
@@ -77,4 +77,15 @@ test("전체에서는 생활·급여·부동산을 모두 찾는다", () => {
   assert.equal(searchCalculators("자동차세", "all")[0]?.slug, "car-tax")
   assert.equal(searchCalculators("주휴수당", "all")[0]?.slug, "weekly-holiday")
   assert.equal(searchCalculators("복비", "all")[0]?.slug, "brokerage")
+})
+
+test("실수령만 넣어도 실수령액 계산기가 나온다", () => {
+  assert.equal(searchCalculators("실수령")[0]?.slug, "take-home")
+})
+
+test("고른 분류에 없으면 전체에서 찾는다", () => {
+  assert.deepEqual(searchCalculators("실수령", "today"), [])
+  assert.equal(searchCalculatorsVisible("실수령", "today")[0]?.slug, "take-home")
+  assert.equal(searchCalculatorsVisible("주휴수당", "today")[0]?.slug, "weekly-holiday")
+  assert.equal(searchCalculatorsVisible("복비", "work")[0]?.slug, "brokerage")
 })

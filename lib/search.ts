@@ -112,3 +112,10 @@ export function searchCalculators(query: string, section: HomeSection = "all"): 
   hits.sort((a, b) => b.rank - a.rank)
   return hits.map((row) => row.item)
 }
+
+/** 홈 검색. 고른 분류에 없으면 전체에서 찾습니다. */
+export function searchCalculatorsVisible(query: string, section: HomeSection = "all"): CalcItem[] {
+  const scoped = searchCalculators(query, section)
+  if (section === "all" || scoped.length > 0) return scoped
+  return searchCalculators(query, "all")
+}
