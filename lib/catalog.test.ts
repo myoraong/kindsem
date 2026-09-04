@@ -49,4 +49,6 @@ test("미리보기 계산기가 카탈로그에 있다", () => {
   assert.equal(getCalculator("rent-credit")?.title, "월세 세액공제")
   assert.equal(getCalculator("ladder")?.title, "사다리타기")
   assert.equal(getCalculator("ladder")?.group, "today")
+  assert.equal(getCalculator("pyeong")?.title, "평·㎡")
+  assert.equal(getCalculator("pyeong")?.group, "buy")
 })

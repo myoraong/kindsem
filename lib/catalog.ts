@@ -315,6 +315,13 @@ export const CALCULATORS: CalcItem[] = [
     group: "buy",
   },
   {
+    slug: "pyeong",
+    title: "평·㎡",
+    blurb: "1평은 3.3058㎡입니다. 평당·㎡당 가격도 같이.",
+    when: "매물 면적, 평당가",
+    group: "buy",
+  },
+  {
     slug: "ltv",
     title: "LTV",
     blurb: "규제지역·생애최초 한도와 희망 대출이 되는지.",

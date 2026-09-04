@@ -163,6 +163,10 @@ export const CALC_SEO: Record<string, CalcSeo> = {
     query: "부담부증여 계산기",
     also: ["채무 승계 증여", "부담부 증여세 양도세"],
   },
+  pyeong: {
+    query: "평수 계산기",
+    also: ["평당 가격 계산기", "제곱미터 평 변환", "평 ㎡ 계산기"],
+  },
   "closing-cost": {
     query: "부동산 취득 총비용 계산기",
     also: ["살 때 총비용", "잔금 필요 현금", "취득세 복비 인지세"],
@@ -370,7 +374,7 @@ export const REALTY_METADATA: Metadata = {
   title: "부동산 계산기",
   description:
     "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
-  keywords: ["부동산 계산기", "취득세 계산기", "양도세 계산기", "중개수수료 계산기", "DSR 계산기", "카인드셈"],
+  keywords: ["부동산 계산기", "취득세 계산기", "양도세 계산기", "중개수수료 계산기", "DSR 계산기", "평수 계산기", "카인드셈"],
   robots: { index: true, follow: true },
   alternates: { canonical: "/realty/", languages: { "ko-KR": "/realty/" } },
   openGraph: pageOpenGraph(

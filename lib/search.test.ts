@@ -37,6 +37,9 @@ test("별칭으로 복비·DSR을 찾는다", () => {
   assert.equal(searchCalculators("사다리타기")[0]?.slug, "ladder")
   assert.equal(searchCalculators("제비뽑기")[0]?.slug, "ladder")
   assert.equal(searchCalculators("사다리게임")[0]?.slug, "ladder")
+  assert.equal(searchCalculators("평수")[0]?.slug, "pyeong")
+  assert.equal(searchCalculators("평당가")[0]?.slug, "pyeong")
+  assert.equal(searchCalculators("제곱미터")[0]?.slug, "pyeong")
 })
 
 test("계산기 검색어로도 찾는다", () => {

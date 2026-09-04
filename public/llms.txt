@@ -49,6 +49,7 @@
 - 상속세 계산기: https://kindsem.com/calc/inheritance/
 - 부담부증여 계산기: https://kindsem.com/calc/encumbered-gift/
 - 부동산 취득 총비용 계산기: https://kindsem.com/calc/closing-cost/
+- 평수 계산기: https://kindsem.com/calc/pyeong/
 - LTV 계산기: https://kindsem.com/calc/ltv/
 - DSR 계산기: https://kindsem.com/calc/dsr/
 - 대출 이자 계산기: https://kindsem.com/calc/loan-interest/

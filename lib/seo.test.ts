@@ -38,6 +38,8 @@ test("실수령·퇴직금·복비는 사람들이 넣는 말로 제목을 단�
   assert.ok(calcSeo("overtime-pay").also.includes("야근수당 계산기"))
   assert.ok(calcSeo("mortgage").also.includes("주담대 이자 계산기"))
   assert.ok(calcSeo("benefit-net").also.includes("구직급여 계산기"))
+  assert.equal(calcSeo("pyeong").query, "평수 계산기")
+  assert.ok(calcSeo("pyeong").also.includes("평당 가격 계산기"))
 })
 
 test("페이지 메타에 홈 canonical을 쓰지 않는다", () => {

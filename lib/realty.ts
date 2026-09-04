@@ -1,6 +1,6 @@
 import { getCalculator, type CalcItem } from "@/lib/catalog"
 
-export type RealtyCategoryId = "tax" | "invest" | "loan" | "youth"
+export type RealtyCategoryId = "area" | "tax" | "invest" | "loan" | "youth"
 
 export type RealtyCategory = {
   id: RealtyCategoryId
@@ -9,6 +9,11 @@ export type RealtyCategory = {
 }
 
 export const REALTY_CATEGORIES: RealtyCategory[] = [
+  {
+    id: "area",
+    title: "면적",
+    slugs: ["pyeong"],
+  },
   {
     id: "tax",
     title: "세금 계산",

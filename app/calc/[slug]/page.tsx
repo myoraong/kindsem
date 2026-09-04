@@ -44,6 +44,7 @@ import { ProratePay } from "@/components/calc/prorate-pay"
 import { DepositCalc } from "@/components/calc/deposit-calc"
 import { RentCredit } from "@/components/calc/rent-credit"
 import { YieldCalc } from "@/components/calc/yield-calc"
+import { PyeongCalc } from "@/components/calc/pyeong-calc"
 import { JsonLd } from "@/components/json-ld"
 import { CALCULATORS, getCalculator, type CalcItem } from "@/lib/catalog"
 import { calcJsonLd, calcMetadata } from "@/lib/seo"
@@ -162,6 +163,8 @@ function calcBody(slug: string, item: CalcItem): ReactNode {
       return <EncumberedGiftCalc item={item} />
     case "closing-cost":
       return <ClosingCost item={item} />
+    case "pyeong":
+      return <PyeongCalc item={item} />
     case "ltv":
       return <LtvCalc item={item} />
     case "dsr":
