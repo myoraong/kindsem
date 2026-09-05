@@ -1,5 +1,5 @@
 /* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
-export const POLICY_FETCHED_AT = "2026-09-04"
+export const POLICY_FETCHED_AT = "2026-09-05"
 
 export const POLICY_SOURCES = {
   "income": {
