@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -12,6 +12,7 @@ import { calculateLtv, type LtvBorrower, type LtvZone } from "@/lib/ltv"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { LTV_POLICY } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const LTV_FAQ = [
   {
@@ -29,21 +30,23 @@ const LTV_FAQ = [
 ]
 
 export function LtvCalc({ item }: { item: CalcItem }) {
-  const [zone, setZone] = useState<LtvZone>("unregulated")
-  const [borrower, setBorrower] = useState<LtvBorrower>("general")
-  const [collateral, setCollateral] = useState("80000")
-  const [desired, setDesired] = useState("40000")
+  const [v, set] = useCalcPersist(item.slug, {
+    zone: "unregulated" as LtvZone,
+    borrower: "general" as LtvBorrower,
+    collateral: "80000",
+    desired: "40000",
+  })
 
   const result = useMemo(() => {
-    const collateralWon = manwonToWon(Number(collateral) || 0)
-    const desiredWon = manwonToWon(Number(desired) || 0)
+    const collateralWon = manwonToWon(Number(v.collateral) || 0)
+    const desiredWon = manwonToWon(Number(v.desired) || 0)
     return calculateLtv({
       collateralWon,
       desiredWon,
-      zone,
-      borrower,
+      zone: v.zone,
+      borrower: v.borrower,
     })
-  }, [collateral, desired, zone, borrower])
+  }, [v])
 
   return (
     <CalcShell
@@ -114,8 +117,8 @@ export function LtvCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="규제 지역"
-          value={zone}
-          onChange={setZone}
+          value={v.zone}
+          onChange={(value) => set("zone", value)}
           options={[
             { value: "unregulated", label: `비규제(${Math.round(LTV_POLICY.unregulated * 100)}%)` },
             { value: "adjusted", label: `조정대상(${Math.round(LTV_POLICY.regulated * 100)}%)` },
@@ -123,14 +126,14 @@ export function LtvCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <Hint>
-          {zone === "unregulated"
+          {v.zone === "unregulated"
             ? `비규제 일반은 ${Math.round(LTV_POLICY.unregulated * 100)}%입니다.`
             : "조정대상과 투기·투기과열은 은행업감독규정 일반 한도가 같습니다."}
         </Hint>
         <ChoiceGroup
           label="차주"
-          value={borrower}
-          onChange={setBorrower}
+          value={v.borrower}
+          onChange={(value) => set("borrower", value)}
           options={[
             { value: "general", label: "일반" },
             { value: "first", label: "생애최초" },
@@ -139,11 +142,11 @@ export function LtvCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <Hint>
-          {borrower === "extra"
+          {v.borrower === "extra"
             ? "지금 집을 팔지 않고 한 채를 더 사면, 주택구입 주담대는 안 됩니다."
-            : borrower === "first"
+            : v.borrower === "first"
               ? `생애최초는 ${Math.round(LTV_POLICY.firstTime * 100)}%까지, 대출금 ${Math.round(LTV_POLICY.firstTimeCap / 100_000_000)}억 원 한도입니다. 서민·실수요자 우대는 자동으로 넣지 않습니다.`
-              : borrower === "conditional"
+              : v.borrower === "conditional"
                 ? "기존 집을 팔기로 하고 사는 경우입니다. 한도는 일반과 같고, 처분 기한은 은행 약정입니다."
                 : "일반 차주 기준입니다. 오피스텔 등 비주택 70% 한도는 따로 보지 않습니다."}
         </Hint>
@@ -151,8 +154,8 @@ export function LtvCalc({ item }: { item: CalcItem }) {
           id="col"
           label="담보가치"
           hint="KB시세·감정가"
-          value={collateral}
-          onChange={setCollateral}
+          value={v.collateral}
+          onChange={(value) => set("collateral", value)}
         />
         <AmountChips
           options={[
@@ -161,14 +164,14 @@ export function LtvCalc({ item }: { item: CalcItem }) {
             { label: "10억", value: "100000" },
             { label: "15억", value: "150000" },
           ]}
-          onPick={setCollateral}
+          onPick={(value) => set("collateral", value)}
         />
         <MoneyField
           id="want"
           label="대출 희망액"
           hint="선택"
-          value={desired}
-          onChange={setDesired}
+          value={v.desired}
+          onChange={(value) => set("desired", value)}
         />
       </div>
     </CalcShell>

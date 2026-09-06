@@ -49,6 +49,17 @@ test("계산기 입력은 슬로그별로 기기에 남긴다", () => {
   assert.equal(readCalcStorage("sale-vat", storage), null)
 })
 
+test("빈 칸도 쿼리에 남겨 기본값과 구분한다", () => {
+  const defaults = { income: "5000", mortgage: "", other: "" }
+  const encoded = encodeCalcQuery({ income: "5000", mortgage: "120", other: "" })
+  assert.equal(encoded, "?income=5000&mortgage=120&other=")
+  assert.deepEqual(decodeCalcQuery(encoded, defaults), {
+    income: "5000",
+    mortgage: "120",
+    other: "",
+  })
+})
+
 test("같은 입력이면 주소를 다시 쓰지 않아도 된다", () => {
   assert.equal(calcStateEquals({ a: "1", b: false }, { a: "1", b: false }), true)
   assert.equal(calcStateEquals({ a: "1", b: false }, { a: "2", b: false }), false)

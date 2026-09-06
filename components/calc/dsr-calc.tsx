@@ -29,8 +29,8 @@ export function DsrCalc({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
     bank: "bank" as DsrBank,
     income: "5000",
-    mortgage: "120",
-    other: "30",
+    mortgage: "",
+    other: "",
   })
 
   const result = useMemo(() => {
@@ -63,9 +63,11 @@ export function DsrCalc({ item }: { item: CalcItem }) {
           kind="percent"
           caption={
             result
-              ? result.allowed
-                ? `한도 ${formatPercent(result.limit * 100, 0)} 안`
-                : `한도 ${formatPercent(result.limit * 100, 0)} 초과`
+              ? result.annual === 0
+                ? `한도 ${formatPercent(result.limit * 100, 0)} · 대출 없음`
+                : result.allowed
+                  ? `한도 ${formatPercent(result.limit * 100, 0)} 안`
+                  : `한도 ${formatPercent(result.limit * 100, 0)} 초과`
               : undefined
           }
           rows={
@@ -108,6 +110,7 @@ export function DsrCalc({ item }: { item: CalcItem }) {
           ]}
           onPick={(value) => set("income", value)}
         />
+        <Hint>주담대·기타 대출은 없으면 비워 두세요. 연소득만으로도 남는 한도가 나옵니다.</Hint>
         <MoneyField id="m" label="주담대 월 상환액" value={v.mortgage} onChange={(value) => set("mortgage", value)} />
         <AmountChips
           options={[

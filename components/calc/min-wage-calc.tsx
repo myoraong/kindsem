@@ -6,6 +6,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { WageSiblingHint } from "@/components/calc/wage-sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -126,6 +127,7 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <WageSiblingHint here="min-wage" />
         <ChoiceGroup
           label="넣을 임금"
           value={pay}

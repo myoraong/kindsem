@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -18,6 +18,7 @@ import {
   type MovingLoanMethod,
 } from "@/lib/moving"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const MOVING_FAQ = [
   {
@@ -39,38 +40,40 @@ const MOVING_FAQ = [
 ]
 
 export function MovingCost({ item }: { item: CalcItem }) {
-  const [deal, setDeal] = useState<MovingDeal>("jeonse")
-  const [deposit, setDeposit] = useState("10000")
-  const [monthly, setMonthly] = useState("50")
-  const [move, setMove] = useState("50")
-  const [stuff, setStuff] = useState("30")
-  const [insurance, setInsurance] = useState("8")
-  const [loan, setLoan] = useState("0")
-  const [rate, setRate] = useState("3.5")
-  const [years, setYears] = useState("2")
-  const [method, setMethod] = useState<MovingLoanMethod>("interest-only")
+  const [v, set] = useCalcPersist(item.slug, {
+    deal: "jeonse" as MovingDeal,
+    deposit: "10000",
+    monthly: "50",
+    move: "50",
+    stuff: "30",
+    insurance: "8",
+    loan: "0",
+    rate: "3.5",
+    years: "2",
+    method: "interest-only" as MovingLoanMethod,
+  })
 
-  const loanEntered = (Number(loan) || 0) > 0
+  const loanEntered = (Number(v.loan) || 0) > 0
 
   const result = useMemo(() => {
     return calcMovingTotal({
-      deal,
-      depositWon: manwonToWon(Number(deposit) || 0),
-      monthlyRentWon: manwonToWon(Number(monthly) || 0),
-      moveWon: manwonToWon(Number(move) || 0),
-      stuffWon: manwonToWon(Number(stuff) || 0),
-      insuranceWon: manwonToWon(Number(insurance) || 0),
-      loanWon: manwonToWon(Number(loan) || 0),
-      annualRatePercent: Number(rate) || 0,
-      years: Number(years) || 0,
-      loanMethod: method,
+      deal: v.deal,
+      depositWon: manwonToWon(Number(v.deposit) || 0),
+      monthlyRentWon: manwonToWon(Number(v.monthly) || 0),
+      moveWon: manwonToWon(Number(v.move) || 0),
+      stuffWon: manwonToWon(Number(v.stuff) || 0),
+      insuranceWon: manwonToWon(Number(v.insurance) || 0),
+      loanWon: manwonToWon(Number(v.loan) || 0),
+      annualRatePercent: Number(v.rate) || 0,
+      years: Number(v.years) || 0,
+      loanMethod: v.method,
     })
-  }, [deal, deposit, monthly, move, stuff, insurance, loan, rate, years, method])
+  }, [v])
 
   const rows: ReceiptRow[] = result
     ? [
         { label: "보증금", value: formatWon(result.deposit) },
-        ...(deal === "wolse"
+        ...(v.deal === "wolse"
           ? [{ label: "첫 달 월세", value: formatWon(result.monthlyRent) }]
           : []),
         { label: "복비 상한(부가세 포함)", value: formatWon(result.brokerage.total) },
@@ -118,15 +121,15 @@ export function MovingCost({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="거래"
-          value={deal}
-          onChange={setDeal}
+          value={v.deal}
+          onChange={(value) => set("deal", value)}
           options={[
             { value: "jeonse", label: "전세" },
             { value: "wolse", label: "월세" },
           ]}
         />
         <div className="space-y-2">
-          <MoneyField id="deposit" label="보증금" value={deposit} onChange={setDeposit} />
+          <MoneyField id="deposit" label="보증금" value={v.deposit} onChange={(value) => set("deposit", value)} />
           <AmountChips
             options={[
               { label: "5천", value: "5000" },
@@ -134,12 +137,12 @@ export function MovingCost({ item }: { item: CalcItem }) {
               { label: "2억", value: "20000" },
               { label: "3억", value: "30000" },
             ]}
-            onPick={setDeposit}
+            onPick={(value) => set("deposit", value)}
           />
         </div>
-        {deal === "wolse" ? (
+        {v.deal === "wolse" ? (
           <div className="space-y-2">
-            <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+            <MoneyField id="monthly" label="월세" value={v.monthly} onChange={(value) => set("monthly", value)} />
             <AmountChips
               options={[
                 { label: "50만", value: "50" },
@@ -147,27 +150,27 @@ export function MovingCost({ item }: { item: CalcItem }) {
                 { label: "100만", value: "100" },
                 { label: "150만", value: "150" },
               ]}
-              onPick={setMonthly}
+              onPick={(value) => set("monthly", value)}
             />
           </div>
         ) : null}
-        <MoneyField id="move" label="이삿짐 견적" value={move} onChange={setMove} />
-        <MoneyField id="stuff" label="가구·생필품" value={stuff} onChange={setStuff} />
+        <MoneyField id="move" label="이삿짐 견적" value={v.move} onChange={(value) => set("move", value)} />
+        <MoneyField id="stuff" label="가구·생필품" value={v.stuff} onChange={(value) => set("stuff", value)} />
         <MoneyField
           id="ins"
           label="보증보험·기타"
-          value={insurance}
-          onChange={setInsurance}
+          value={v.insurance}
+          onChange={(value) => set("insurance", value)}
         />
-        <MoneyField id="loan" label="빌릴 금액" value={loan} onChange={setLoan} />
+        <MoneyField id="loan" label="빌릴 금액" value={v.loan} onChange={(value) => set("loan", value)} />
         {loanEntered ? (
           <>
-            <MoneyField id="rate" label="연 금리" unit="%" value={rate} onChange={setRate} />
-            <MoneyField id="years" label="기간" unit="년" value={years} onChange={setYears} />
+            <MoneyField id="rate" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
+            <MoneyField id="years" label="기간" unit="년" value={v.years} onChange={(value) => set("years", value)} />
             <ChoiceGroup
               label="상환 방식"
-              value={method}
-              onChange={setMethod}
+              value={v.method}
+              onChange={(value) => set("method", value)}
               options={[
                 { value: "equal-payment", label: "원리금균등" },
                 { value: "interest-only", label: "이자만" },

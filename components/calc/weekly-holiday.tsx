@@ -16,6 +16,7 @@ import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcWeeklyHoliday, monthlyContractHours } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
+import { WageSiblingHint } from "@/components/calc/wage-sibling-hint"
 
 const FAQ = [
   {
@@ -95,6 +96,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <WageSiblingHint here="weekly-holiday" />
         <ChoiceGroup
           label="임금"
           value={v.pay}

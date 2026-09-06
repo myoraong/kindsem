@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
 import { formatKoreanUnit, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
+import { RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
 
 export type ReceiptRow = {
   label: string
@@ -89,6 +90,9 @@ export function ResultReceipt({
           {lawLine ? (
             <p className="mt-4 text-xs leading-5 text-muted-foreground">{lawLine}</p>
           ) : null}
+          <p className={`${lawLine ? "mt-2" : "mt-4"} text-xs leading-5 text-muted-foreground`}>
+            {RECEIPT_REFERENCE_NOTE}
+          </p>
           <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
             결과 복사
           </Button>

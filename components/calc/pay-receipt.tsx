@@ -6,6 +6,7 @@ import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
+import { PAY_SLIP_NOTE, RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
 
 function healthWon(row: TakeHomeResult) {
   return row.insurance.healthCapped
@@ -71,6 +72,8 @@ function Frame({
           <p className="mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl">{headline}</p>
           {caption ? <p className="mt-1 text-sm text-muted-foreground">{caption}</p> : null}
           {children}
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">{PAY_SLIP_NOTE}</p>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">{RECEIPT_REFERENCE_NOTE}</p>
           {copyValue ? (
             <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
               결과 복사

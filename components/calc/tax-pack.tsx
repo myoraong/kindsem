@@ -14,6 +14,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatKoreanUnit, formatPercent, formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { GIFT_DEDUCTIONS, INHERITANCE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 import {
   calcCapitalGains,
   calcCorporateGains,
@@ -294,22 +295,24 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
 }
 
 export function GiftTaxCalc({ item }: { item: CalcItem }) {
-  const [amount, setAmount] = useState("20000")
-  const [prior, setPrior] = useState("")
-  const [relation, setRelation] = useState<GiftRelation>("descendant")
+  const [v, set] = useCalcPersist(item.slug, {
+    amount: "20000",
+    prior: "",
+    relation: "descendant" as GiftRelation,
+  })
 
   const result = useMemo(() => {
     return calcGiftTax({
-      amount: manwonToWon(Number(amount) || 0),
-      prior: manwonToWon(Number(prior) || 0),
-      relation,
+      amount: manwonToWon(Number(v.amount) || 0),
+      prior: manwonToWon(Number(v.prior) || 0),
+      relation: v.relation,
     })
-  }, [amount, prior, relation])
+  }, [v])
 
   const deductionLabel =
-    relation === "spouse"
+    v.relation === "spouse"
       ? formatKoreanUnit(GIFT_DEDUCTIONS.spouse)
-      : relation === "other"
+      : v.relation === "other"
         ? formatKoreanUnit(GIFT_DEDUCTIONS.other)
         : formatKoreanUnit(GIFT_DEDUCTIONS.descendant)
 
@@ -366,8 +369,8 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="누구에게 주나요?"
-          value={relation}
-          onChange={setRelation}
+          value={v.relation}
+          onChange={(value) => set("relation", value)}
           options={[
             { value: "descendant", label: "자녀·손주" },
             { value: "spouse", label: "배우자" },
@@ -376,7 +379,7 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <div className="space-y-2">
-          <MoneyField id="gift" label="이번 증여" value={amount} onChange={setAmount} />
+          <MoneyField id="gift" label="이번 증여" value={v.amount} onChange={(value) => set("amount", value)} />
           <AmountChips
             options={[
               { label: "5천만", value: "5000" },
@@ -384,15 +387,15 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
               { label: "3억", value: "30000" },
               { label: "6억", value: "60000" },
             ]}
-            onPick={setAmount}
+            onPick={(value) => set("amount", value)}
           />
         </div>
         <MoneyField
           id="prior"
           label="10년 내 같은 사람 증여"
           hint="없으면 비워 두세요"
-          value={prior}
-          onChange={setPrior}
+          value={v.prior}
+          onChange={(value) => set("prior", value)}
         />
         <Hint>
           공제 한도는 {deductionLabel}입니다. 미성년 직계존속 2천만 원, 세대생략 할증은 넣지 않았습니다.
@@ -406,27 +409,29 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
 const CHILD_COUNTS = ["0", "1", "2", "3", "4", "5", "6", "7", "8"] as const
 
 export function InheritanceCalc({ item }: { item: CalcItem }) {
-  const [estate, setEstate] = useState("150000")
-  const [debts, setDebts] = useState("")
-  const [heirs, setHeirs] = useState<InheritanceHeirs>("spouse-children")
-  const [children, setChildren] = useState<(typeof CHILD_COUNTS)[number]>("2")
-  const [minorCount, setMinorCount] = useState("0")
-  const [minorAge, setMinorAge] = useState("10")
-  const [elderlyCount, setElderlyCount] = useState("0")
-  const [finance, setFinance] = useState("")
+  const [v, set] = useCalcPersist(item.slug, {
+    estate: "150000",
+    debts: "",
+    heirs: "spouse-children" as InheritanceHeirs,
+    children: "2" as (typeof CHILD_COUNTS)[number],
+    minorCount: "0",
+    minorAge: "10",
+    elderlyCount: "0",
+    finance: "",
+  })
 
   const result = useMemo(() => {
     return calcInheritance({
-      estate: manwonToWon(Number(estate) || 0),
-      debts: manwonToWon(Number(debts) || 0),
-      heirs,
-      children: heirs === "spouse-only" ? 0 : Number(children) || 0,
-      minorCount: Number(minorCount) || 0,
-      minorAge: Number(minorAge) || 0,
-      elderlyCount: Number(elderlyCount) || 0,
-      finance: manwonToWon(Number(finance) || 0),
+      estate: manwonToWon(Number(v.estate) || 0),
+      debts: manwonToWon(Number(v.debts) || 0),
+      heirs: v.heirs,
+      children: v.heirs === "spouse-only" ? 0 : Number(v.children) || 0,
+      minorCount: Number(v.minorCount) || 0,
+      minorAge: Number(v.minorAge) || 0,
+      elderlyCount: Number(v.elderlyCount) || 0,
+      finance: manwonToWon(Number(v.finance) || 0),
     })
-  }, [estate, debts, heirs, children, minorCount, minorAge, elderlyCount, finance])
+  }, [v])
 
   return (
     <CalcShell
@@ -524,20 +529,20 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="누가 받나요?"
-          value={heirs}
-          onChange={setHeirs}
+          value={v.heirs}
+          onChange={(value) => set("heirs", value)}
           options={[
             { value: "spouse-children", label: "배우자·자녀" },
             { value: "children", label: "자녀만" },
             { value: "spouse-only", label: "배우자만" },
           ]}
         />
-        {heirs !== "spouse-only" ? (
+        {v.heirs !== "spouse-only" ? (
           <div className="space-y-2">
             <ChoiceGroup
               label="자녀 수"
-              value={children}
-              onChange={setChildren}
+              value={v.children}
+              onChange={(value) => set("children", value)}
               options={CHILD_COUNTS.map((value) => ({
                 value,
                 label: value === "0" ? "없음" : `${value}명`,
@@ -550,7 +555,7 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
           </div>
         ) : null}
         <div className="space-y-2">
-          <MoneyField id="est" label="상속재산" value={estate} onChange={setEstate} />
+          <MoneyField id="est" label="상속재산" value={v.estate} onChange={(value) => set("estate", value)} />
           <AmountChips
             options={[
               { label: "5억", value: "50000" },
@@ -559,15 +564,15 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
               { label: "20억", value: "200000" },
               { label: "30억", value: "300000" },
             ]}
-            onPick={setEstate}
+            onPick={(value) => set("estate", value)}
           />
         </div>
         <MoneyField
           id="debt"
           label="빚·대출"
           hint="없으면 비워 두세요"
-          value={debts}
-          onChange={setDebts}
+          value={v.debts}
+          onChange={(value) => set("debts", value)}
         />
         <details className="rounded-xl bg-secondary/60 px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium">
@@ -579,17 +584,17 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
               label="미성년 상속인·동거가족"
               hint="배우자 제외"
               unit="명"
-              value={minorCount}
-              onChange={setMinorCount}
+              value={v.minorCount}
+              onChange={(value) => set("minorCount", value)}
             />
-            {Number(minorCount) > 0 ? (
+            {Number(v.minorCount) > 0 ? (
               <MoneyField
                 id="minor-age"
                 label="그 사람 만나이"
                 hint={`19세까지 ${formatKoreanUnit(INHERITANCE.minorPerYear)}×연수`}
                 unit="세"
-                value={minorAge}
-                onChange={setMinorAge}
+                value={v.minorAge}
+                onChange={(value) => set("minorAge", value)}
               />
             ) : null}
             <MoneyField
@@ -597,15 +602,15 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
               label="65세 이상 상속인·동거가족"
               hint="배우자 제외. 대습한 며느리·사위면 여기"
               unit="명"
-              value={elderlyCount}
-              onChange={setElderlyCount}
+              value={v.elderlyCount}
+              onChange={(value) => set("elderlyCount", value)}
             />
             <MoneyField
               id="finance"
               label="순금융재산"
               hint="예금·보험 − 금융빚"
-              value={finance}
-              onChange={setFinance}
+              value={v.finance}
+              onChange={(value) => set("finance", value)}
             />
             <Hint>
               미성년·65세 이상은 자녀 공제와 겹쳐도 됩니다. 동거가족은 피상속인이 부양한
@@ -694,21 +699,23 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
 }
 
 export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
-  const [property, setProperty] = useState("80000")
-  const [debt, setDebt] = useState("20000")
-  const [buy, setBuy] = useState("30000")
-  const [years, setYears] = useState("8")
-  const [relation, setRelation] = useState<GiftRelation>("descendant")
+  const [v, set] = useCalcPersist(item.slug, {
+    property: "80000",
+    debt: "20000",
+    buy: "30000",
+    years: "8",
+    relation: "descendant" as GiftRelation,
+  })
 
   const result = useMemo(() => {
     return calcEncumberedGift({
-      property: manwonToWon(Number(property) || 0),
-      debt: manwonToWon(Number(debt) || 0),
-      buy: manwonToWon(Number(buy) || 0),
-      years: Number(years) || 0,
-      relation,
+      property: manwonToWon(Number(v.property) || 0),
+      debt: manwonToWon(Number(v.debt) || 0),
+      buy: manwonToWon(Number(v.buy) || 0),
+      years: Number(v.years) || 0,
+      relation: v.relation,
     })
-  }, [property, debt, buy, years, relation])
+  }, [v])
 
   return (
     <CalcShell
@@ -745,8 +752,8 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="수증자"
-          value={relation}
-          onChange={setRelation}
+          value={v.relation}
+          onChange={(value) => set("relation", value)}
           options={[
             { value: "descendant", label: "자녀·손주" },
             { value: "spouse", label: "배우자" },
@@ -754,7 +761,7 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
           ]}
         />
         <div className="space-y-2">
-          <MoneyField id="prop" label="증여재산가액" value={property} onChange={setProperty} />
+          <MoneyField id="prop" label="증여재산가액" value={v.property} onChange={(value) => set("property", value)} />
           <AmountChips
             options={[
               { label: "5억", value: "50000" },
@@ -762,11 +769,11 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
-            onPick={setProperty}
+            onPick={(value) => set("property", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="debt" label="승계 채무" value={debt} onChange={setDebt} />
+          <MoneyField id="debt" label="승계 채무" value={v.debt} onChange={(value) => set("debt", value)} />
           <AmountChips
             options={[
               { label: "1억", value: "10000" },
@@ -774,11 +781,11 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
               { label: "3억", value: "30000" },
               { label: "5억", value: "50000" },
             ]}
-            onPick={setDebt}
+            onPick={(value) => set("debt", value)}
           />
         </div>
-        <MoneyField id="orig" label="원 취득가액" value={buy} onChange={setBuy} />
-        <MoneyField id="ey" label="보유기간" unit="년" value={years} onChange={setYears} />
+        <MoneyField id="orig" label="원 취득가액" value={v.buy} onChange={(value) => set("buy", value)} />
+        <MoneyField id="ey" label="보유기간" unit="년" value={v.years} onChange={(value) => set("years", value)} />
         <Hint>
           채무 부분은 증여자 양도, 나머지가 수증자 증여입니다. 1주택 비과세는 넣지 않았습니다.
         </Hint>
