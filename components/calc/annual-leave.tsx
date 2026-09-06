@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -14,6 +14,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcAnnualLeave } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -27,25 +28,27 @@ const FAQ = [
 ]
 
 export function AnnualLeave({ item }: { item: CalcItem }) {
-  const [years, setYears] = useState("3")
-  const [months, setMonths] = useState("6")
-  const [weeklyHours, setWeeklyHours] = useState("40")
-  const [weeklyDays, setWeeklyDays] = useState("5")
-  const [monthly, setMonthly] = useState(String(MIN_WAGE.monthly))
-  const [unused, setUnused] = useState("0")
+  const [v, set] = useCalcPersist(item.slug, {
+    years: "3",
+    months: "6",
+    weeklyHours: "40",
+    weeklyDays: "5",
+    monthly: String(MIN_WAGE.monthly),
+    unused: "0",
+  })
 
   const result = useMemo(() => {
-    const y = Number(years)
+    const y = Number(v.years)
     if (!Number.isFinite(y) || y < 0) return null
     return calcAnnualLeave({
       years: y,
-      attendedMonths: Number(months) || 0,
-      weeklyHours: Number(weeklyHours) || 0,
-      weeklyDays: Number(weeklyDays) || 5,
-      monthlyOrdinary: Number(monthly) || 0,
-      unusedDays: Number(unused) || 0,
+      attendedMonths: Number(v.months) || 0,
+      weeklyHours: Number(v.weeklyHours) || 0,
+      weeklyDays: Number(v.weeklyDays) || 5,
+      monthlyOrdinary: Number(v.monthly) || 0,
+      unusedDays: Number(v.unused) || 0,
     })
-  }, [years, months, weeklyHours, weeklyDays, monthly, unused])
+  }, [v])
 
   return (
     <CalcShell
@@ -59,7 +62,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
           caption={
             result
               ? result.eligible
-                ? Number(unused) > 0 && result.allowance > 0
+                ? Number(v.unused) > 0 && result.allowance > 0
                   ? `미사용 수당 ${formatWon(result.allowance)}`
                   : "제60조 입사일 기준"
                 : "주 15시간 미만 · 제18조"
@@ -81,7 +84,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="years" label="계속근로 연수" unit="년" value={years} onChange={setYears} />
+          <MoneyField id="years" label="계속근로 연수" unit="년" value={v.years} onChange={(value) => set("years", value)} />
           <AmountChips
             options={[
               { label: "1년", value: "1" },
@@ -89,16 +92,16 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "5년", value: "5" },
               { label: "10년", value: "10" },
             ]}
-            onPick={setYears}
+            onPick={(value) => set("years", value)}
           />
         </div>
-        {Number(years) < 1 ? (
+        {Number(v.years) < 1 ? (
           <MoneyField
             id="months"
             label="1개월 개근한 개월"
             unit="개월"
-            value={months}
-            onChange={setMonths}
+            value={v.months}
+            onChange={(value) => set("months", value)}
           />
         ) : null}
         <div className="space-y-2">
@@ -106,8 +109,8 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
             id="hours"
             label="1주 소정근로시간"
             unit="시간/주"
-            value={weeklyHours}
-            onChange={setWeeklyHours}
+            value={v.weeklyHours}
+            onChange={(value) => set("weeklyHours", value)}
           />
           <AmountChips
             options={[
@@ -116,13 +119,13 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "30시간", value: "30" },
               { label: "40시간", value: "40" },
             ]}
-            onPick={setWeeklyHours}
+            onPick={(value) => set("weeklyHours", value)}
           />
         </div>
         <ChoiceGroup
           label="1주 소정근로일"
-          value={weeklyDays}
-          onChange={setWeeklyDays}
+          value={v.weeklyDays}
+          onChange={(value) => set("weeklyDays", value)}
           options={[
             { value: "5", label: "5일" },
             { value: "6", label: "6일" },
@@ -133,8 +136,8 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
             id="monthly"
             label="월 통상임금"
             unit="원"
-            value={monthly}
-            onChange={setMonthly}
+            value={v.monthly}
+            onChange={(value) => set("monthly", value)}
           />
           <AmountChips
             options={[
@@ -143,11 +146,11 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "300만", value: "3000000" },
               { label: "350만", value: "3500000" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="unused" label="미사용 일수" unit="일" value={unused} onChange={setUnused} />
+          <MoneyField id="unused" label="미사용 일수" unit="일" value={v.unused} onChange={(value) => set("unused", value)} />
           <AmountChips
             options={[
               { label: "0일", value: "0" },
@@ -155,7 +158,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "10일", value: "10" },
               { label: "15일", value: "15" },
             ]}
-            onPick={setUnused}
+            onPick={(value) => set("unused", value)}
           />
         </div>
         <Hint>

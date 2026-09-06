@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -12,6 +12,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calcLoanInterest, type Repayment } from "@/lib/loan"
 import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -25,22 +26,24 @@ const FAQ = [
 ]
 
 export function LoanInterestCalc({ item }: { item: CalcItem }) {
-  const [principal, setPrincipal] = useState("5000")
-  const [rate, setRate] = useState("5.5")
-  const [months, setMonths] = useState("36")
-  const [method, setMethod] = useState<Repayment>("equal-payment")
+  const [v, set] = useCalcPersist(item.slug, {
+    principal: "5000",
+    rate: "5.5",
+    months: "36",
+    method: "equal-payment" as Repayment,
+  })
 
   const result = useMemo(() => {
     return calcLoanInterest({
-      principal: manwonToWon(Number(principal) || 0),
-      annualPercent: Number(rate) || 0,
-      months: Math.round(Number(months) || 0),
-      method,
+      principal: manwonToWon(Number(v.principal) || 0),
+      annualPercent: Number(v.rate) || 0,
+      months: Math.round(Number(v.months) || 0),
+      method: v.method,
     })
-  }, [principal, rate, months, method])
+  }, [v])
 
   const title =
-    method === "equal-principal" ? "첫 달 납입" : method === "interest-only" ? "매달 이자" : "월 납입"
+    v.method === "equal-principal" ? "첫 달 납입" : v.method === "interest-only" ? "매달 이자" : "월 납입"
 
   return (
     <CalcShell
@@ -57,7 +60,7 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
           }
           rows={
             result
-              ? method === "equal-principal"
+              ? v.method === "equal-principal"
                 ? [
                     { label: "첫 달", value: formatWon(result.first) },
                     { label: "마지막 달", value: formatWon(result.last) },
@@ -65,7 +68,7 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
                     { label: "총 상환", value: formatWon(result.totalPay) },
                   ]
                 : [
-                    { label: method === "interest-only" ? "매달 이자" : "매달 같은 금액", value: formatWon(result.monthly) },
+                    { label: v.method === "interest-only" ? "매달 이자" : "매달 같은 금액", value: formatWon(result.monthly) },
                     { label: "총 이자", value: formatWon(result.totalInterest) },
                     { label: "총 상환", value: formatWon(result.totalPay) },
                   ]
@@ -77,7 +80,7 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <LoanSiblingHint here="loan-interest" />
-        <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
+        <MoneyField id="p" label="대출 금액" value={v.principal} onChange={(value) => set("principal", value)} />
         <AmountChips
           options={[
             { label: "1천만", value: "1000" },
@@ -85,10 +88,10 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
             { label: "5천만", value: "5000" },
             { label: "1억", value: "10000" },
           ]}
-          onPick={setPrincipal}
+          onPick={(value) => set("principal", value)}
         />
-        <MoneyField id="r" label="연 금리" unit="%" value={rate} onChange={setRate} />
-        <MoneyField id="m" label="기간" unit="개월" value={months} onChange={setMonths} />
+        <MoneyField id="r" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
+        <MoneyField id="m" label="기간" unit="개월" value={v.months} onChange={(value) => set("months", value)} />
         <AmountChips
           options={[
             { label: "12개월", value: "12" },
@@ -96,12 +99,12 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
             { label: "36개월", value: "36" },
             { label: "60개월", value: "60" },
           ]}
-          onPick={setMonths}
+          onPick={(value) => set("months", value)}
         />
         <ChoiceGroup
           label="상환 방식"
-          value={method}
-          onChange={setMethod}
+          value={v.method}
+          onChange={(value) => set("method", value)}
           options={[
             { value: "equal-payment", label: "원리금균등" },
             { value: "equal-principal", label: "원금균등" },

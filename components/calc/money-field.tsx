@@ -16,7 +16,7 @@ export function MoneyField({
   unit = "만원",
   value,
   onChange,
-  placeholder = "0",
+  placeholder = "",
 }: {
   id: string
   label: string

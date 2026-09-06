@@ -35,6 +35,20 @@ test("주소가 비면 저장된 입력을 쓴다", () => {
   assert.equal(merged.pay, "4800")
 })
 
+test("예전에 쓰던 칸 이름은 새 기본값을 덮지 않는다", () => {
+  const defaults = { current: "4000", mealExempt: false as boolean }
+  const stored = { current: "4500", meal: true }
+  const query = { meal: "1" }
+  const merged = mergeCalcState(defaults, stored as never, query as never)
+  assert.deepEqual(merged, { current: "4500", mealExempt: false })
+})
+
+test("예전 주소의 meal 칸은 식대 기본 끄기를 덮지 않는다", () => {
+  const defaults = { current: "4000", mealExempt: false as boolean }
+  const query = decodeCalcQuery("?current=4500&meal=1", defaults)
+  assert.deepEqual(query, { current: "4500" })
+})
+
 test("계산기 입력은 슬로그별로 기기에 남긴다", () => {
   const memory = new Map<string, string>()
   const storage = {

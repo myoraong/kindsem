@@ -113,7 +113,13 @@ export function DsrCalc({ item }: { item: CalcItem }) {
           onPick={(value) => set("income", value)}
         />
         <Hint>주담대·기타 대출은 없으면 비워 두세요. 연소득만으로도 남는 한도가 나옵니다.</Hint>
-        <MoneyField id="m" label="주담대 월 상환액" value={v.mortgage} onChange={(value) => set("mortgage", value)} />
+        <MoneyField
+          id="m"
+          label="주담대 월 상환액"
+          value={v.mortgage}
+          onChange={(value) => set("mortgage", value)}
+          placeholder="없음"
+        />
         <AmountChips
           options={[
             { label: "80만", value: "80" },
@@ -123,7 +129,13 @@ export function DsrCalc({ item }: { item: CalcItem }) {
           ]}
           onPick={(value) => set("mortgage", value)}
         />
-        <MoneyField id="o" label="기타 대출 월 상환액" value={v.other} onChange={(value) => set("other", value)} />
+        <MoneyField
+          id="o"
+          label="기타 대출 월 상환액"
+          value={v.other}
+          onChange={(value) => set("other", value)}
+          placeholder="없음"
+        />
       </div>
     </CalcShell>
   )

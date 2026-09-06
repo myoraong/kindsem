@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
@@ -14,6 +14,7 @@ import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcDeposit, type DepositCompound, type DepositKind } from "@/lib/deposit"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -27,27 +28,29 @@ const FAQ = [
 ]
 
 export function DepositCalc({ item }: { item: CalcItem }) {
-  const [kind, setKind] = useState<DepositKind>("savings")
-  const [compound, setCompound] = useState<DepositCompound>("simple")
-  const [principal, setPrincipal] = useState("1000")
-  const [monthly, setMonthly] = useState("30")
-  const [rate, setRate] = useState("3.5")
-  const [months, setMonths] = useState("12")
-  const [afterTax, setAfterTax] = useState(true)
+  const [v, set] = useCalcPersist(item.slug, {
+    kind: "savings" as DepositKind,
+    compound: "simple" as DepositCompound,
+    principal: "1000",
+    monthly: "30",
+    rate: "3.5",
+    months: "12",
+    afterTax: true,
+  })
 
   const result = useMemo(() => {
     return calcDeposit({
-      kind,
-      compound,
-      principal: manwonToWon(Number(principal) || 0),
-      monthly: manwonToWon(Number(monthly) || 0),
-      annualRate: Number(rate),
-      months: Number(months),
+      kind: v.kind,
+      compound: v.compound,
+      principal: manwonToWon(Number(v.principal) || 0),
+      monthly: manwonToWon(Number(v.monthly) || 0),
+      annualRate: Number(v.rate),
+      months: Number(v.months),
     })
-  }, [kind, compound, principal, monthly, rate, months])
+  }, [v])
 
-  const interest = afterTax ? result?.netInterest : result?.grossInterest
-  const total = afterTax ? result?.netTotal : result?.grossTotal
+  const interest = v.afterTax ? result?.netInterest : result?.grossInterest
+  const total = v.afterTax ? result?.netTotal : result?.grossTotal
 
   return (
     <CalcShell
@@ -55,12 +58,12 @@ export function DepositCalc({ item }: { item: CalcItem }) {
       faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
-          title={afterTax ? "세후 만기" : "세전 만기"}
+          title={v.afterTax ? "세후 만기" : "세전 만기"}
           amount={total ?? null}
           caption={result ? `이자 ${formatWon(interest ?? 0)}` : undefined}
           copyLine={
             result && total != null
-              ? kakaoCopyLine("예적금", formatWon(total), afterTax ? "세후" : "세전")
+              ? kakaoCopyLine("예적금", formatWon(total), v.afterTax ? "세후" : "세전")
               : undefined
           }
           rows={
@@ -79,8 +82,8 @@ export function DepositCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="상품"
-          value={kind}
-          onChange={setKind}
+          value={v.kind}
+          onChange={(value) => set("kind", value)}
           options={[
             { value: "savings", label: "예금" },
             { value: "installment", label: "적금" },
@@ -88,16 +91,16 @@ export function DepositCalc({ item }: { item: CalcItem }) {
         />
         <ChoiceGroup
           label="이자"
-          value={compound}
-          onChange={setCompound}
+          value={v.compound}
+          onChange={(value) => set("compound", value)}
           options={[
             { value: "simple", label: "단리" },
             { value: "monthly", label: "월복리" },
           ]}
         />
-        {kind === "savings" ? (
+        {v.kind === "savings" ? (
           <div className="space-y-2">
-            <MoneyField id="principal" label="원금" value={principal} onChange={setPrincipal} />
+            <MoneyField id="principal" label="원금" value={v.principal} onChange={(value) => set("principal", value)} />
             <AmountChips
               options={[
                 { label: "100만", value: "100" },
@@ -105,12 +108,12 @@ export function DepositCalc({ item }: { item: CalcItem }) {
                 { label: "1천만", value: "1000" },
                 { label: "3천만", value: "3000" },
               ]}
-              onPick={setPrincipal}
+              onPick={(value) => set("principal", value)}
             />
           </div>
         ) : (
           <div className="space-y-2">
-            <MoneyField id="monthly" label="월 납입" value={monthly} onChange={setMonthly} />
+            <MoneyField id="monthly" label="월 납입" value={v.monthly} onChange={(value) => set("monthly", value)} />
             <AmountChips
               options={[
                 { label: "10만", value: "10" },
@@ -118,13 +121,13 @@ export function DepositCalc({ item }: { item: CalcItem }) {
                 { label: "50만", value: "50" },
                 { label: "100만", value: "100" },
               ]}
-              onPick={setMonthly}
+              onPick={(value) => set("monthly", value)}
             />
           </div>
         )}
-        <MoneyField id="rate" label="연이율" unit="%" value={rate} onChange={setRate} />
-        <MoneyField id="months" label="기간" unit="개월" value={months} onChange={setMonths} />
-        <CheckRow id="tax" checked={afterTax} onChange={setAfterTax}>
+        <MoneyField id="rate" label="연이율" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
+        <MoneyField id="months" label="기간" unit="개월" value={v.months} onChange={(value) => set("months", value)} />
+        <CheckRow id="tax" checked={v.afterTax} onChange={(value) => set("afterTax", value)}>
           세후 (이자소득세 15.4%)
         </CheckRow>
         <Hint>특판·우대이율·중도해지는 넣지 않았습니다. 이율은 상품 안내를 그대로 적으세요.</Hint>

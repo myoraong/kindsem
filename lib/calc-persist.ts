@@ -35,7 +35,16 @@ export function mergeCalcState<T extends Record<string, CalcPersistValue>>(
   stored: Partial<T> | null | undefined,
   query: Partial<T>,
 ): T {
-  return { ...defaults, ...(stored ?? {}), ...query }
+  const next = { ...defaults }
+  for (const key of Object.keys(defaults) as (keyof T)[]) {
+    if (stored && Object.prototype.hasOwnProperty.call(stored, key) && stored[key] !== undefined) {
+      next[key] = stored[key] as T[keyof T]
+    }
+    if (Object.prototype.hasOwnProperty.call(query, key) && query[key] !== undefined) {
+      next[key] = query[key] as T[keyof T]
+    }
+  }
+  return next
 }
 
 export function calcStateEquals<T extends Record<string, CalcPersistValue>>(left: T, right: T) {

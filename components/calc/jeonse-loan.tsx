@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -11,6 +11,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { interestOnly } from "@/lib/loan"
 import { formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -24,17 +25,19 @@ const FAQ = [
 ]
 
 export function JeonseLoan({ item }: { item: CalcItem }) {
-  const [principal, setPrincipal] = useState("15000")
-  const [rate, setRate] = useState("3.5")
-  const [years, setYears] = useState("2")
+  const [v, set] = useCalcPersist(item.slug, {
+    principal: "15000",
+    rate: "3.5",
+    years: "2",
+  })
 
   const result = useMemo(() => {
-    const p = manwonToWon(Number(principal) || 0)
-    const r = Number(rate)
-    const months = Math.round(Number(years) * 12)
+    const p = manwonToWon(Number(v.principal) || 0)
+    const r = Number(v.rate)
+    const months = Math.round(Number(v.years) * 12)
     if (!p || !months) return null
     return interestOnly(p, r, months)
-  }, [principal, rate, years])
+  }, [v])
 
   return (
     <CalcShell
@@ -47,8 +50,8 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
           rows={
             result
               ? [
-                  { label: "대출원금", value: formatWon(manwonToWon(Number(principal) || 0)) },
-                  { label: "기간", value: `${years}년` },
+                  { label: "대출원금", value: formatWon(manwonToWon(Number(v.principal) || 0)) },
+                  { label: "기간", value: `${v.years}년` },
                   { label: "총 이자", value: formatWon(result.totalInterest) },
                   { label: "만기 때 갚을 돈", value: formatWon(result.totalPay) },
                 ]
@@ -60,7 +63,7 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
     >
       <div className="space-y-4">
         <LoanSiblingHint here="jeonse" />
-        <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
+        <MoneyField id="p" label="대출 금액" value={v.principal} onChange={(value) => set("principal", value)} />
         <AmountChips
           options={[
             { label: "1억", value: "10000" },
@@ -68,11 +71,11 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
             { label: "2억", value: "20000" },
             { label: "3억", value: "30000" },
           ]}
-          onPick={setPrincipal}
+          onPick={(value) => set("principal", value)}
         />
-        <MoneyField id="r" label="연 금리" unit="%" value={rate} onChange={setRate} />
+        <MoneyField id="r" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
         <div className="space-y-2">
-          <MoneyField id="y" label="기간" unit="년" value={years} onChange={setYears} />
+          <MoneyField id="y" label="기간" unit="년" value={v.years} onChange={(value) => set("years", value)} />
           <AmountChips
             options={[
               { label: "1년", value: "1" },
@@ -80,7 +83,7 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
               { label: "3년", value: "3" },
               { label: "4년", value: "4" },
             ]}
-            onPick={setYears}
+            onPick={(value) => set("years", value)}
           />
         </div>
         <Hint>

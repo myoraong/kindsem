@@ -223,15 +223,17 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
 }
 
 export function HoldingTaxCalc({ item }: { item: CalcItem }) {
-  const [price, setPrice] = useState("90000")
-  const [homes, setHomes] = useState<Homes>("1")
+  const [v, set] = useCalcPersist(item.slug, {
+    price: "90000",
+    homes: "2" as Homes,
+  })
 
   const result = useMemo(() => {
     return calcHoldingTax({
-      price: manwonToWon(Number(price) || 0),
-      homes,
+      price: manwonToWon(Number(v.price) || 0),
+      homes: v.homes,
     })
-  }, [price, homes])
+  }, [v])
 
   return (
     <CalcShell
@@ -270,15 +272,15 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="주택 수"
-          value={homes}
-          onChange={setHomes}
+          value={v.homes}
+          onChange={(value) => set("homes", value)}
           options={[
             { value: "1", label: "1세대1주택" },
             { value: "2", label: "2주택" },
             { value: "3+", label: "3주택 이상" },
           ]}
         />
-        <MoneyField id="pub" label="공시가격" value={price} onChange={setPrice} />
+        <MoneyField id="pub" label="공시가격" value={v.price} onChange={(value) => set("price", value)} />
         <AmountChips
           options={[
             { label: "6억", value: "60000" },
@@ -286,10 +288,11 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
             { label: "12억", value: "120000" },
             { label: "18억", value: "180000" },
           ]}
-          onPick={setPrice}
+          onPick={(value) => set("price", value)}
         />
         <Hint>
-          공정시장가액비율 60%로 봅니다. 세부담상한과 특례주택은 넣지 않았습니다.
+          기본은 2주택입니다. 1세대1주택이면 고르세요. 공정시장가액비율 60%로 봅니다. 세부담상한과
+          특례주택은 넣지 않았습니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.holding]} />
       </div>

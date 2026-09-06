@@ -99,7 +99,7 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
   const [v, set, setMany] = useCalcPersist(item.slug, {
     period: "year" as PayPeriod,
     current: "4000",
-    meal: false,
+    mealExempt: false,
     youth: "none",
     dependents: "0",
   })
@@ -109,11 +109,11 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
     const currentWon = v.period === "month" ? entered * 12 : entered
     return calcTakeHome({
       annualGross: currentWon,
-      mealExempt: v.meal,
+      mealExempt: v.mealExempt,
       youthSme: v.youth === "current" || v.youth === "both",
       dependents: Number(v.dependents) || 0,
     })
-  }, [v.period, v.current, v.meal, v.youth, v.dependents])
+  }, [v.period, v.current, v.mealExempt, v.youth, v.dependents])
 
   const now = packed.annualGross > 0 ? packed : null
 
@@ -172,7 +172,7 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
             { value: "current", label: "적용" },
           ]}
         />
-        <CheckRow id="meal" checked={v.meal} onChange={(value) => set("meal", value)}>
+        <CheckRow id="meal" checked={v.mealExempt} onChange={(value) => set("mealExempt", value)}>
           식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}
         </CheckRow>
         <Hint>해당하면 켜세요. 기본은 꺼 둡니다. 식대가 없으면 명세서보다 실수령이 커집니다.</Hint>
@@ -188,7 +188,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
     offer: "4800",
     commute: "0",
     years: "0",
-    meal: false,
+    mealExempt: false,
     youth: "none" as YouthSide,
     quitKind: "voluntary" as QuitHealthKind,
     gapMonths: "1",
@@ -206,7 +206,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
     const result = calcOfferCompare({
       currentAnnual: currentWon,
       offerAnnual: offerWon,
-      mealExempt: v.meal,
+      mealExempt: v.mealExempt,
       currentYouthSme: v.youth === "current" || v.youth === "both",
       offerYouthSme: v.youth === "offer" || v.youth === "both",
       offerCommuteMonthly: commuteWon,
@@ -345,7 +345,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
           ]}
         />
         <Hint>소득세 90%, 연 200만 원 한도. 이직하면 끊기거나 새로 생기는 경우가 많습니다.</Hint>
-        <CheckRow id="meal" checked={v.meal} onChange={(value) => set("meal", value)}>
+        <CheckRow id="meal" checked={v.mealExempt} onChange={(value) => set("mealExempt", value)}>
           식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}
         </CheckRow>
         <Hint>해당하면 켜세요. 기본은 꺼 둡니다. 식대가 없으면 명세서보다 실수령이 커집니다.</Hint>
