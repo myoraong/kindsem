@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -13,6 +13,7 @@ import { formatPercent, formatWon, kakaoCopyLine, manwonToWon } from "@/lib/form
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcRentCredit } from "@/lib/rent-credit"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -26,21 +27,23 @@ const FAQ = [
 ]
 
 export function RentCredit({ item }: { item: CalcItem }) {
-  const [monthly, setMonthly] = useState("70")
-  const [salary, setSalary] = useState("4500")
-  const [noHome, setNoHome] = useState(true)
-  const [wageOnly, setWageOnly] = useState(true)
-  const [globalIncome, setGlobalIncome] = useState("0")
+  const [v, set] = useCalcPersist(item.slug, {
+    monthly: "70",
+    salary: "4500",
+    noHome: false,
+    wageOnly: false,
+    globalIncome: "0",
+  })
 
   const result = useMemo(() => {
     return calcRentCredit({
-      annualRent: manwonToWon(Number(monthly) || 0) * 12,
-      totalSalary: manwonToWon(Number(salary) || 0),
-      globalIncome: manwonToWon(Number(globalIncome) || 0),
-      wageOnly,
-      noHome,
+      annualRent: manwonToWon(Number(v.monthly) || 0) * 12,
+      totalSalary: manwonToWon(Number(v.salary) || 0),
+      globalIncome: manwonToWon(Number(v.globalIncome) || 0),
+      wageOnly: v.wageOnly,
+      noHome: v.noHome,
     })
-  }, [monthly, salary, wageOnly, globalIncome, noHome])
+  }, [v])
 
   const amount = result?.eligible ? result.credit : result ? 0 : null
   const caption = !result
@@ -68,19 +71,19 @@ export function RentCredit({ item }: { item: CalcItem }) {
           rows={
             result?.eligible
               ? [
-                  { label: "연 월세", value: formatWon(manwonToWon(Number(monthly) || 0) * 12) },
+                  { label: "연 월세", value: formatWon(manwonToWon(Number(v.monthly) || 0) * 12) },
                   { label: "인정 월세", value: formatWon(result.recognized) },
                   { label: "공제율", value: formatPercent(result.rate * 100, 0) },
                 ]
               : []
           }
-          empty="월세와 총급여만 넣으면 한도 안 공제액이 나옵니다."
+          empty="월세와 총급여를 넣고, 해당하면 무주택·근로소득만을 켜세요."
         />
       }
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="rent" label="월세" value={monthly} onChange={setMonthly} />
+          <MoneyField id="rent" label="월세" value={v.monthly} onChange={(value) => set("monthly", value)} />
           <AmountChips
             options={[
               { label: "40만", value: "40" },
@@ -88,11 +91,11 @@ export function RentCredit({ item }: { item: CalcItem }) {
               { label: "70만", value: "70" },
               { label: "100만", value: "100" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="salary" label="총급여" value={salary} onChange={setSalary} />
+          <MoneyField id="salary" label="총급여" value={v.salary} onChange={(value) => set("salary", value)} />
           <AmountChips
             options={[
               { label: "3천만", value: "3000" },
@@ -100,27 +103,28 @@ export function RentCredit({ item }: { item: CalcItem }) {
               { label: "5,500만", value: "5500" },
               { label: "7천만", value: "7000" },
             ]}
-            onPick={setSalary}
+            onPick={(value) => set("salary", value)}
           />
         </div>
-        <CheckRow id="home" checked={noHome} onChange={setNoHome}>
+        <CheckRow id="home" checked={v.noHome} onChange={(value) => set("noHome", value)}>
           과세기간 종료일 무주택
         </CheckRow>
-        <CheckRow id="wage" checked={wageOnly} onChange={setWageOnly}>
+        <CheckRow id="wage" checked={v.wageOnly} onChange={(value) => set("wageOnly", value)}>
           근로소득만 있음
         </CheckRow>
-        {wageOnly ? null : (
+        {v.wageOnly ? null : (
           <MoneyField
             id="global"
             label="종합소득금액"
             hint="근로 외 합산"
-            value={globalIncome}
-            onChange={setGlobalIncome}
+            value={v.globalIncome}
+            onChange={(value) => set("globalIncome", value)}
           />
         )}
         <Hint>
-          총급여 5,500만 원 이하(종합소득금액 4,500만 원 초과 제외)는 17%, 그 외 8천만 원 이하(종합소득 7천만
-          초과 제외)는 15%입니다. 월세액 한도는 연 1천만 원입니다.
+          기본은 꺼 둡니다. 해당하면 무주택·근로소득만을 켜세요. 총급여 5,500만 원 이하(종합소득금액
+          4,500만 원 초과 제외)는 17%, 그 외 8천만 원 이하(종합소득 7천만 초과 제외)는 15%입니다. 월세액
+          한도는 연 1천만 원입니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.rentCredit]} />
       </div>

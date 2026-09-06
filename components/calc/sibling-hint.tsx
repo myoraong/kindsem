@@ -78,3 +78,53 @@ export function LoanSiblingHint({ here }: { here: "mortgage" | "loan-interest" |
     </Hint>
   )
 }
+
+/** 담보 한도, 소득 대비 원리금, 월 납입을 가릅니다. */
+export function LimitSiblingHint({ here }: { here: "ltv" | "dsr" | "mortgage" }) {
+  const ltv = <CalcLink slug="ltv">LTV</CalcLink>
+  const dsr = <CalcLink slug="dsr">DSR</CalcLink>
+  const mortgage = <CalcLink slug="mortgage">주택담보대출</CalcLink>
+
+  if (here === "ltv") {
+    return (
+      <Hint>
+        집값 대비 대출 한도는 여기입니다. 연소득 대비 원리금은 {dsr}, 이미 정해진 원금의 월 납입은{" "}
+        {mortgage}입니다.
+      </Hint>
+    )
+  }
+
+  if (here === "dsr") {
+    return (
+      <Hint>
+        연소득 대비 원리금 한도는 여기입니다. 담보 한도는 {ltv}, 월 납입 계산은 {mortgage}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      이미 빌릴 금액이 있을 때 월 납입은 여기입니다. 얼마까지 가능한지는 {ltv}·{dsr}입니다.
+    </Hint>
+  )
+}
+
+/** 취득세만 볼 때와 복비·인지세까지 볼 때를 가릅니다. */
+export function BuySiblingHint({ here }: { here: "acquisition" | "closing-cost" }) {
+  const tax = <CalcLink slug="acquisition">취득세</CalcLink>
+  const total = <CalcLink slug="closing-cost">살 때 총비용</CalcLink>
+
+  if (here === "acquisition") {
+    return (
+      <Hint>
+        취득세만 보려면 여기입니다. 복비·인지세까지 합은 {total}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      잔금 전 준비 현금은 여기입니다. 취득세만은 {tax}입니다.
+    </Hint>
+  )
+}

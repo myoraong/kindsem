@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -14,6 +14,7 @@ import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcRentConvert } from "@/lib/rent-convert"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -27,26 +28,28 @@ const FAQ = [
 ]
 
 export function RentConvert({ item }: { item: CalcItem }) {
-  const [mode, setMode] = useState<"to-monthly" | "to-jeonse">("to-monthly")
-  const [jeonse, setJeonse] = useState("20000")
-  const [deposit, setDeposit] = useState("5000")
-  const [monthly, setMonthly] = useState("60")
-  const [agreed, setAgreed] = useState("4.75")
-  const [base, setBase] = useState("2.75")
+  const [v, set] = useCalcPersist(item.slug, {
+    mode: "to-monthly" as "to-monthly" | "to-jeonse",
+    jeonse: "20000",
+    deposit: "5000",
+    monthly: "60",
+    agreed: "4.75",
+    base: "2.75",
+  })
 
   const result = useMemo(() => {
     return calcRentConvert({
-      mode,
-      jeonse: manwonToWon(Number(jeonse) || 0),
-      deposit: manwonToWon(Number(deposit) || 0),
-      monthly: manwonToWon(Number(monthly) || 0),
-      agreedRate: (Number(agreed) || 0) / 100,
-      baseRate: (Number(base) || 0) / 100,
+      mode: v.mode,
+      jeonse: manwonToWon(Number(v.jeonse) || 0),
+      deposit: manwonToWon(Number(v.deposit) || 0),
+      monthly: manwonToWon(Number(v.monthly) || 0),
+      agreedRate: (Number(v.agreed) || 0) / 100,
+      baseRate: (Number(v.base) || 0) / 100,
     })
-  }, [mode, jeonse, deposit, monthly, agreed, base])
+  }, [v])
 
   const headline =
-    mode === "to-monthly" ? "법정 상한 월세" : "법정 상한 환산 전세"
+    v.mode === "to-monthly" ? "법정 상한 월세" : "법정 상한 환산 전세"
 
   return (
     <CalcShell
@@ -65,7 +68,7 @@ export function RentConvert({ item }: { item: CalcItem }) {
           }
           rows={
             result
-              ? mode === "to-monthly"
+              ? v.mode === "to-monthly"
                 ? [
                     { label: "전환 보증금", value: formatWon(result.converted) },
                     { label: "법정 상한", value: formatPercent(result.cap * 100, 2) },
@@ -93,16 +96,16 @@ export function RentConvert({ item }: { item: CalcItem }) {
         <RentSiblingHint here="rent-convert" />
         <ChoiceGroup
           label="방향"
-          value={mode}
-          onChange={setMode}
+          value={v.mode}
+          onChange={(value) => set("mode", value)}
           options={[
             { value: "to-monthly", label: "전세 → 월세" },
             { value: "to-jeonse", label: "월세 → 전세" },
           ]}
         />
-        {mode === "to-monthly" ? (
+        {v.mode === "to-monthly" ? (
           <div className="space-y-2">
-            <MoneyField id="jeonse" label="지금 전세 보증금" value={jeonse} onChange={setJeonse} />
+            <MoneyField id="jeonse" label="지금 전세 보증금" value={v.jeonse} onChange={(value) => set("jeonse", value)} />
             <AmountChips
               options={[
                 { label: "1억", value: "10000" },
@@ -110,12 +113,12 @@ export function RentConvert({ item }: { item: CalcItem }) {
                 { label: "3억", value: "30000" },
                 { label: "5억", value: "50000" },
               ]}
-              onPick={setJeonse}
+              onPick={(value) => set("jeonse", value)}
             />
           </div>
         ) : (
           <div className="space-y-2">
-            <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+            <MoneyField id="monthly" label="월세" value={v.monthly} onChange={(value) => set("monthly", value)} />
             <AmountChips
               options={[
                 { label: "50만", value: "50" },
@@ -123,16 +126,16 @@ export function RentConvert({ item }: { item: CalcItem }) {
                 { label: "100만", value: "100" },
                 { label: "150만", value: "150" },
               ]}
-              onPick={setMonthly}
+              onPick={(value) => set("monthly", value)}
             />
           </div>
         )}
         <div className="space-y-2">
           <MoneyField
             id="deposit"
-            label={mode === "to-monthly" ? "바꿀 월세 보증금" : "남는 보증금"}
-            value={deposit}
-            onChange={setDeposit}
+            label={v.mode === "to-monthly" ? "바꿀 월세 보증금" : "남는 보증금"}
+            value={v.deposit}
+            onChange={(value) => set("deposit", value)}
           />
           <AmountChips
             options={[
@@ -141,22 +144,22 @@ export function RentConvert({ item }: { item: CalcItem }) {
               { label: "5천", value: "5000" },
               { label: "1억", value: "10000" },
             ]}
-            onPick={setDeposit}
+            onPick={(value) => set("deposit", value)}
           />
         </div>
         <MoneyField
           id="base"
           label="한국은행 기준금리"
           unit="%"
-          value={base}
-          onChange={setBase}
+          value={v.base}
+          onChange={(value) => set("base", value)}
         />
         <MoneyField
           id="agreed"
           label="약정 전환율"
           unit="%"
-          value={agreed}
-          onChange={setAgreed}
+          value={v.agreed}
+          onChange={(value) => set("agreed", value)}
         />
         <Hint>
           기준금리는 한국은행이 정합니다. 여기 적힌 값은 직접 넣는 숫자이고, 법제처에서 받아 오지

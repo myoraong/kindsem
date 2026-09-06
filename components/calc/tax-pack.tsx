@@ -29,25 +29,27 @@ import {
 } from "@/lib/realty-tax"
 
 export function CapitalGainsCalc({ item }: { item: CalcItem }) {
-  const [buy, setBuy] = useState("40000")
-  const [sell, setSell] = useState("80000")
-  const [costs, setCosts] = useState("500")
-  const [years, setYears] = useState("8")
-  const [homes, setHomes] = useState<Homes>("2")
-  const [adjusted, setAdjusted] = useState(false)
-  const [lived2y, setLived2y] = useState(false)
+  const [v, set] = useCalcPersist(item.slug, {
+    buy: "40000",
+    sell: "80000",
+    costs: "500",
+    years: "8",
+    homes: "2" as Homes,
+    adjusted: false,
+    lived2y: false,
+  })
 
   const result = useMemo(() => {
     return calcCapitalGains({
-      buy: manwonToWon(Number(buy) || 0),
-      sell: manwonToWon(Number(sell) || 0),
-      costs: manwonToWon(Number(costs) || 0),
-      years: Number(years) || 0,
-      homes,
-      adjusted,
-      lived2y,
+      buy: manwonToWon(Number(v.buy) || 0),
+      sell: manwonToWon(Number(v.sell) || 0),
+      costs: manwonToWon(Number(v.costs) || 0),
+      years: Number(v.years) || 0,
+      homes: v.homes,
+      adjusted: v.adjusted,
+      lived2y: v.lived2y,
     })
-  }, [buy, sell, costs, years, homes, adjusted, lived2y])
+  }, [v])
 
   return (
     <CalcShell
@@ -89,15 +91,15 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="주택 수"
-          value={homes}
-          onChange={setHomes}
+          value={v.homes}
+          onChange={(value) => set("homes", value)}
           options={[
             { value: "1", label: "1주택" },
             { value: "2", label: "2주택" },
             { value: "3+", label: "3주택 이상" },
           ]}
         />
-        <MoneyField id="buy" label="취득가액" value={buy} onChange={setBuy} />
+        <MoneyField id="buy" label="취득가액" value={v.buy} onChange={(value) => set("buy", value)} />
         <AmountChips
           options={[
             { label: "3억", value: "30000" },
@@ -105,10 +107,10 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
             { label: "8억", value: "80000" },
             { label: "12억", value: "120000" },
           ]}
-          onPick={setBuy}
+          onPick={(value) => set("buy", value)}
         />
         <div className="space-y-2">
-          <MoneyField id="sell" label="양도가액" value={sell} onChange={setSell} />
+          <MoneyField id="sell" label="양도가액" value={v.sell} onChange={(value) => set("sell", value)} />
           <AmountChips
             options={[
               { label: "6억", value: "60000" },
@@ -116,15 +118,15 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
-            onPick={setSell}
+            onPick={(value) => set("sell", value)}
           />
         </div>
-        <MoneyField id="cost" label="필요경비" value={costs} onChange={setCosts} />
-        <MoneyField id="yr" label="보유기간" unit="년" value={years} onChange={setYears} />
-        <CheckRow id="live" checked={lived2y} onChange={setLived2y}>
+        <MoneyField id="cost" label="필요경비" value={v.costs} onChange={(value) => set("costs", value)} />
+        <MoneyField id="yr" label="보유기간" unit="년" value={v.years} onChange={(value) => set("years", value)} />
+        <CheckRow id="live" checked={v.lived2y} onChange={(value) => set("lived2y", value)}>
           2년 이상 거주
         </CheckRow>
-        <CheckRow id="adj" checked={adjusted} onChange={setAdjusted}>
+        <CheckRow id="adj" checked={v.adjusted} onChange={(value) => set("adjusted", value)}>
           조정대상지역
         </CheckRow>
         <Hint>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -13,6 +13,7 @@ import { formatPercent, formatWon, kakaoCopyLine, manwonToWon } from "@/lib/form
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcJeonseVsRent } from "@/lib/jeonse-vs-rent"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -26,21 +27,23 @@ const FAQ = [
 ]
 
 export function JeonseVsRent({ item }: { item: CalcItem }) {
-  const [jeonse, setJeonse] = useState("20000")
-  const [deposit, setDeposit] = useState("5000")
-  const [monthly, setMonthly] = useState("70")
-  const [base, setBase] = useState("2.75")
-  const [interest, setInterest] = useState("")
+  const [v, set] = useCalcPersist(item.slug, {
+    jeonse: "20000",
+    deposit: "5000",
+    monthly: "70",
+    base: "2.75",
+    interest: "",
+  })
 
   const result = useMemo(() => {
     return calcJeonseVsRent({
-      jeonse: manwonToWon(Number(jeonse) || 0),
-      monthlyDeposit: manwonToWon(Number(deposit) || 0),
-      monthlyRent: manwonToWon(Number(monthly) || 0),
-      baseRate: (Number(base) || 0) / 100,
-      jeonseInterestMonthly: interest === "" ? 0 : manwonToWon(Number(interest) || 0),
+      jeonse: manwonToWon(Number(v.jeonse) || 0),
+      monthlyDeposit: manwonToWon(Number(v.deposit) || 0),
+      monthlyRent: manwonToWon(Number(v.monthly) || 0),
+      baseRate: (Number(v.base) || 0) / 100,
+      jeonseInterestMonthly: v.interest === "" ? 0 : manwonToWon(Number(v.interest) || 0),
     })
-  }, [jeonse, deposit, monthly, base, interest])
+  }, [v])
 
   return (
     <CalcShell
@@ -92,7 +95,7 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <RentSiblingHint here="jeonse-vs-rent" />
         <div className="space-y-2">
-          <MoneyField id="jeonse" label="전세 보증금" value={jeonse} onChange={setJeonse} />
+          <MoneyField id="jeonse" label="전세 보증금" value={v.jeonse} onChange={(value) => set("jeonse", value)} />
           <AmountChips
             options={[
               { label: "1억", value: "10000" },
@@ -100,11 +103,11 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
               { label: "3억", value: "30000" },
               { label: "5억", value: "50000" },
             ]}
-            onPick={setJeonse}
+            onPick={(value) => set("jeonse", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="deposit" label="월세 보증금" value={deposit} onChange={setDeposit} />
+          <MoneyField id="deposit" label="월세 보증금" value={v.deposit} onChange={(value) => set("deposit", value)} />
           <AmountChips
             options={[
               { label: "1천", value: "1000" },
@@ -112,11 +115,11 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
               { label: "5천", value: "5000" },
               { label: "1억", value: "10000" },
             ]}
-            onPick={setDeposit}
+            onPick={(value) => set("deposit", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+          <MoneyField id="monthly" label="월세" value={v.monthly} onChange={(value) => set("monthly", value)} />
           <AmountChips
             options={[
               { label: "50만", value: "50" },
@@ -124,15 +127,15 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
               { label: "100만", value: "100" },
               { label: "150만", value: "150" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <MoneyField
           id="base"
           label="한국은행 기준금리"
           unit="%"
-          value={base}
-          onChange={setBase}
+          value={v.base}
+          onChange={(value) => set("base", value)}
         />
         <details className="rounded-xl bg-secondary/60 px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium">전세대출 이자</summary>
@@ -140,8 +143,8 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
             <MoneyField
               id="interest"
               label="전세대출 월 이자"
-              value={interest}
-              onChange={setInterest}
+              value={v.interest}
+              onChange={(value) => set("interest", value)}
             />
           </div>
         </details>

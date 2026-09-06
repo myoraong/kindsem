@@ -14,6 +14,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
 import { LawNote } from "@/components/calc/law-note"
+import { BuySiblingHint } from "@/components/calc/sibling-hint"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function AcquisitionCalc({ item }: { item: CalcItem }) {
@@ -78,6 +79,7 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <BuySiblingHint here="acquisition" />
         <div className="space-y-2">
           <MoneyField id="price" label="취득가액" value={v.price} onChange={(value) => set("price", value)} />
           <AmountChips

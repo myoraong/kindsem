@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -9,7 +9,7 @@ import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import type { CalcItem } from "@/lib/catalog"
-import { formatWon, kakaoCopyLine } from "@/lib/format"
+import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import {
   calcPyeongPrice,
   formatM2,
@@ -17,6 +17,7 @@ import {
   m2ToPyeong,
   pyeongToM2,
 } from "@/lib/pyeong"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -34,15 +35,17 @@ const FAQ = [
 ]
 
 export function PyeongCalc({ item }: { item: CalcItem }) {
-  const [mode, setMode] = useState<"area" | "price">("area")
-  const [direction, setDirection] = useState<"toM2" | "toPyeong">("toM2")
-  const [area, setArea] = useState("24")
-  const [price, setPrice] = useState("1000000000")
-  const [priceUnit, setPriceUnit] = useState<"pyeong" | "m2">("pyeong")
+  const [v, set] = useCalcPersist(item.slug, {
+    mode: "area" as "area" | "price",
+    direction: "toM2" as "toM2" | "toPyeong",
+    area: "24",
+    price: "100000",
+    priceUnit: "pyeong" as "pyeong" | "m2",
+  })
 
   const areaResult = useMemo(() => {
-    const n = Number(area)
-    if (direction === "toM2") {
+    const n = Number(v.area)
+    if (v.direction === "toM2") {
       const m2 = pyeongToM2(n)
       if (m2 == null) return null
       return {
@@ -68,36 +71,36 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
       ],
       copyLine: kakaoCopyLine("평수", formatPyeong(pyeong), formatM2(n)),
     }
-  }, [area, direction])
+  }, [v])
 
   const priceResult = useMemo(() => {
     const row = calcPyeongPrice({
-      priceWon: Number(price),
-      area: Number(area),
-      unit: priceUnit,
+      priceWon: manwonToWon(Number(v.price) || 0),
+      area: Number(v.area),
+      unit: v.priceUnit,
     })
     if (!row) return null
     return {
       amount: row.perPyeong,
       caption: `㎡당 ${formatWon(row.perM2)}`,
       rows: [
-        { label: "매매가", value: formatWon(Number(price)) },
+        { label: "매매가", value: formatWon(manwonToWon(Number(v.price) || 0)) },
         { label: "면적", value: `${formatPyeong(row.pyeong)} · ${formatM2(row.m2)}` },
         { label: "평당", value: formatWon(row.perPyeong) },
         { label: "㎡당", value: formatWon(row.perM2) },
       ],
       copyLine: kakaoCopyLine("평당", formatWon(row.perPyeong), formatPyeong(row.pyeong)),
     }
-  }, [area, price, priceUnit])
+  }, [v])
 
   return (
     <CalcShell
       item={item}
       faq={<FaqList items={FAQ} />}
       result={
-        mode === "area" ? (
+        v.mode === "area" ? (
           <ResultReceipt
-            title={direction === "toM2" ? "제곱미터" : "평"}
+            title={v.direction === "toM2" ? "제곱미터" : "평"}
             amount={null}
             headline={areaResult?.headline}
             caption={areaResult?.caption}
@@ -122,18 +125,18 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="무엇을 계산할까요"
-          value={mode}
-          onChange={setMode}
+          value={v.mode}
+          onChange={(value) => set("mode", value)}
           options={[
             { value: "area", label: "평 ↔ ㎡" },
             { value: "price", label: "평당 가격" },
           ]}
         />
-        {mode === "area" ? (
+        {v.mode === "area" ? (
           <ChoiceGroup
             label="방향"
-            value={direction}
-            onChange={setDirection}
+            value={v.direction}
+            onChange={(value) => set("direction", value)}
             options={[
               { value: "toM2", label: "평 → ㎡" },
               { value: "toPyeong", label: "㎡ → 평" },
@@ -142,48 +145,48 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
         ) : (
           <ChoiceGroup
             label="면적 단위"
-            value={priceUnit}
-            onChange={setPriceUnit}
+            value={v.priceUnit}
+            onChange={(value) => set("priceUnit", value)}
             options={[
               { value: "pyeong", label: "평" },
               { value: "m2", label: "㎡" },
             ]}
           />
         )}
-        {mode === "price" ? (
+        {v.mode === "price" ? (
           <div className="space-y-2">
-            <MoneyField id="price" label="매매가" unit="원" value={price} onChange={setPrice} />
+            <MoneyField id="price" label="매매가" value={v.price} onChange={(value) => set("price", value)} />
             <AmountChips
               options={[
-                { label: "5억", value: "500000000" },
-                { label: "8억", value: "800000000" },
-                { label: "10억", value: "1000000000" },
-                { label: "15억", value: "1500000000" },
-                { label: "20억", value: "2000000000" },
+                { label: "5억", value: "50000" },
+                { label: "8억", value: "80000" },
+                { label: "10억", value: "100000" },
+                { label: "15억", value: "150000" },
+                { label: "20억", value: "200000" },
               ]}
-              onPick={setPrice}
+              onPick={(value) => set("price", value)}
             />
           </div>
         ) : null}
         <div className="space-y-2">
           <MoneyField
             id="area"
-            label={mode === "price" ? "면적" : direction === "toM2" ? "평" : "제곱미터"}
+            label={v.mode === "price" ? "면적" : v.direction === "toM2" ? "평" : "제곱미터"}
             unit={
-              mode === "price"
-                ? priceUnit === "pyeong"
+              v.mode === "price"
+                ? v.priceUnit === "pyeong"
                   ? "평"
                   : "㎡"
-                : direction === "toM2"
+                : v.direction === "toM2"
                   ? "평"
                   : "㎡"
             }
-            value={area}
-            onChange={setArea}
+            value={v.area}
+            onChange={(value) => set("area", value)}
           />
           <AmountChips
             options={
-              (mode === "price" ? priceUnit === "pyeong" : direction === "toM2")
+              (v.mode === "price" ? v.priceUnit === "pyeong" : v.direction === "toM2")
                 ? [
                     { label: "18평", value: "18" },
                     { label: "24평", value: "24" },
@@ -197,7 +200,7 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
                     { label: "114㎡", value: "114" },
                   ]
             }
-            onPick={setArea}
+            onPick={(value) => set("area", value)}
           />
         </div>
         <Hint>

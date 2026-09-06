@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
@@ -14,6 +14,7 @@ import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { calcImportDuty, DE_MINIMIS_USD, LIST_CLEARANCE_USD, LIST_CLEARANCE_US_USD } from "@/lib/import-duty"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -27,23 +28,25 @@ const FAQ = [
 ]
 
 export function ImportDuty({ item }: { item: CalcItem }) {
-  const [priceUsd, setPriceUsd] = useState("")
-  const [fx, setFx] = useState("")
-  const [origin, setOrigin] = useState<"other" | "us">("other")
-  const [excluded, setExcluded] = useState(false)
-  const [dutyWon, setDutyWon] = useState("")
-  const [dutyRate, setDutyRate] = useState("")
+  const [v, set] = useCalcPersist(item.slug, {
+    priceUsd: "",
+    fx: "",
+    origin: "other" as "other" | "us",
+    excluded: false,
+    dutyWon: "",
+    dutyRate: "",
+  })
 
   const result = useMemo(() => {
     return calcImportDuty({
-      priceUsd: Number(priceUsd) || 0,
-      fxKrw: Number(fx) || 0,
-      origin,
-      listExcluded: excluded,
-      dutyWon: dutyWon === "" ? undefined : Number(dutyWon) || 0,
-      dutyRate: dutyRate === "" ? undefined : (Number(dutyRate) || 0) / 100,
+      priceUsd: Number(v.priceUsd) || 0,
+      fxKrw: Number(v.fx) || 0,
+      origin: v.origin,
+      listExcluded: v.excluded,
+      dutyWon: v.dutyWon === "" ? undefined : Number(v.dutyWon) || 0,
+      dutyRate: v.dutyRate === "" ? undefined : (Number(v.dutyRate) || 0) / 100,
     })
-  }, [priceUsd, fx, origin, excluded, dutyWon, dutyRate])
+  }, [v])
 
   const headline = !result
     ? null
@@ -132,8 +135,8 @@ export function ImportDuty({ item }: { item: CalcItem }) {
             id="usd"
             label="물품가격"
             unit="달러"
-            value={priceUsd}
-            onChange={setPriceUsd}
+            value={v.priceUsd}
+            onChange={(value) => set("priceUsd", value)}
           />
           <AmountChips
             options={[
@@ -142,33 +145,33 @@ export function ImportDuty({ item }: { item: CalcItem }) {
               { label: `${LIST_CLEARANCE_USD}달러`, value: String(LIST_CLEARANCE_USD) },
               { label: `${LIST_CLEARANCE_US_USD}달러`, value: String(LIST_CLEARANCE_US_USD) },
             ]}
-            onPick={setPriceUsd}
+            onPick={(value) => set("priceUsd", value)}
           />
         </div>
         <MoneyField
           id="fx"
           label="적용 환율"
           unit="원/달러"
-          value={fx}
-          onChange={setFx}
+          value={v.fx}
+          onChange={(value) => set("fx", value)}
         />
         <ChoiceGroup
           label="발송지"
-          value={origin}
-          onChange={setOrigin}
+          value={v.origin}
+          onChange={(value) => set("origin", value)}
           options={[
             { value: "other", label: "그 외" },
             { value: "us", label: "미국" },
           ]}
         />
-        <CheckRow id="excluded" checked={excluded} onChange={setExcluded}>
+        <CheckRow id="excluded" checked={v.excluded} onChange={(value) => set("excluded", value)}>
           목록통관 배제 물품 (식품·의약품 등)
         </CheckRow>
         <details className="rounded-xl bg-secondary/60 px-3 py-2">
           <summary className="cursor-pointer text-sm font-medium">관세 (HS가 정해진 뒤)</summary>
           <div className="mt-3 space-y-4">
-            <MoneyField id="duty" label="관세" unit="원" value={dutyWon} onChange={setDutyWon} />
-            <MoneyField id="rate" label="관세율" unit="%" value={dutyRate} onChange={setDutyRate} />
+            <MoneyField id="duty" label="관세" unit="원" value={v.dutyWon} onChange={(value) => set("dutyWon", value)} />
+            <MoneyField id="rate" label="관세율" unit="%" value={v.dutyRate} onChange={(value) => set("dutyRate", value)} />
           </div>
         </details>
         <Hint>

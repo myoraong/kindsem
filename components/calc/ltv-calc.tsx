@@ -6,6 +6,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { LimitSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calculateLtv, type LtvBorrower, type LtvZone } from "@/lib/ltv"
@@ -115,6 +116,7 @@ export function LtvCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <LimitSiblingHint here="ltv" />
         <ChoiceGroup
           label="규제 지역"
           value={v.zone}

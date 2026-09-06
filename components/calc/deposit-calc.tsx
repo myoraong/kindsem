@@ -10,7 +10,7 @@ import { Hint } from "@/components/calc/hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon, kakaoCopyLine } from "@/lib/format"
+import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcDeposit, type DepositCompound, type DepositKind } from "@/lib/deposit"
 import type { CalcItem } from "@/lib/catalog"
@@ -29,8 +29,8 @@ const FAQ = [
 export function DepositCalc({ item }: { item: CalcItem }) {
   const [kind, setKind] = useState<DepositKind>("savings")
   const [compound, setCompound] = useState<DepositCompound>("simple")
-  const [principal, setPrincipal] = useState("10000000")
-  const [monthly, setMonthly] = useState("300000")
+  const [principal, setPrincipal] = useState("1000")
+  const [monthly, setMonthly] = useState("30")
   const [rate, setRate] = useState("3.5")
   const [months, setMonths] = useState("12")
   const [afterTax, setAfterTax] = useState(true)
@@ -39,8 +39,8 @@ export function DepositCalc({ item }: { item: CalcItem }) {
     return calcDeposit({
       kind,
       compound,
-      principal: Number(principal),
-      monthly: Number(monthly),
+      principal: manwonToWon(Number(principal) || 0),
+      monthly: manwonToWon(Number(monthly) || 0),
       annualRate: Number(rate),
       months: Number(months),
     })
@@ -97,26 +97,26 @@ export function DepositCalc({ item }: { item: CalcItem }) {
         />
         {kind === "savings" ? (
           <div className="space-y-2">
-            <MoneyField id="principal" label="원금" unit="원" value={principal} onChange={setPrincipal} />
+            <MoneyField id="principal" label="원금" value={principal} onChange={setPrincipal} />
             <AmountChips
               options={[
-                { label: "100만", value: "1000000" },
-                { label: "500만", value: "5000000" },
-                { label: "1천만", value: "10000000" },
-                { label: "3천만", value: "30000000" },
+                { label: "100만", value: "100" },
+                { label: "500만", value: "500" },
+                { label: "1천만", value: "1000" },
+                { label: "3천만", value: "3000" },
               ]}
               onPick={setPrincipal}
             />
           </div>
         ) : (
           <div className="space-y-2">
-            <MoneyField id="monthly" label="월 납입" unit="원" value={monthly} onChange={setMonthly} />
+            <MoneyField id="monthly" label="월 납입" value={monthly} onChange={setMonthly} />
             <AmountChips
               options={[
-                { label: "10만", value: "100000" },
-                { label: "30만", value: "300000" },
-                { label: "50만", value: "500000" },
-                { label: "100만", value: "1000000" },
+                { label: "10만", value: "10" },
+                { label: "30만", value: "30" },
+                { label: "50만", value: "50" },
+                { label: "100만", value: "100" },
               ]}
               onPick={setMonthly}
             />

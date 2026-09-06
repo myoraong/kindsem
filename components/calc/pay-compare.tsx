@@ -99,7 +99,7 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
   const [v, set, setMany] = useCalcPersist(item.slug, {
     period: "year" as PayPeriod,
     current: "4000",
-    meal: true,
+    meal: false,
     youth: "none",
     dependents: "0",
   })
@@ -175,18 +175,20 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
         <CheckRow id="meal" checked={v.meal} onChange={(value) => set("meal", value)}>
           식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}
         </CheckRow>
+        <Hint>해당하면 켜세요. 기본은 꺼 둡니다. 식대가 없으면 명세서보다 실수령이 커집니다.</Hint>
       </div>
     </CalcShell>
   )
 }
 
 function OfferCompareForm({ item }: { item: CalcItem }) {
-  const [v, set] = useCalcPersist(item.slug, {
+  const [v, set, setMany] = useCalcPersist(item.slug, {
+    period: "year" as PayPeriod,
     current: "4000",
     offer: "4800",
     commute: "0",
     years: "0",
-    meal: true,
+    meal: false,
     youth: "none" as YouthSide,
     quitKind: "voluntary" as QuitHealthKind,
     gapMonths: "1",
@@ -194,8 +196,12 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
   })
 
   const packed = useMemo(() => {
-    const currentWon = manwonToWon(Number(v.current) || 0)
-    const offerWon = manwonToWon(Number(v.offer) || 0)
+    const toAnnual = (raw: string) => {
+      const entered = manwonToWon(Number(raw) || 0)
+      return v.period === "month" ? entered * 12 : entered
+    }
+    const currentWon = toAnnual(v.current)
+    const offerWon = toAnnual(v.offer)
     const commuteWon = manwonToWon(Number(v.commute) || 0)
     const result = calcOfferCompare({
       currentAnnual: currentWon,
@@ -246,9 +252,76 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <ChoiceGroup
+          label="입력 단위"
+          value={v.period}
+          onChange={(value) => {
+            setMany({
+              period: value,
+              current: convertPayEntry(v.current, v.period, value),
+              offer: convertPayEntry(v.offer, v.period, value),
+            })
+          }}
+          options={[
+            { value: "year", label: "연봉" },
+            { value: "month", label: "월급" },
+          ]}
+        />
         <div className="grid gap-4 sm:grid-cols-2">
-          <MoneyField id="cur" label="지금 연봉" value={v.current} onChange={(value) => set("current", value)} />
-          <MoneyField id="off" label="이직 제안 연봉" value={v.offer} onChange={(value) => set("offer", value)} />
+          <div className="space-y-2">
+            <MoneyField
+              id="cur"
+              label={v.period === "month" ? "지금 월급" : "지금 연봉"}
+              value={v.current}
+              onChange={(value) => set("current", value)}
+            />
+            <AmountChips
+              options={
+                v.period === "month"
+                  ? [
+                      { label: "250만", value: "250" },
+                      { label: "300만", value: "300" },
+                      { label: "350만", value: "350" },
+                      { label: "400만", value: "400" },
+                      { label: "500만", value: "500" },
+                    ]
+                  : [
+                      { label: "3천만", value: "3000" },
+                      { label: "4천만", value: "4000" },
+                      { label: "5천만", value: "5000" },
+                      { label: "6천만", value: "6000" },
+                      { label: "8천만", value: "8000" },
+                    ]
+              }
+              onPick={(value) => set("current", value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <MoneyField
+              id="off"
+              label={v.period === "month" ? "이직 제안 월급" : "이직 제안 연봉"}
+              value={v.offer}
+              onChange={(value) => set("offer", value)}
+            />
+            <AmountChips
+              options={
+                v.period === "month"
+                  ? [
+                      { label: "280만", value: "280" },
+                      { label: "350만", value: "350" },
+                      { label: "400만", value: "400" },
+                      { label: "500만", value: "500" },
+                    ]
+                  : [
+                      { label: "4천만", value: "4000" },
+                      { label: "4,800만", value: "4800" },
+                      { label: "6천만", value: "6000" },
+                      { label: "8천만", value: "8000" },
+                    ]
+              }
+              onPick={(value) => set("offer", value)}
+            />
+          </div>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <MoneyField
@@ -275,6 +348,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
         <CheckRow id="meal" checked={v.meal} onChange={(value) => set("meal", value)}>
           식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}
         </CheckRow>
+        <Hint>해당하면 켜세요. 기본은 꺼 둡니다. 식대가 없으면 명세서보다 실수령이 커집니다.</Hint>
         <ChoiceGroup
           label="퇴사 후 건강보험"
           value={v.quitKind}

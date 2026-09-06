@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -15,6 +15,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcMinWage } from "@/lib/min-wage"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -32,23 +33,25 @@ const FAQ = [
 ]
 
 export function MinWageCalc({ item }: { item: CalcItem }) {
-  const [pay, setPay] = useState<"hourly" | "monthly">("hourly")
-  const [hourly, setHourly] = useState(String(MIN_WAGE.hourly))
-  const [monthly, setMonthly] = useState(String(MIN_WAGE.monthly))
-  const [weeklyHours, setWeeklyHours] = useState("40")
+  const [v, set] = useCalcPersist(item.slug, {
+    pay: "hourly" as "hourly" | "monthly",
+    hourly: String(MIN_WAGE.hourly),
+    monthly: String(MIN_WAGE.monthly),
+    weeklyHours: "40",
+  })
 
   const result = useMemo(() => {
     return calcMinWage({
-      hourlyWage: pay === "hourly" ? Number(hourly) || 0 : 0,
-      monthlyWage: pay === "monthly" ? Number(monthly) || 0 : 0,
-      weeklyHours: Number(weeklyHours) || 0,
+      hourlyWage: v.pay === "hourly" ? Number(v.hourly) || 0 : 0,
+      monthlyWage: v.pay === "monthly" ? Number(v.monthly) || 0 : 0,
+      weeklyHours: Number(v.weeklyHours) || 0,
     })
-  }, [pay, hourly, monthly, weeklyHours])
+  }, [v])
 
   const hasPay = Boolean(result && result.userHourly > 0)
   const converted =
     result && hasPay
-      ? pay === "hourly"
+      ? v.pay === "hourly"
         ? { title: "환산 월급", amount: result.userMonthly, note: `시급 ${formatWon(result.userHourly)}` }
         : {
             title: "환산 시급",
@@ -80,8 +83,8 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
                   converted?.title ?? "최저임금",
                   formatWon(converted?.amount ?? result.floorMonthly),
                   converted
-                    ? `${converted.note} · 주 ${weeklyHours}시간`
-                    : `시급 ${formatWon(result.hourly)} · 주 ${weeklyHours}시간`,
+                    ? `${converted.note} · 주 ${v.weeklyHours}시간`
+                    : `시급 ${formatWon(result.hourly)} · 주 ${v.weeklyHours}시간`,
                 )
               : undefined
           }
@@ -92,16 +95,16 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
                   ...(result.userHourly > 0
                     ? [
                         {
-                          label: pay === "hourly" ? "넣은 시급" : "넣은 월급",
+                          label: v.pay === "hourly" ? "넣은 시급" : "넣은 월급",
                           value:
-                            pay === "hourly"
+                            v.pay === "hourly"
                               ? formatWon(result.userHourly)
                               : formatWon(result.userMonthly),
                         },
                         {
-                          label: pay === "hourly" ? "환산 월급" : "환산 시급",
+                          label: v.pay === "hourly" ? "환산 월급" : "환산 시급",
                           value:
-                            pay === "hourly"
+                            v.pay === "hourly"
                               ? formatWon(result.userMonthly)
                               : formatWon(Math.round(result.userHourly)),
                         },
@@ -130,16 +133,16 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
         <WageSiblingHint here="min-wage" />
         <ChoiceGroup
           label="넣을 임금"
-          value={pay}
-          onChange={setPay}
+          value={v.pay}
+          onChange={(value) => set("pay", value)}
           options={[
             { value: "hourly", label: "시급" },
             { value: "monthly", label: "월급" },
           ]}
         />
-        {pay === "hourly" ? (
+        {v.pay === "hourly" ? (
           <div className="space-y-2">
-            <MoneyField id="hourly" label="내 시급" unit="원" value={hourly} onChange={setHourly} />
+            <MoneyField id="hourly" label="내 시급" unit="원" value={v.hourly} onChange={(value) => set("hourly", value)} />
             <AmountChips
               options={[
                 { label: "고시", value: String(MIN_WAGE.hourly) },
@@ -147,12 +150,12 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
                 { label: "1.5만", value: "15000" },
                 { label: "2만", value: "20000" },
               ]}
-              onPick={setHourly}
+              onPick={(value) => set("hourly", value)}
             />
           </div>
         ) : (
           <div className="space-y-2">
-            <MoneyField id="monthly" label="내 월급" unit="원" value={monthly} onChange={setMonthly} />
+            <MoneyField id="monthly" label="내 월급" unit="원" value={v.monthly} onChange={(value) => set("monthly", value)} />
             <AmountChips
               options={[
                 { label: "고시", value: String(MIN_WAGE.monthly) },
@@ -160,7 +163,7 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
                 { label: "300만", value: "3000000" },
                 { label: "350만", value: "3500000" },
               ]}
-              onPick={setMonthly}
+              onPick={(value) => set("monthly", value)}
             />
           </div>
         )}
@@ -168,8 +171,8 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
           id="hours"
           label="1주 소정근로시간"
           unit="시간/주"
-          value={weeklyHours}
-          onChange={setWeeklyHours}
+          value={v.weeklyHours}
+          onChange={(value) => set("weeklyHours", value)}
         />
         <AmountChips
           options={[
@@ -178,7 +181,7 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
             { label: "30시간", value: "30" },
             { label: "40시간", value: "40" },
           ]}
-          onPick={setWeeklyHours}
+          onPick={(value) => set("weeklyHours", value)}
         />
         <Hint>
           시급을 넣으면 월 환산 시간을 곱한 월급이, 월급을 넣으면 그 시간으로 나눈 시급이 큰 숫자로 나옵니다. 주

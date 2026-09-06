@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -14,6 +14,7 @@ import { formatPercent, formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcCarTax, type CarTaxKind } from "@/lib/vehicle"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -27,17 +28,19 @@ const FAQ = [
 ]
 
 export function CarTax({ item }: { item: CalcItem }) {
-  const [kind, setKind] = useState<CarTaxKind>("private")
-  const [cc, setCc] = useState("1598")
-  const [age, setAge] = useState("1")
+  const [v, set] = useCalcPersist(item.slug, {
+    kind: "private" as CarTaxKind,
+    cc: "1598",
+    age: "1",
+  })
 
   const result = useMemo(() => {
     return calcCarTax({
-      kind,
-      cc: Number(cc),
-      ageYears: Number(age),
+      kind: v.kind,
+      cc: Number(v.cc),
+      ageYears: Number(v.age),
     })
-  }, [kind, cc, age])
+  }, [v])
 
   return (
     <CalcShell
@@ -72,17 +75,17 @@ export function CarTax({ item }: { item: CalcItem }) {
         <CarSiblingHint here="car-tax" />
         <ChoiceGroup
           label="차종"
-          value={kind}
-          onChange={setKind}
+          value={v.kind}
+          onChange={(value) => set("kind", value)}
           options={[
             { value: "private", label: "비영업 승용" },
             { value: "commercial", label: "영업 승용" },
             { value: "ev", label: "전기·수소 등" },
           ]}
         />
-        {kind === "ev" ? null : (
+        {v.kind === "ev" ? null : (
           <div className="space-y-2">
-            <MoneyField id="cc" label="배기량" unit="cc" value={cc} onChange={setCc} />
+            <MoneyField id="cc" label="배기량" unit="cc" value={v.cc} onChange={(value) => set("cc", value)} />
             <AmountChips
               options={[
                 { label: "1000cc", value: "999" },
@@ -90,13 +93,13 @@ export function CarTax({ item }: { item: CalcItem }) {
                 { label: "2000cc", value: "1999" },
                 { label: "2500cc", value: "2499" },
               ]}
-              onPick={setCc}
+              onPick={(value) => set("cc", value)}
             />
           </div>
         )}
-        {kind === "private" ? (
+        {v.kind === "private" ? (
           <div className="space-y-2">
-            <MoneyField id="age" label="차령" unit="년" value={age} onChange={setAge} />
+            <MoneyField id="age" label="차령" unit="년" value={v.age} onChange={(value) => set("age", value)} />
             <AmountChips
               options={[
                 { label: "1년", value: "1" },
@@ -104,7 +107,7 @@ export function CarTax({ item }: { item: CalcItem }) {
                 { label: "5년", value: "5" },
                 { label: "12년", value: "12" },
               ]}
-              onPick={setAge}
+              onPick={(value) => set("age", value)}
             />
           </div>
         ) : null}

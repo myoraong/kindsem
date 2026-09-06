@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -15,6 +15,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcPartTimeMonth } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -28,17 +29,19 @@ const FAQ = [
 ]
 
 export function PartTimeMonth({ item }: { item: CalcItem }) {
-  const [hourly, setHourly] = useState(String(MIN_WAGE.hourly))
-  const [weeklyHours, setWeeklyHours] = useState("20")
-  const [attended, setAttended] = useState(true)
+  const [v, set] = useCalcPersist(item.slug, {
+    hourly: String(MIN_WAGE.hourly),
+    weeklyHours: "20",
+    attended: true,
+  })
 
   const result = useMemo(() => {
     return calcPartTimeMonth({
-      hourlyWage: Number(hourly),
-      weeklyHours: Number(weeklyHours),
-      attended,
+      hourlyWage: Number(v.hourly),
+      weeklyHours: Number(v.weeklyHours),
+      attended: v.attended,
     })
-  }, [hourly, weeklyHours, attended])
+  }, [v])
 
   return (
     <CalcShell
@@ -51,7 +54,7 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
           caption={
             result
               ? result.eligible
-                ? attended
+                ? v.attended
                   ? `주휴 ${result.holidayHours}시간 포함`
                   : "주휴수당 없음"
                 : "주 15시간 미만 · 주휴 없음"
@@ -59,7 +62,7 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
           }
           copyLine={
             result
-              ? kakaoCopyLine("알바 월급", formatWon(result.monthTotal), `시급 ${formatWon(Number(hourly))}`)
+              ? kakaoCopyLine("알바 월급", formatWon(result.monthTotal), `시급 ${formatWon(Number(v.hourly))}`)
               : undefined
           }
           rows={
@@ -79,7 +82,7 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <WageSiblingHint here="part-time-month" />
         <div className="space-y-2">
-          <MoneyField id="hourly" label="시급" unit="원" value={hourly} onChange={setHourly} />
+          <MoneyField id="hourly" label="시급" unit="원" value={v.hourly} onChange={(value) => set("hourly", value)} />
           <AmountChips
             options={[
               { label: "고시", value: String(MIN_WAGE.hourly) },
@@ -87,7 +90,7 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
               { label: "1.5만", value: "15000" },
               { label: "2만", value: "20000" },
             ]}
-            onPick={setHourly}
+            onPick={(value) => set("hourly", value)}
           />
         </div>
         <div className="space-y-2">
@@ -95,8 +98,8 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
             id="hours"
             label="1주 소정근로시간"
             unit="시간/주"
-            value={weeklyHours}
-            onChange={setWeeklyHours}
+            value={v.weeklyHours}
+            onChange={(value) => set("weeklyHours", value)}
           />
           <AmountChips
             options={[
@@ -105,10 +108,10 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
               { label: "30시간", value: "30" },
               { label: "40시간", value: "40" },
             ]}
-            onPick={setWeeklyHours}
+            onPick={(value) => set("weeklyHours", value)}
           />
         </div>
-        <CheckRow id="attended" checked={attended} onChange={setAttended}>
+        <CheckRow id="attended" checked={v.attended} onChange={(value) => set("attended", value)}>
           주휴수당 포함
         </CheckRow>
         <Hint>

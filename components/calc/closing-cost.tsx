@@ -15,6 +15,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
 import { LawNote } from "@/components/calc/law-note"
+import { BuySiblingHint } from "@/components/calc/sibling-hint"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function ClosingCost({ item }: { item: CalcItem }) {
@@ -85,6 +86,7 @@ export function ClosingCost({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <BuySiblingHint here="closing-cost" />
         <MoneyField id="price" label="매매가" value={v.price} onChange={(value) => set("price", value)} />
         <AmountChips
           options={[

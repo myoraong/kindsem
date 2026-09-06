@@ -1,17 +1,18 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
-import { LoanSiblingHint } from "@/components/calc/sibling-hint"
+import { LimitSiblingHint, LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { equalPayment, equalPrincipal, type Repayment } from "@/lib/loan"
+import { equalPayment, equalPrincipal } from "@/lib/loan"
 import { formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -25,17 +26,19 @@ const FAQ = [
 ]
 
 export function MortgageCalc({ item }: { item: CalcItem }) {
-  const [principal, setPrincipal] = useState("30000")
-  const [rate, setRate] = useState("3.8")
-  const [years, setYears] = useState("30")
-  const [method, setMethod] = useState<Repayment>("equal-payment")
+  const [v, set] = useCalcPersist(item.slug, {
+    principal: "30000",
+    rate: "3.8",
+    years: "30",
+    method: "equal-payment" as "equal-payment" | "equal-principal",
+  })
 
   const result = useMemo(() => {
-    const p = manwonToWon(Number(principal) || 0)
-    const r = Number(rate)
-    const months = Math.round(Number(years) * 12)
+    const p = manwonToWon(Number(v.principal) || 0)
+    const r = Number(v.rate)
+    const months = Math.round(Number(v.years) * 12)
     if (!p || !months) return null
-    if (method === "equal-principal") {
+    if (v.method === "equal-principal") {
       const calc = equalPrincipal(p, r, months)
       return {
         amount: calc.first,
@@ -56,7 +59,7 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
         { label: "총 상환", value: formatWon(calc.totalPay) },
       ],
     }
-  }, [principal, rate, years, method])
+  }, [v])
 
   return (
     <CalcShell
@@ -64,7 +67,7 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
       faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
-          title={method === "equal-principal" ? "첫 달 납입" : "월 납입"}
+          title={v.method === "equal-principal" ? "첫 달 납입" : "월 납입"}
           amount={result?.amount ?? null}
           rows={result?.rows ?? []}
           empty="대출 금액, 금리, 기간만 넣으면 됩니다."
@@ -73,7 +76,8 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <LoanSiblingHint here="mortgage" />
-        <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
+        <LimitSiblingHint here="mortgage" />
+        <MoneyField id="p" label="대출 금액" value={v.principal} onChange={(value) => set("principal", value)} />
         <AmountChips
           options={[
             { label: "2억", value: "20000" },
@@ -81,10 +85,10 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
             { label: "5억", value: "50000" },
             { label: "8억", value: "80000" },
           ]}
-          onPick={setPrincipal}
+          onPick={(value) => set("principal", value)}
         />
-        <MoneyField id="r" label="연 금리" unit="%" value={rate} onChange={setRate} />
-        <MoneyField id="y" label="기간" unit="년" value={years} onChange={setYears} />
+        <MoneyField id="r" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
+        <MoneyField id="y" label="기간" unit="년" value={v.years} onChange={(value) => set("years", value)} />
         <AmountChips
           options={[
             { label: "10년", value: "10" },
@@ -92,12 +96,12 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
             { label: "30년", value: "30" },
             { label: "40년", value: "40" },
           ]}
-          onPick={setYears}
+          onPick={(value) => set("years", value)}
         />
         <ChoiceGroup
           label="상환 방식"
-          value={method}
-          onChange={setMethod}
+          value={v.method}
+          onChange={(value) => set("method", value)}
           options={[
             { value: "equal-payment", label: "원리금균등" },
             { value: "equal-principal", label: "원금균등" },

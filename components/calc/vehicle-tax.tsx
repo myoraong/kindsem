@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -14,6 +14,7 @@ import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcVehicleAcquisition, type VehicleKind } from "@/lib/vehicle"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -27,15 +28,17 @@ const FAQ = [
 ]
 
 export function VehicleTax({ item }: { item: CalcItem }) {
-  const [base, setBase] = useState("3000")
-  const [kind, setKind] = useState<VehicleKind>("passenger")
+  const [v, set] = useCalcPersist(item.slug, {
+    base: "3000",
+    kind: "passenger" as VehicleKind,
+  })
 
   const result = useMemo(() => {
     return calcVehicleAcquisition({
-      base: manwonToWon(Number(base) || 0),
-      kind,
+      base: manwonToWon(Number(v.base) || 0),
+      kind: v.kind,
     })
-  }, [base, kind])
+  }, [v])
 
   return (
     <CalcShell
@@ -66,8 +69,8 @@ export function VehicleTax({ item }: { item: CalcItem }) {
           id="base"
           label="과세표준"
           hint="신차는 부가세 제외 공급가"
-          value={base}
-          onChange={setBase}
+          value={v.base}
+          onChange={(value) => set("base", value)}
         />
         <AmountChips
           options={[
@@ -76,12 +79,12 @@ export function VehicleTax({ item }: { item: CalcItem }) {
             { label: "4천만", value: "4000" },
             { label: "5천만", value: "5000" },
           ]}
-          onPick={setBase}
+          onPick={(value) => set("base", value)}
         />
         <ChoiceGroup
           label="차종"
-          value={kind}
-          onChange={setKind}
+          value={v.kind}
+          onChange={(value) => set("kind", value)}
           options={[
             { value: "passenger", label: "비영업 승용" },
             { value: "compact", label: "경형" },
