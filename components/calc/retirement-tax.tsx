@@ -5,6 +5,7 @@ import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { SeveranceSiblingHint } from "@/components/calc/sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -81,6 +82,7 @@ export function RetirementTax({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <SeveranceSiblingHint here="retirement-tax" />
         <div className="space-y-2">
           <MoneyField id="pay" label="퇴직금" value={v.payout} onChange={(value) => set("payout", value)} />
           <AmountChips

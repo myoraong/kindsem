@@ -108,6 +108,8 @@ export function LimitSiblingHint({ here }: { here: "ltv" | "dsr" }) {
 export function BuySiblingHint({ here }: { here: "acquisition" | "closing-cost" }) {
   const tax = <CalcLink slug="acquisition">취득세</CalcLink>
   const total = <CalcLink slug="closing-cost">살 때 총비용</CalcLink>
+  const fee = <CalcLink slug="brokerage">중개보수</CalcLink>
+  const move = <CalcLink slug="moving">이사 총액</CalcLink>
 
   if (here === "acquisition") {
     return (
@@ -119,7 +121,48 @@ export function BuySiblingHint({ here }: { here: "acquisition" | "closing-cost" 
 
   return (
     <Hint>
-      잔금 전 준비 현금은 여기입니다. 취득세만은 {tax}입니다.
+      잔금 전 준비 현금은 여기입니다. 취득세만은 {tax}, 복비만은 {fee}, 이사 총액은 {move}입니다.
+    </Hint>
+  )
+}
+
+/** 복비 상한, 이사 당일 현금, 살 때 총비용을 가릅니다. */
+export function MoveSiblingHint({ here }: { here: "brokerage" | "moving" }) {
+  const fee = <CalcLink slug="brokerage">중개보수</CalcLink>
+  const move = <CalcLink slug="moving">이사 총액</CalcLink>
+  const buy = <CalcLink slug="closing-cost">살 때 총비용</CalcLink>
+
+  if (here === "brokerage") {
+    return (
+      <Hint>
+        복비 상한만 보려면 여기입니다. 이사 때 나가는 돈은 {move}, 살 때 취득세·복비 합은 {buy}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      이사 때 나가는 돈은 여기입니다. 복비 상한만은 {fee}, 살 때 총비용은 {buy}입니다.
+    </Hint>
+  )
+}
+
+/** 받을 퇴직금과 그 금액에 붙는 세금을 가릅니다. */
+export function SeveranceSiblingHint({ here }: { here: "severance" | "retirement-tax" }) {
+  const pay = <CalcLink slug="severance">퇴직금</CalcLink>
+  const tax = <CalcLink slug="retirement-tax">퇴직소득세</CalcLink>
+
+  if (here === "severance") {
+    return (
+      <Hint>
+        받을 퇴직금은 여기입니다. 그 금액에 붙는 세금은 {tax}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      퇴직금에 붙는 세금은 여기입니다. 받을 금액은 {pay}입니다.
     </Hint>
   )
 }

@@ -6,6 +6,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { MoveSiblingHint } from "@/components/calc/sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt, type ReceiptRow } from "@/components/calc/result-receipt"
@@ -119,6 +120,7 @@ export function MovingCost({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <MoveSiblingHint here="moving" />
         <ChoiceGroup
           label="거래"
           value={v.deal}

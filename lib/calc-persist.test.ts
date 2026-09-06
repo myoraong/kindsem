@@ -44,6 +44,13 @@ test("예전에 쓰던 칸 이름은 새 기본값을 덮지 않는다", () => {
   assert.deepEqual(merged, { current: "4500", mealExempt: false })
 })
 
+test("예전 월급 원 칸은 만원 칸을 덮지 않는다", () => {
+  const defaults = { ordinaryMan: "216", hourly: "10320" }
+  const stored = { monthly: "2156880", hourly: "10320" }
+  const merged = mergeCalcState(defaults, stored as never, {})
+  assert.deepEqual(merged, { ordinaryMan: "216", hourly: "10320" })
+})
+
 test("예전 주소의 meal 칸은 식대 기본 끄기를 덮지 않는다", () => {
   const defaults = { current: "4000", mealExempt: false as boolean }
   const query = decodeCalcQuery("?current=4500&meal=1", defaults)

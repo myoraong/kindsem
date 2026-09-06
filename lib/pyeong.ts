@@ -13,6 +13,18 @@ export function m2ToPyeong(m2: number) {
   return m2 / M2_PER_PYEONG
 }
 
+export type AreaUnit = "pyeong" | "m2"
+
+/** 평 ↔ ㎡ 칸을 바꿀 때 같은 넓이로 맞춥니다. 소수 넷째 자리에서 반올림합니다. */
+export function convertAreaEntry(raw: string, from: AreaUnit, to: AreaUnit) {
+  if (from === to) return raw
+  const n = Number(raw)
+  if (!Number.isFinite(n) || n <= 0) return raw
+  const next = from === "pyeong" ? pyeongToM2(n) : m2ToPyeong(n)
+  if (next == null) return raw
+  return String(Math.round(next * 10_000) / 10_000)
+}
+
 export function formatM2(value: number) {
   return `${formatArea(value)}㎡`
 }

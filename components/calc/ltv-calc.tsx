@@ -32,7 +32,7 @@ const LTV_FAQ = [
 
 export function LtvCalc({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
-    zone: "unregulated" as LtvZone,
+    zone: "adjusted" as LtvZone,
     borrower: "general" as LtvBorrower,
     collateral: "80000",
     desired: "40000",

@@ -10,6 +10,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calcBrokerage, type DealType, type PropertyType } from "@/lib/brokerage"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { MoveSiblingHint } from "@/components/calc/sibling-hint"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { VAT_RATE } from "@/lib/policy.generated"
@@ -87,6 +88,7 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <MoveSiblingHint here="brokerage" />
         <ChoiceGroup
           label="거래 유형"
           value={v.deal}

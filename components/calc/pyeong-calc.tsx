@@ -12,10 +12,12 @@ import type { CalcItem } from "@/lib/catalog"
 import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import {
   calcPyeongPrice,
+  convertAreaEntry,
   formatM2,
   formatPyeong,
   m2ToPyeong,
   pyeongToM2,
+  type AreaUnit,
 } from "@/lib/pyeong"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -34,8 +36,17 @@ const FAQ = [
   },
 ]
 
+function inputAreaUnit(
+  mode: "area" | "price",
+  direction: "toM2" | "toPyeong",
+  priceUnit: AreaUnit,
+): AreaUnit {
+  if (mode === "price") return priceUnit
+  return direction === "toM2" ? "pyeong" : "m2"
+}
+
 export function PyeongCalc({ item }: { item: CalcItem }) {
-  const [v, set] = useCalcPersist(item.slug, {
+  const [v, set, setMany] = useCalcPersist(item.slug, {
     mode: "area" as "area" | "price",
     direction: "toM2" as "toM2" | "toPyeong",
     area: "24",
@@ -126,7 +137,11 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
         <ChoiceGroup
           label="무엇을 계산할까요"
           value={v.mode}
-          onChange={(value) => set("mode", value)}
+          onChange={(value) => {
+            const from = inputAreaUnit(v.mode, v.direction, v.priceUnit)
+            const to = inputAreaUnit(value, v.direction, v.priceUnit)
+            setMany({ mode: value, area: convertAreaEntry(v.area, from, to) })
+          }}
           options={[
             { value: "area", label: "평 ↔ ㎡" },
             { value: "price", label: "평당 가격" },
@@ -136,7 +151,11 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
           <ChoiceGroup
             label="방향"
             value={v.direction}
-            onChange={(value) => set("direction", value)}
+            onChange={(value) => {
+              const from = v.direction === "toM2" ? "pyeong" : "m2"
+              const to = value === "toM2" ? "pyeong" : "m2"
+              setMany({ direction: value, area: convertAreaEntry(v.area, from, to) })
+            }}
             options={[
               { value: "toM2", label: "평 → ㎡" },
               { value: "toPyeong", label: "㎡ → 평" },
@@ -146,7 +165,12 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
           <ChoiceGroup
             label="면적 단위"
             value={v.priceUnit}
-            onChange={(value) => set("priceUnit", value)}
+            onChange={(value) => {
+              setMany({
+                priceUnit: value,
+                area: convertAreaEntry(v.area, v.priceUnit, value),
+              })
+            }}
             options={[
               { value: "pyeong", label: "평" },
               { value: "m2", label: "㎡" },

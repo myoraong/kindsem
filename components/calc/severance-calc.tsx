@@ -5,10 +5,11 @@ import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { SeveranceSiblingHint } from "@/components/calc/sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon } from "@/lib/format"
+import { formatWon, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcSeverance, dailyOrdinaryWage, serviceDays } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
@@ -37,7 +38,7 @@ export function Severance({ item }: { item: CalcItem }) {
     end: "2026-08-30",
     wage3m: "900",
     days3m: "90",
-    monthlyOrdinary: "",
+    ordinaryMan: "",
     weeklyHours: "40",
     weeklyDays: "5",
   })
@@ -50,9 +51,9 @@ export function Severance({ item }: { item: CalcItem }) {
     if (!from || !to || wage <= 0 || days <= 0) return null
     const served = serviceDays(from, to)
     if (served <= 0) return null
-    const ordinary = v.monthlyOrdinary
+    const ordinary = v.ordinaryMan
       ? dailyOrdinaryWage({
-          monthlyOrdinary: Number(v.monthlyOrdinary) || 0,
+          monthlyOrdinary: manwonToWon(Number(v.ordinaryMan) || 0),
           weeklyHours: Number(v.weeklyHours) || 40,
           weeklyDays: Number(v.weeklyDays) || 5,
         })
@@ -99,6 +100,7 @@ export function Severance({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <SeveranceSiblingHint here="severance" />
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="space-y-1.5 text-sm">
             <span className="font-medium">계속근로 시작일</span>
@@ -144,11 +146,10 @@ export function Severance({ item }: { item: CalcItem }) {
         <MoneyField
           id="ordinary"
           label="월 통상임금 (선택)"
-          unit="원"
-          value={v.monthlyOrdinary}
-          onChange={(value) => set("monthlyOrdinary", value)}
+          value={v.ordinaryMan}
+          onChange={(value) => set("ordinaryMan", value)}
         />
-        {v.monthlyOrdinary ? (
+        {v.ordinaryMan ? (
           <>
             <MoneyField
               id="hours"

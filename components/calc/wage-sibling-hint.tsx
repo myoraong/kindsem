@@ -23,7 +23,7 @@ export function WageSiblingHint({
   if (here === "weekly-holiday") {
     return (
       <Hint>
-        시급만 보려면 여기입니다. 월급으로 환산은 {month}, 최저와 비교는 {min}입니다.
+        1주 주휴만 보려면 여기입니다. 월급으로 환산은 {month}, 최저와 비교는 {min}입니다.
       </Hint>
     )
   }
@@ -38,7 +38,7 @@ export function WageSiblingHint({
 
   return (
     <Hint>
-      최저와 비교하려면 여기입니다. 시급만은 {weekly}, 월급으로 환산은 {month}입니다.
+      최저와 비교하려면 여기입니다. 1주 주휴만은 {weekly}, 월급으로 환산은 {month}입니다.
     </Hint>
   )
 }

@@ -9,7 +9,7 @@ import { Hint } from "@/components/calc/hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon } from "@/lib/format"
+import { formatWon, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcAnnualLeave } from "@/lib/labor"
@@ -33,7 +33,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
     months: "6",
     weeklyHours: "40",
     weeklyDays: "5",
-    monthly: String(MIN_WAGE.monthly),
+    ordinaryMan: String(Math.round(MIN_WAGE.monthly / 10_000)),
     unused: "",
   })
 
@@ -45,7 +45,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
       attendedMonths: Number(v.months) || 0,
       weeklyHours: Number(v.weeklyHours) || 0,
       weeklyDays: Number(v.weeklyDays) || 5,
-      monthlyOrdinary: Number(v.monthly) || 0,
+      monthlyOrdinary: manwonToWon(Number(v.ordinaryMan) || 0),
       unusedDays: Number(v.unused) || 0,
     })
   }, [v])
@@ -133,20 +133,19 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
         />
         <div className="space-y-2">
           <MoneyField
-            id="monthly"
+            id="ordinary"
             label="월 통상임금"
-            unit="원"
-            value={v.monthly}
-            onChange={(value) => set("monthly", value)}
+            value={v.ordinaryMan}
+            onChange={(value) => set("ordinaryMan", value)}
           />
           <AmountChips
             options={[
-              { label: "고시", value: String(MIN_WAGE.monthly) },
-              { label: "250만", value: "2500000" },
-              { label: "300만", value: "3000000" },
-              { label: "350만", value: "3500000" },
+              { label: "고시", value: String(Math.round(MIN_WAGE.monthly / 10_000)) },
+              { label: "250만", value: "250" },
+              { label: "300만", value: "300" },
+              { label: "350만", value: "350" },
             ]}
-            onPick={(value) => set("monthly", value)}
+            onPick={(value) => set("ordinaryMan", value)}
           />
         </div>
         <div className="space-y-2">

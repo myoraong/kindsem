@@ -3,6 +3,7 @@ import test from "node:test"
 import {
   M2_PER_PYEONG,
   calcPyeongPrice,
+  convertAreaEntry,
   formatM2,
   formatPyeong,
   m2ToPyeong,
@@ -40,4 +41,11 @@ test("㎡로 넣어도 평당가가 같다", () => {
 test("넓이 표시에 단위가 붙는다", () => {
   assert.match(formatM2(400 / 121), /㎡$/)
   assert.match(formatPyeong(1), /1평/)
+})
+
+test("평 칸을 ㎡로 바꾸면 같은 넓이를 환산한다", () => {
+  assert.equal(convertAreaEntry("24", "pyeong", "m2"), "79.3388")
+  assert.equal(convertAreaEntry("79.3388", "m2", "pyeong"), "24")
+  assert.equal(convertAreaEntry("24", "pyeong", "pyeong"), "24")
+  assert.equal(convertAreaEntry("", "pyeong", "m2"), "")
 })

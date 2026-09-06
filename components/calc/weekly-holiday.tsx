@@ -10,7 +10,7 @@ import { Hint } from "@/components/calc/hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon, kakaoCopyLine } from "@/lib/format"
+import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcWeeklyHoliday, monthlyContractHours } from "@/lib/labor"
@@ -33,7 +33,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
     pay: "hourly" as "hourly" | "monthly",
     hourly: String(MIN_WAGE.hourly),
-    monthly: String(MIN_WAGE.monthly),
+    ordinaryMan: String(Math.round(MIN_WAGE.monthly / 10_000)),
     weeklyHours: "40",
     attended: true,
   })
@@ -45,7 +45,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
       v.pay === "hourly"
         ? Number(v.hourly)
         : monthlyContractHours(hours) > 0
-          ? Number(v.monthly) / monthlyContractHours(hours)
+          ? manwonToWon(Number(v.ordinaryMan) || 0) / monthlyContractHours(hours)
           : 0
     return calcWeeklyHoliday({
       hourlyWage: wage,
@@ -122,20 +122,19 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
         ) : (
           <div className="space-y-2">
             <MoneyField
-              id="monthly"
+              id="ordinary"
               label="월 통상임금"
-              unit="원"
-              value={v.monthly}
-              onChange={(value) => set("monthly", value)}
+              value={v.ordinaryMan}
+              onChange={(value) => set("ordinaryMan", value)}
             />
             <AmountChips
               options={[
-                { label: "고시", value: String(MIN_WAGE.monthly) },
-                { label: "250만", value: "2500000" },
-                { label: "300만", value: "3000000" },
-                { label: "350만", value: "3500000" },
+                { label: "고시", value: String(Math.round(MIN_WAGE.monthly / 10_000)) },
+                { label: "250만", value: "250" },
+                { label: "300만", value: "300" },
+                { label: "350만", value: "350" },
               ]}
-              onPick={(value) => set("monthly", value)}
+              onPick={(value) => set("ordinaryMan", value)}
             />
           </div>
         )}
