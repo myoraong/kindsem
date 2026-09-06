@@ -166,3 +166,72 @@ export function SeveranceSiblingHint({ here }: { here: "severance" | "retirement
     </Hint>
   )
 }
+
+/** 육아휴직 급여와 출산전후휴가 급여를 가릅니다. */
+export function LeaveSiblingHint({ here }: { here: "parental-leave" | "maternity-leave" }) {
+  const parental = <CalcLink slug="parental-leave">육아휴직</CalcLink>
+  const maternity = <CalcLink slug="maternity-leave">출산전후휴가</CalcLink>
+
+  if (here === "parental-leave") {
+    return (
+      <Hint>
+        육아휴직 급여는 여기입니다. 출산전후휴가는 {maternity}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      출산전후휴가 급여는 여기입니다. 육아휴직은 {parental}입니다.
+    </Hint>
+  )
+}
+
+/** 생전 증여, 상속, 빚을 떠안은 증여를 가릅니다. */
+export function GiftSiblingHint({ here }: { here: "gift-tax" | "inheritance" | "encumbered-gift" }) {
+  const gift = <CalcLink slug="gift-tax">증여세</CalcLink>
+  const inherit = <CalcLink slug="inheritance">상속세</CalcLink>
+  const debt = <CalcLink slug="encumbered-gift">부담부증여</CalcLink>
+
+  if (here === "gift-tax") {
+    return (
+      <Hint>
+        살아 있을 때 주면 여기입니다. 상속은 {inherit}, 빚을 떠안은 증여는 {debt}입니다.
+      </Hint>
+    )
+  }
+
+  if (here === "inheritance") {
+    return (
+      <Hint>
+        돌아가신 뒤 받으면 여기입니다. 생전 증여는 {gift}, 빚을 떠안은 증여는 {debt}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      집과 빚을 같이 주면 여기입니다. 일반 증여는 {gift}, 상속은 {inherit}입니다.
+    </Hint>
+  )
+}
+
+/** 한 직장 실수령과 이직 제안 비교를 가릅니다. */
+export function PaySiblingHint({ here }: { here: "take-home" | "offer-compare" }) {
+  const takeHome = <CalcLink slug="take-home">실수령</CalcLink>
+  const offer = <CalcLink slug="offer-compare">이직 제안</CalcLink>
+
+  if (here === "take-home") {
+    return (
+      <Hint>
+        지금 직장 실수령은 여기입니다. 이직 제안과 비교는 {offer}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      이직 제안과 지금을 비교하려면 여기입니다. 한 직장 실수령만은 {takeHome}입니다.
+    </Hint>
+  )
+}

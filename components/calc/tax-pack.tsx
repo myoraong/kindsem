@@ -7,6 +7,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { GiftSiblingHint } from "@/components/calc/sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -306,7 +307,7 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
     amount: "20000",
     prior: "",
-    relation: "descendant" as GiftRelation,
+    relation: "other" as GiftRelation,
   })
 
   const result = useMemo(() => {
@@ -375,6 +376,7 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <GiftSiblingHint here="gift-tax" />
         <ChoiceGroup
           label="누구에게 주나요?"
           value={v.relation}
@@ -406,7 +408,8 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
           onChange={(value) => set("prior", value)}
         />
         <Hint>
-          공제 한도는 {deductionLabel}입니다. 미성년 직계존속 2천만 원, 세대생략 할증은 넣지 않았습니다.
+          기본은 그 외 친족 공제입니다. 자녀·부모·배우자면 고르세요. 공제 한도는 {deductionLabel}입니다.
+          미성년 직계존속 2천만 원, 세대생략 할증은 넣지 않았습니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.gift]} />
       </div>
@@ -420,7 +423,7 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
     estate: "150000",
     debts: "",
-    heirs: "spouse-children" as InheritanceHeirs,
+    heirs: "children" as InheritanceHeirs,
     children: "2" as (typeof CHILD_COUNTS)[number],
     minorCount: "0",
     minorAge: "10",
@@ -535,6 +538,7 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <GiftSiblingHint here="inheritance" />
         <ChoiceGroup
           label="누가 받나요?"
           value={v.heirs}
@@ -545,6 +549,7 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
             { value: "spouse-only", label: "배우자만" },
           ]}
         />
+        <Hint>기본은 자녀만입니다. 배우자가 같이 받으면 고르세요. 배우자 공제가 붙으면 세금이 줄어 보입니다.</Hint>
         {v.heirs !== "spouse-only" ? (
           <div className="space-y-2">
             <ChoiceGroup
@@ -714,7 +719,7 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
     debt: "20000",
     buy: "30000",
     years: "8",
-    relation: "descendant" as GiftRelation,
+    relation: "other" as GiftRelation,
   })
 
   const result = useMemo(() => {
@@ -760,6 +765,7 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <GiftSiblingHint here="encumbered-gift" />
         <ChoiceGroup
           label="수증자"
           value={v.relation}

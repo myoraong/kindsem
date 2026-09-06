@@ -7,6 +7,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { PaySiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { PayOfferReceipt, PayTakeHomeReceipt } from "@/components/calc/pay-receipt"
 import { formatKoreanUnit, formatWon, manwonToWon } from "@/lib/format"
@@ -120,6 +121,7 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
   return (
     <CalcShell item={item} faq={payFaq()} guide={payGuide()} result={<PayTakeHomeReceipt row={now} />}>
       <div className="space-y-5">
+        <PaySiblingHint here="take-home" />
         <ChoiceGroup
           label="입력 단위"
           value={v.period}
@@ -252,6 +254,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <PaySiblingHint here="offer-compare" />
         <ChoiceGroup
           label="입력 단위"
           value={v.period}
