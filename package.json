@@ -9,7 +9,7 @@
     "prebuild": "node scripts/refresh-policy.mjs && node scripts/write-ads-txt.mjs && node --experimental-strip-types scripts/write-rss.mjs",
     "build": "next build",
     "start": "next start --port 43217",
-    "test": "node --test scripts/refresh-policy.test.mjs scripts/write-rss.test.mjs && node --experimental-strip-types --test lib/*.test.ts",
+    "test": "node --test scripts/refresh-policy.test.mjs scripts/write-rss.test.mjs scripts/keep-kindsem-preview.test.mjs && node --experimental-strip-types --test lib/*.test.ts",
     "lint": "eslint"
   },
   "dependencies": {

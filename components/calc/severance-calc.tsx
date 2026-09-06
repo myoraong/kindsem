@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -12,6 +12,7 @@ import { formatWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcSeverance, dailyOrdinaryWage, serviceDays } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -31,27 +32,29 @@ function parseDate(raw: string) {
 }
 
 export function Severance({ item }: { item: CalcItem }) {
-  const [start, setStart] = useState("2023-08-30")
-  const [end, setEnd] = useState("2026-08-30")
-  const [wage3m, setWage3m] = useState("900")
-  const [days3m, setDays3m] = useState("90")
-  const [monthlyOrdinary, setMonthly] = useState("")
-  const [weeklyHours, setWeeklyHours] = useState("40")
-  const [weeklyDays, setWeeklyDays] = useState("5")
+  const [v, set] = useCalcPersist(item.slug, {
+    start: "2023-08-30",
+    end: "2026-08-30",
+    wage3m: "900",
+    days3m: "90",
+    monthlyOrdinary: "",
+    weeklyHours: "40",
+    weeklyDays: "5",
+  })
 
   const result = useMemo(() => {
-    const from = parseDate(start)
-    const to = parseDate(end)
-    const wage = (Number(wage3m) || 0) * 10_000
-    const days = Number(days3m)
+    const from = parseDate(v.start)
+    const to = parseDate(v.end)
+    const wage = (Number(v.wage3m) || 0) * 10_000
+    const days = Number(v.days3m)
     if (!from || !to || wage <= 0 || days <= 0) return null
     const served = serviceDays(from, to)
     if (served <= 0) return null
-    const ordinary = monthlyOrdinary
+    const ordinary = v.monthlyOrdinary
       ? dailyOrdinaryWage({
-          monthlyOrdinary: Number(monthlyOrdinary) || 0,
-          weeklyHours: Number(weeklyHours) || 40,
-          weeklyDays: Number(weeklyDays) || 5,
+          monthlyOrdinary: Number(v.monthlyOrdinary) || 0,
+          weeklyHours: Number(v.weeklyHours) || 40,
+          weeklyDays: Number(v.weeklyDays) || 5,
         })
       : 0
     return calcSeverance({
@@ -60,7 +63,7 @@ export function Severance({ item }: { item: CalcItem }) {
       serviceDays: served,
       dailyOrdinary: ordinary,
     })
-  }, [start, end, wage3m, days3m, monthlyOrdinary, weeklyHours, weeklyDays])
+  }, [v])
 
   return (
     <CalcShell
@@ -101,8 +104,8 @@ export function Severance({ item }: { item: CalcItem }) {
             <span className="font-medium">계속근로 시작일</span>
             <input
               type="date"
-              value={start}
-              onChange={(event) => setStart(event.target.value)}
+              value={v.start}
+              onChange={(event) => set("start", event.target.value)}
               className="h-12 w-full rounded-xl border border-input bg-transparent px-3 text-lg outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />
           </label>
@@ -110,8 +113,8 @@ export function Severance({ item }: { item: CalcItem }) {
             <span className="font-medium">퇴직일</span>
             <input
               type="date"
-              value={end}
-              onChange={(event) => setEnd(event.target.value)}
+              value={v.end}
+              onChange={(event) => set("end", event.target.value)}
               className="h-12 w-full rounded-xl border border-input bg-transparent px-3 text-lg outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />
           </label>
@@ -119,8 +122,8 @@ export function Severance({ item }: { item: CalcItem }) {
         <MoneyField
           id="wage3m"
           label="퇴직일 전 3개월 임금 총액"
-          value={wage3m}
-          onChange={setWage3m}
+          value={v.wage3m}
+          onChange={(value) => set("wage3m", value)}
         />
         <AmountChips
           options={[
@@ -129,37 +132,37 @@ export function Severance({ item }: { item: CalcItem }) {
             { label: "1,200만", value: "1200" },
             { label: "1,500만", value: "1500" },
           ]}
-          onPick={setWage3m}
+          onPick={(value) => set("wage3m", value)}
         />
         <MoneyField
           id="days3m"
           label="그 3개월의 달력 일수"
           unit="일"
-          value={days3m}
-          onChange={setDays3m}
+          value={v.days3m}
+          onChange={(value) => set("days3m", value)}
         />
         <MoneyField
           id="ordinary"
           label="월 통상임금 (선택)"
           unit="원"
-          value={monthlyOrdinary}
-          onChange={setMonthly}
+          value={v.monthlyOrdinary}
+          onChange={(value) => set("monthlyOrdinary", value)}
         />
-        {monthlyOrdinary ? (
+        {v.monthlyOrdinary ? (
           <>
             <MoneyField
               id="hours"
               label="1주 소정근로시간"
               unit="시간/주"
-              value={weeklyHours}
-              onChange={setWeeklyHours}
+              value={v.weeklyHours}
+              onChange={(value) => set("weeklyHours", value)}
             />
             <MoneyField
               id="days"
               label="1주 소정근로일"
               unit="일/주"
-              value={weeklyDays}
-              onChange={setWeeklyDays}
+              value={v.weeklyDays}
+              onChange={(value) => set("weeklyDays", value)}
             />
           </>
         ) : null}

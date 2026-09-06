@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
@@ -15,34 +15,37 @@ import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { VAT_RATE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
 import { LawNote } from "@/components/calc/law-note"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function BrokerageCalc({ item }: { item: CalcItem }) {
-  const [deal, setDeal] = useState<DealType>("wolse")
-  const [property, setProperty] = useState<PropertyType>("house")
-  const [price, setPrice] = useState("5000")
-  const [monthly, setMonthly] = useState("65")
-  const [paid, setPaid] = useState("8000")
-  const [premium, setPremium] = useState("2000")
-  const [vat, setVat] = useState(true)
+  const [v, set] = useCalcPersist(item.slug, {
+    deal: "wolse" as DealType,
+    property: "house" as PropertyType,
+    price: "5000",
+    monthly: "65",
+    paid: "8000",
+    premium: "2000",
+    vat: true,
+  })
 
   const result = useMemo(() => {
-    const p = manwonToWon(Number(price) || 0)
-    const m = manwonToWon(Number(monthly) || 0)
-    const paidWon = manwonToWon(Number(paid) || 0)
-    const prem = manwonToWon(Number(premium) || 0)
+    const p = manwonToWon(Number(v.price) || 0)
+    const m = manwonToWon(Number(v.monthly) || 0)
+    const paidWon = manwonToWon(Number(v.paid) || 0)
+    const prem = manwonToWon(Number(v.premium) || 0)
     const amount =
-      property === "presale" ? paidWon + prem : deal === "wolse" ? p + m : p
+      v.property === "presale" ? paidWon + prem : v.deal === "wolse" ? p + m : p
     if (!amount) return null
     return calcBrokerage({
-      deal,
-      property,
+      deal: v.deal,
+      property: v.property,
       price: p,
       monthlyRent: m,
       paid: paidWon,
       premium: prem,
-      includeVat: vat,
+      includeVat: v.vat,
     })
-  }, [deal, property, price, monthly, paid, premium, vat])
+  }, [v])
 
   return (
     <CalcShell
@@ -86,8 +89,8 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="거래 유형"
-          value={deal}
-          onChange={setDeal}
+          value={v.deal}
+          onChange={(value) => set("deal", value)}
           options={[
             { value: "sale", label: "매매" },
             { value: "jeonse", label: "전세" },
@@ -96,8 +99,8 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
         />
         <ChoiceGroup
           label="대상"
-          value={property}
-          onChange={setProperty}
+          value={v.property}
+          onChange={(value) => set("property", value)}
           options={[
             { value: "house", label: "주택" },
             { value: "officetel", label: "오피스텔" },
@@ -105,27 +108,27 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
             { value: "other", label: "상가·토지" },
           ]}
         />
-        {property === "presale" ? (
+        {v.property === "presale" ? (
           <>
             <MoneyField
               id="paid"
               label="낸 계약금·중도금"
-              value={paid}
-              onChange={setPaid}
+              value={v.paid}
+              onChange={(value) => set("paid", value)}
             />
-            <MoneyField id="premium" label="프리미엄" value={premium} onChange={setPremium} />
+            <MoneyField id="premium" label="프리미엄" value={v.premium} onChange={(value) => set("premium", value)} />
           </>
         ) : (
           <div className="space-y-2">
             <MoneyField
               id="price"
-              label={deal === "sale" ? "매매가" : "보증금"}
-              value={price}
-              onChange={setPrice}
+              label={v.deal === "sale" ? "매매가" : "보증금"}
+              value={v.price}
+              onChange={(value) => set("price", value)}
             />
             <AmountChips
               options={
-                deal === "sale"
+                v.deal === "sale"
                   ? [
                       { label: "3억", value: "30000" },
                       { label: "5억", value: "50000" },
@@ -141,13 +144,13 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
                       { label: "5억", value: "50000" },
                     ]
               }
-              onPick={setPrice}
+              onPick={(value) => set("price", value)}
             />
           </div>
         )}
-        {deal === "wolse" && property !== "presale" ? (
+        {v.deal === "wolse" && v.property !== "presale" ? (
           <div className="space-y-2">
-            <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+            <MoneyField id="monthly" label="월세" value={v.monthly} onChange={(value) => set("monthly", value)} />
             <AmountChips
               options={[
                 { label: "50만", value: "50" },
@@ -155,11 +158,11 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
                 { label: "80만", value: "80" },
                 { label: "100만", value: "100" },
               ]}
-              onPick={setMonthly}
+              onPick={(value) => set("monthly", value)}
             />
           </div>
         ) : null}
-        <CheckRow id="vat" checked={vat} onChange={setVat}>
+        <CheckRow id="vat" checked={v.vat} onChange={(value) => set("vat", value)}>
           부가세 {formatPercent(VAT_RATE * 100, 0)} 포함
         </CheckRow>
         <Hint>

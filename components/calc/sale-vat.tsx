@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -11,6 +11,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatPercent, formatWon } from "@/lib/format"
 import { VAT_RATE } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -24,16 +25,18 @@ const FAQ = [
 ]
 
 export function SaleVat({ item }: { item: CalcItem }) {
-  const [mode, setMode] = useState<"sale" | "vat">("sale")
-  const [price, setPrice] = useState("89000")
-  const [rate, setRate] = useState("20")
-  const [vatMode, setVatMode] = useState<"add" | "split">("split")
+  const [v, set] = useCalcPersist(item.slug, {
+    mode: "sale" as "sale" | "vat",
+    price: "89000",
+    rate: "20",
+    vatMode: "split" as "add" | "split",
+  })
 
   const result = useMemo(() => {
-    const p = Number(price)
-    const r = Number(rate)
+    const p = Number(v.price)
+    const r = Number(v.rate)
     if (!p) return null
-    if (mode === "sale") {
+    if (v.mode === "sale") {
       const discount = p * (r / 100)
       const final = p - discount
       return {
@@ -45,7 +48,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
         ],
       }
     }
-    if (vatMode === "add") {
+    if (v.vatMode === "add") {
       const vat = p * VAT_RATE
       return {
         amount: p + vat,
@@ -64,7 +67,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
         { label: "부가세", value: formatWon(vat) },
       ],
     }
-  }, [mode, price, rate, vatMode])
+  }, [v])
 
   return (
     <CalcShell
@@ -72,7 +75,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
       faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
-          title={mode === "sale" ? "할인된 가격" : vatMode === "add" ? "부가세 포함" : "공급가액"}
+          title={v.mode === "sale" ? "할인된 가격" : v.vatMode === "add" ? "부가세 포함" : "공급가액"}
           amount={result?.amount ?? null}
           rows={result?.rows ?? []}
           empty="금액만 넣으면 세일가와 부가세가 바로 나옵니다."
@@ -82,8 +85,8 @@ export function SaleVat({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="무엇을 계산할까요"
-          value={mode}
-          onChange={setMode}
+          value={v.mode}
+          onChange={(value) => set("mode", value)}
           options={[
             { value: "sale", label: "할인" },
             { value: "vat", label: "부가세" },
@@ -92,10 +95,10 @@ export function SaleVat({ item }: { item: CalcItem }) {
         <div className="space-y-2">
           <MoneyField
             id="price"
-            label={mode === "sale" ? "정가" : vatMode === "add" ? "공급가액" : "부가세 포함 금액"}
+            label={v.mode === "sale" ? "정가" : v.vatMode === "add" ? "공급가액" : "부가세 포함 금액"}
             unit="원"
-            value={price}
-            onChange={setPrice}
+            value={v.price}
+            onChange={(value) => set("price", value)}
           />
           <AmountChips
             options={[
@@ -105,12 +108,12 @@ export function SaleVat({ item }: { item: CalcItem }) {
               { label: "10만", value: "100000" },
               { label: "50만", value: "500000" },
             ]}
-            onPick={setPrice}
+            onPick={(value) => set("price", value)}
           />
         </div>
-        {mode === "sale" ? (
+        {v.mode === "sale" ? (
           <div className="space-y-2">
-            <MoneyField id="rate" label="할인율" unit="%" value={rate} onChange={setRate} />
+            <MoneyField id="rate" label="할인율" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
             <AmountChips
               options={[
                 { label: "10%", value: "10" },
@@ -118,14 +121,14 @@ export function SaleVat({ item }: { item: CalcItem }) {
                 { label: "30%", value: "30" },
                 { label: "50%", value: "50" },
               ]}
-              onPick={setRate}
+              onPick={(value) => set("rate", value)}
             />
           </div>
         ) : (
           <ChoiceGroup
             label="부가세 방향"
-            value={vatMode}
-            onChange={setVatMode}
+            value={v.vatMode}
+            onChange={(value) => set("vatMode", value)}
             options={[
               { value: "split", label: "포함 금액 → 공급가" },
               { value: "add", label: `공급가 + ${formatPercent(VAT_RATE * 100, 0)}` },

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
@@ -15,25 +15,28 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
 import { LawNote } from "@/components/calc/law-note"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function ClosingCost({ item }: { item: CalcItem }) {
-  const [price, setPrice] = useState("65000")
-  const [homes, setHomes] = useState<HomeCount>("1")
-  const [adjusted, setAdjusted] = useState(false)
-  const [over85, setOver85] = useState(false)
-  const [first, setFirst] = useState(true)
-  const [shrinking, setShrinking] = useState(false)
+  const [v, set] = useCalcPersist(item.slug, {
+    price: "65000",
+    homes: "1" as HomeCount,
+    adjusted: false,
+    over85: false,
+    first: false,
+    shrinking: false,
+  })
 
   const result = useMemo(() => {
-    const p = manwonToWon(Number(price) || 0)
+    const p = manwonToWon(Number(v.price) || 0)
     if (!p) return null
     const tax = calcAcquisition({
       price: p,
-      homeCount: homes,
-      adjustedArea: adjusted,
-      over85,
-      firstHome: first,
-      shrinkingArea: shrinking,
+      homeCount: v.homes,
+      adjustedArea: v.adjusted,
+      over85: v.over85,
+      firstHome: v.first,
+      shrinkingArea: v.shrinking,
     })
     const fee = calcBrokerage({
       deal: "sale",
@@ -44,7 +47,7 @@ export function ClosingCost({ item }: { item: CalcItem }) {
     const stamp = stampDuty(p, true)
     const total = tax.total + fee.total + stamp
     return { tax, fee: fee.total, stamp, total }
-  }, [price, homes, adjusted, over85, first, shrinking])
+  }, [v])
 
   return (
     <CalcShell
@@ -82,7 +85,7 @@ export function ClosingCost({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
-        <MoneyField id="price" label="매매가" value={price} onChange={setPrice} />
+        <MoneyField id="price" label="매매가" value={v.price} onChange={(value) => set("price", value)} />
         <AmountChips
           options={[
             { label: "3억", value: "30000" },
@@ -90,12 +93,12 @@ export function ClosingCost({ item }: { item: CalcItem }) {
             { label: "9억", value: "90000" },
             { label: "12억", value: "120000" },
           ]}
-          onPick={setPrice}
+          onPick={(value) => set("price", value)}
         />
         <ChoiceGroup
           label="취득 후 주택 수"
-          value={homes}
-          onChange={setHomes}
+          value={v.homes}
+          onChange={(value) => set("homes", value)}
           options={[
             { value: "1", label: "1주택" },
             { value: "2", label: "2주택" },
@@ -103,21 +106,21 @@ export function ClosingCost({ item }: { item: CalcItem }) {
             { value: "4+", label: "4주택+" },
           ]}
         />
-        {homes !== "1" ? (
-          <CheckRow id="close-adjusted" checked={adjusted} onChange={setAdjusted}>
+        {v.homes !== "1" ? (
+          <CheckRow id="close-adjusted" checked={v.adjusted} onChange={(value) => set("adjusted", value)}>
             조정대상지역
           </CheckRow>
         ) : null}
-        <CheckRow id="close-over85" checked={over85} onChange={setOver85}>
+        <CheckRow id="close-over85" checked={v.over85} onChange={(value) => set("over85", value)}>
           전용 85㎡ 초과
         </CheckRow>
-        {homes === "1" ? (
+        {v.homes === "1" ? (
           <>
-            <CheckRow id="close-first" checked={first} onChange={setFirst}>
+            <CheckRow id="close-first" checked={v.first} onChange={(value) => set("first", value)}>
               생애최초
             </CheckRow>
-            {first ? (
-              <CheckRow id="close-shrinking" checked={shrinking} onChange={setShrinking}>
+            {v.first ? (
+              <CheckRow id="close-shrinking" checked={v.shrinking} onChange={(value) => set("shrinking", value)}>
                 인구감소지역 주택
               </CheckRow>
             ) : null}

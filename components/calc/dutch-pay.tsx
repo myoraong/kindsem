@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -10,28 +10,31 @@ import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function DutchPay({ item }: { item: CalcItem }) {
-  const [total, setTotal] = useState("86000")
-  const [people, setPeople] = useState("4")
-  const [tip, setTip] = useState("0")
-  const [ceil, setCeil] = useState(true)
+  const [v, set] = useCalcPersist(item.slug, {
+    total: "86000",
+    people: "4",
+    tip: "0",
+    ceil: true,
+  })
 
   const result = useMemo(() => {
-    const bill = Number(total)
-    const count = Number(people)
-    const tipRate = Number(tip)
+    const bill = Number(v.total)
+    const count = Number(v.people)
+    const tipRate = Number(v.tip)
     if (!bill || !count || count < 1) return null
     const withTip = bill + bill * (tipRate / 100)
     const raw = withTip / count
-    const each = ceil ? Math.ceil(raw) : Math.round(raw)
+    const each = v.ceil ? Math.ceil(raw) : Math.round(raw)
     const collected = each * count
     return {
       withTip,
       each,
       leftover: collected - withTip,
     }
-  }, [total, people, tip, ceil])
+  }, [v])
 
   return (
     <CalcShell
@@ -54,8 +57,8 @@ export function DutchPay({ item }: { item: CalcItem }) {
             result
               ? [
                   { label: "전체 + 팁", value: formatWon(result.withTip) },
-                  { label: "인원", value: `${people}명` },
-                  { label: "거둔 금액", value: formatWon(result.each * Number(people)) },
+                  { label: "인원", value: `${v.people}명` },
+                  { label: "거둔 금액", value: formatWon(result.each * Number(v.people)) },
                   { label: "남는 돈", value: formatWon(result.leftover) },
                 ]
               : []
@@ -66,7 +69,7 @@ export function DutchPay({ item }: { item: CalcItem }) {
     >
       <div className="space-y-4">
         <div className="space-y-2">
-          <MoneyField id="bill" label="총액" unit="원" value={total} onChange={setTotal} />
+          <MoneyField id="bill" label="총액" unit="원" value={v.total} onChange={(value) => set("total", value)} />
           <AmountChips
             options={[
               { label: "3만", value: "30000" },
@@ -75,11 +78,11 @@ export function DutchPay({ item }: { item: CalcItem }) {
               { label: "10만", value: "100000" },
               { label: "15만", value: "150000" },
             ]}
-            onPick={setTotal}
+            onPick={(value) => set("total", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="people" label="인원" unit="명" value={people} onChange={setPeople} />
+          <MoneyField id="people" label="인원" unit="명" value={v.people} onChange={(value) => set("people", value)} />
           <AmountChips
             options={[
               { label: "2명", value: "2" },
@@ -89,11 +92,11 @@ export function DutchPay({ item }: { item: CalcItem }) {
               { label: "6명", value: "6" },
               { label: "8명", value: "8" },
             ]}
-            onPick={setPeople}
+            onPick={(value) => set("people", value)}
           />
         </div>
-        <MoneyField id="tip" label="팁·봉사료" unit="%" value={tip} onChange={setTip} />
-        <CheckRow id="ceil" checked={ceil} onChange={setCeil}>
+        <MoneyField id="tip" label="팁·봉사료" unit="%" value={v.tip} onChange={(value) => set("tip", value)} />
+        <CheckRow id="ceil" checked={v.ceil} onChange={(value) => set("ceil", value)}>
           원 단위 올림
         </CheckRow>
         <Hint>남는 돈은 먼저 낸 사람이 가져가거나, 다음 모임 적립으로 두면 됩니다.</Hint>

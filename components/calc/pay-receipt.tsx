@@ -4,7 +4,7 @@ import type { ReactNode } from "react"
 import { toast } from "sonner"
 import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
-import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
+import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
 
 function healthWon(row: TakeHomeResult) {
@@ -59,7 +59,7 @@ function Frame({
 }) {
   async function copy() {
     if (!copyValue) return
-    await navigator.clipboard.writeText(copyValue)
+    await navigator.clipboard.writeText(shareCopyText(copyValue))
     toast.success("복사됨")
   }
 
@@ -132,7 +132,7 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
             { label: "장기요양(월)", value: formatWon(row.insurance.longTermCare) },
             { label: "고용보험(월)", value: formatWon(row.insurance.employment) },
             { label: "근로소득공제", value: formatWon(row.earnedDeduction) },
-            { label: "기본공제", value: formatWon(row.personDeduction) },
+            { label: `기본공제 ${row.personCount}명`, value: formatWon(row.personDeduction) },
             { label: "과세표준", value: formatWon(row.taxableBase) },
             { label: "산출세액", value: formatWon(row.calculatedTax) },
             { label: "근로세액공제", value: formatWon(row.earnedCredit) },
@@ -309,7 +309,7 @@ export function PayOfferReceipt({
               next: formatWon(next.earnedDeduction),
             },
             {
-              label: "기본공제",
+              label: `기본공제 ${now.personCount}명`,
               now: formatWon(now.personDeduction),
               next: formatWon(next.personDeduction),
             },

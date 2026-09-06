@@ -35,6 +35,23 @@ test("사다리 다음에 더치페이", () => {
   assert.equal(relatedCalculators("dutch")[0]?.slug, "ladder")
 })
 
+test("부가세 다음에는 직구·자동차 세금을 보여 준다", () => {
+  const slugs = relatedCalculators("sale-vat").map((item) => item.slug)
+  assert.deepEqual(slugs.slice(0, 3), ["import-duty", "vehicle-tax", "car-tax"])
+  assert.ok(!slugs.slice(0, 3).includes("dutch"))
+  assert.ok(!slugs.slice(0, 3).includes("quick"))
+})
+
+test("예적금 다음에는 실수령·대출이자를 보여 준다", () => {
+  assert.equal(relatedCalculators("deposit")[0]?.slug, "take-home")
+  assert.equal(relatedCalculators("deposit")[1]?.slug, "loan-interest")
+})
+
+test("자동차세 다음에는 취득세를 보여 준다", () => {
+  assert.equal(relatedCalculators("car-tax")[0]?.slug, "vehicle-tax")
+  assert.equal(relatedCalculators("car-tax")[1]?.slug, "acquisition")
+})
+
 test("이어서 볼 것은 카탈로그에 있는 슬로그만", () => {
   for (const slug of ["take-home", "import-duty", "parental-leave", "jeonse-vs-rent", "ladder"]) {
     for (const item of relatedCalculators(slug)) {

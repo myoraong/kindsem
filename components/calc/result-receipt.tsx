@@ -3,7 +3,7 @@
 import { toast } from "sonner"
 import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
-import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
+import { formatKoreanUnit, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
 
 export type ReceiptRow = {
   label: string
@@ -54,7 +54,7 @@ export function ResultReceipt({
     const line =
       copyLine ??
       kakaoCopyLine(title, display, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
-    await navigator.clipboard.writeText(line)
+    await navigator.clipboard.writeText(shareCopyText(line))
     toast.success("복사됨")
   }
 

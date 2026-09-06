@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
@@ -15,6 +15,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcWeeklyHoliday, monthlyContractHours } from "@/lib/labor"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -28,27 +29,29 @@ const FAQ = [
 ]
 
 export function WeeklyHoliday({ item }: { item: CalcItem }) {
-  const [pay, setPay] = useState<"hourly" | "monthly">("hourly")
-  const [hourly, setHourly] = useState(String(MIN_WAGE.hourly))
-  const [monthly, setMonthly] = useState(String(MIN_WAGE.monthly))
-  const [weeklyHours, setWeeklyHours] = useState("40")
-  const [attended, setAttended] = useState(true)
+  const [v, set] = useCalcPersist(item.slug, {
+    pay: "hourly" as "hourly" | "monthly",
+    hourly: String(MIN_WAGE.hourly),
+    monthly: String(MIN_WAGE.monthly),
+    weeklyHours: "40",
+    attended: true,
+  })
 
   const result = useMemo(() => {
-    const hours = Number(weeklyHours)
+    const hours = Number(v.weeklyHours)
     if (!hours) return null
     const wage =
-      pay === "hourly"
-        ? Number(hourly)
+      v.pay === "hourly"
+        ? Number(v.hourly)
         : monthlyContractHours(hours) > 0
-          ? Number(monthly) / monthlyContractHours(hours)
+          ? Number(v.monthly) / monthlyContractHours(hours)
           : 0
     return calcWeeklyHoliday({
       hourlyWage: wage,
       weeklyHours: hours,
-      attended,
+      attended: v.attended,
     })
-  }, [pay, hourly, monthly, weeklyHours, attended])
+  }, [v])
 
   return (
     <CalcShell
@@ -61,7 +64,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           caption={
             result
               ? result.eligible
-                ? attended
+                ? v.attended
                   ? `주휴 ${result.holidayHours}시간`
                   : "주휴수당 없음"
                 : "주 15시간 미만 · 제18조"
@@ -79,7 +82,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           rows={
             result
               ? [
-                  { label: "시간급", value: formatWon(result.workPay / Number(weeklyHours || 1)) },
+                  { label: "시간급", value: formatWon(result.workPay / Number(v.weeklyHours || 1)) },
                   { label: "근로수당", value: formatWon(result.workPay) },
                   { label: "주휴수당", value: formatWon(result.holidayPay) },
                   { label: "주 합계", value: formatWon(result.weeklyTotal) },
@@ -94,16 +97,16 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="임금"
-          value={pay}
-          onChange={setPay}
+          value={v.pay}
+          onChange={(value) => set("pay", value)}
           options={[
             { value: "hourly", label: "시급" },
             { value: "monthly", label: "월급" },
           ]}
         />
-        {pay === "hourly" ? (
+        {v.pay === "hourly" ? (
           <div className="space-y-2">
-            <MoneyField id="hourly" label="시급" unit="원" value={hourly} onChange={setHourly} />
+            <MoneyField id="hourly" label="시급" unit="원" value={v.hourly} onChange={(value) => set("hourly", value)} />
             <AmountChips
               options={[
                 { label: "고시", value: String(MIN_WAGE.hourly) },
@@ -111,7 +114,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
                 { label: "1.5만", value: "15000" },
                 { label: "2만", value: "20000" },
               ]}
-              onPick={setHourly}
+              onPick={(value) => set("hourly", value)}
             />
           </div>
         ) : (
@@ -120,8 +123,8 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
               id="monthly"
               label="월 통상임금"
               unit="원"
-              value={monthly}
-              onChange={setMonthly}
+              value={v.monthly}
+              onChange={(value) => set("monthly", value)}
             />
             <AmountChips
               options={[
@@ -130,7 +133,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
                 { label: "300만", value: "3000000" },
                 { label: "350만", value: "3500000" },
               ]}
-              onPick={setMonthly}
+              onPick={(value) => set("monthly", value)}
             />
           </div>
         )}
@@ -138,8 +141,8 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
           id="hours"
           label="1주 소정근로시간"
           unit="시간/주"
-          value={weeklyHours}
-          onChange={setWeeklyHours}
+          value={v.weeklyHours}
+          onChange={(value) => set("weeklyHours", value)}
         />
         <AmountChips
           options={[
@@ -148,9 +151,9 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
             { label: "30시간", value: "30" },
             { label: "40시간", value: "40" },
           ]}
-          onPick={setWeeklyHours}
+          onPick={(value) => set("weeklyHours", value)}
         />
-        <CheckRow id="attended" checked={attended} onChange={setAttended}>
+        <CheckRow id="attended" checked={v.attended} onChange={(value) => set("attended", value)}>
           그 주 소정근로일 개근
         </CheckRow>
         <Hint>

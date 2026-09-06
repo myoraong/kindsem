@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -12,6 +12,7 @@ import { calculateDsr, type DsrBank } from "@/lib/dsr"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { DSR_POLICY } from "@/lib/policy.generated"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const DSR_FAQ = [
   {
@@ -25,19 +26,21 @@ const DSR_FAQ = [
 ]
 
 export function DsrCalc({ item }: { item: CalcItem }) {
-  const [bank, setBank] = useState<DsrBank>("bank")
-  const [income, setIncome] = useState("5000")
-  const [mortgage, setMortgage] = useState("120")
-  const [other, setOther] = useState("30")
+  const [v, set] = useCalcPersist(item.slug, {
+    bank: "bank" as DsrBank,
+    income: "5000",
+    mortgage: "120",
+    other: "30",
+  })
 
   const result = useMemo(() => {
     return calculateDsr({
-      incomeWon: manwonToWon(Number(income) || 0),
-      mortgageMonthlyWon: manwonToWon(Number(mortgage) || 0),
-      otherMonthlyWon: manwonToWon(Number(other) || 0),
-      bank,
+      incomeWon: manwonToWon(Number(v.income) || 0),
+      mortgageMonthlyWon: manwonToWon(Number(v.mortgage) || 0),
+      otherMonthlyWon: manwonToWon(Number(v.other) || 0),
+      bank: v.bank,
     })
-  }, [income, mortgage, other, bank])
+  }, [v])
 
   return (
     <CalcShell
@@ -83,19 +86,19 @@ export function DsrCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="금융권"
-          value={bank}
-          onChange={setBank}
+          value={v.bank}
+          onChange={(value) => set("bank", value)}
           options={[
             { value: "bank", label: `은행(${Math.round(DSR_POLICY.bank * 100)}%)` },
             { value: "nonbank", label: `비은행(${Math.round(DSR_POLICY.nonbank * 100)}%)` },
           ]}
         />
         <Hint>
-          {bank === "bank"
+          {v.bank === "bank"
             ? `1금융 주담대는 연소득의 ${Math.round(DSR_POLICY.bank * 100)}%까지입니다. 연봉 5천만 원이면 원리금 합 연 2천만 원 안쪽입니다.`
             : `2금융은 ${Math.round(DSR_POLICY.nonbank * 100)}%까지입니다. 같은 연봉이면 은행보다 한도가 조금 더 나옵니다.`}
         </Hint>
-        <MoneyField id="inc" label="연소득" value={income} onChange={setIncome} />
+        <MoneyField id="inc" label="연소득" value={v.income} onChange={(value) => set("income", value)} />
         <AmountChips
           options={[
             { label: "3천만", value: "3000" },
@@ -103,9 +106,9 @@ export function DsrCalc({ item }: { item: CalcItem }) {
             { label: "7천만", value: "7000" },
             { label: "1억", value: "10000" },
           ]}
-          onPick={setIncome}
+          onPick={(value) => set("income", value)}
         />
-        <MoneyField id="m" label="주담대 월 상환액" value={mortgage} onChange={setMortgage} />
+        <MoneyField id="m" label="주담대 월 상환액" value={v.mortgage} onChange={(value) => set("mortgage", value)} />
         <AmountChips
           options={[
             { label: "80만", value: "80" },
@@ -113,9 +116,9 @@ export function DsrCalc({ item }: { item: CalcItem }) {
             { label: "150만", value: "150" },
             { label: "200만", value: "200" },
           ]}
-          onPick={setMortgage}
+          onPick={(value) => set("mortgage", value)}
         />
-        <MoneyField id="o" label="기타 대출 월 상환액" value={other} onChange={setOther} />
+        <MoneyField id="o" label="기타 대출 월 상환액" value={v.other} onChange={(value) => set("other", value)} />
       </div>
     </CalcShell>
   )

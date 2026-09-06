@@ -100,3 +100,11 @@ export function kakaoCopyLine(label: string, amountText: string, note?: string) 
   const extra = note?.trim()
   return extra ? `${core} · ${extra}` : core
 }
+
+/** 결과 한 줄 아래에 지금 주소. 입력값이 주소에 있으면 그대로 보낼 수 있습니다. */
+export function shareCopyText(line: string, href?: string) {
+  const url =
+    href ?? (typeof window === "undefined" ? "" : window.location.href)
+  const text = line.trim()
+  return url ? `${text}\n${url}` : text
+}

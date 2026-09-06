@@ -13,6 +13,7 @@ import {
   earnedIncomeTaxCredit,
   fullHealthPremium,
   pensionBaseMonthly,
+  personCountFromDependents,
 } from "./payroll.ts"
 
 test("국민연금 기준소득월액은 2026.7 상한 659만", () => {
@@ -52,6 +53,17 @@ test("실수령은 4대보험·소득세·지방세를 빼고 월·연이 맞는
   assert.ok(result.insurance.pension > 0)
   assert.ok(result.earnedDeduction > 0)
   assert.ok(result.personDeduction === 1_500_000)
+})
+
+test("부양가족 기본공제는 본인 포함 1인 150만 원이다", () => {
+  assert.equal(personCountFromDependents(0), 1)
+  assert.equal(personCountFromDependents(2), 3)
+  const alone = calcTakeHome({ annualGross: 40_000_000, dependents: 0 })
+  const family = calcTakeHome({ annualGross: 40_000_000, dependents: 2 })
+  assert.equal(alone.personCount, 1)
+  assert.equal(family.personCount, 3)
+  assert.equal(family.personDeduction, 4_500_000)
+  assert.ok(family.monthlyTakeHome > alone.monthlyTakeHome)
 })
 
 test("식대 비과세는 과세급여와 보험료를 줄인다", () => {

@@ -154,6 +154,7 @@ export type TakeHomeResult = {
   earnedDeduction: number
   earnedIncome: number
   personDeduction: number
+  personCount: number
   taxableBase: number
   calculatedTax: number
   taxRate: number
@@ -167,10 +168,17 @@ export type TakeHomeResult = {
   monthlyTakeHome: number
 }
 
+export function personCountFromDependents(dependents = 0) {
+  const extra = Math.max(0, Math.min(9, Math.floor(Number(dependents) || 0)))
+  return 1 + extra
+}
+
 export function calcTakeHome(input: {
   annualGross: number
   mealExempt?: boolean
   youthSme?: boolean
+  /** 본인을 뺀 기본공제 대상 인원. 소득세법 제50조 1인 공제만. */
+  dependents?: number
 }) {
   const annualGross = Math.max(0, input.annualGross)
   const monthlyGross = truncWon(annualGross / 12)
@@ -180,7 +188,8 @@ export function calcTakeHome(input: {
   const insurance = calcEmployeeInsurance(taxableMonthly)
   const earnedDeduction = earnedIncomeDeduction(taxableAnnual)
   const earnedIncome = Math.max(0, taxableAnnual - earnedDeduction)
-  const personDeduction = Math.min(PAYROLL.basicPersonDeduction, earnedIncome)
+  const personCount = personCountFromDependents(input.dependents)
+  const personDeduction = Math.min(PAYROLL.basicPersonDeduction * personCount, earnedIncome)
   const taxableBase = Math.max(0, earnedIncome - personDeduction)
   const { tax: calculatedTax, rate: taxRate } = progressiveIncomeTax(taxableBase)
   const earnedCredit = earnedIncomeTaxCredit(calculatedTax, taxableAnnual)
@@ -204,6 +213,7 @@ export function calcTakeHome(input: {
     earnedDeduction,
     earnedIncome,
     personDeduction,
+    personCount,
     taxableBase,
     calculatedTax,
     taxRate,
@@ -227,16 +237,19 @@ export function calcOfferCompare(input: {
   currentCommuteMonthly?: number
   offerCommuteMonthly?: number
   yearsOfService?: number
+  dependents?: number
 }) {
   const current = calcTakeHome({
     annualGross: input.currentAnnual,
     mealExempt: input.mealExempt,
     youthSme: input.currentYouthSme,
+    dependents: input.dependents,
   })
   const offer = calcTakeHome({
     annualGross: input.offerAnnual,
     mealExempt: input.mealExempt,
     youthSme: input.offerYouthSme,
+    dependents: input.dependents,
   })
   const currentCommute = Math.max(0, input.currentCommuteMonthly ?? 0)
   const offerCommute = Math.max(0, input.offerCommuteMonthly ?? 0)
