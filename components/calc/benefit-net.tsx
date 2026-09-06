@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -11,6 +11,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, manwonToWon } from "@/lib/format"
 import { calcBenefitNet } from "@/lib/payroll"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 type BenefitKind = "unemployment" | "jobseek" | "training" | "other"
 
@@ -45,17 +46,19 @@ const BENEFITS: Record<
 }
 
 export function BenefitNet({ item }: { item: CalcItem }) {
-  const [kind, setKind] = useState<BenefitKind>("unemployment")
-  const [monthly, setMonthly] = useState("180")
-  const [months, setMonths] = useState("6")
+  const [v, set] = useCalcPersist(item.slug, {
+    kind: "unemployment" as BenefitKind,
+    monthly: "180",
+    months: "6",
+  })
 
-  const spec = BENEFITS[kind]
+  const spec = BENEFITS[v.kind]
   const result = useMemo(() => {
-    const monthWon = manwonToWon(Number(monthly) || 0)
-    const n = Number(months) || 0
+    const monthWon = manwonToWon(Number(v.monthly) || 0)
+    const n = Number(v.months) || 0
     if (monthWon <= 0 || n <= 0) return null
     return calcBenefitNet({ monthlyAmount: monthWon, months: n, taxable: spec.taxable })
-  }, [kind, monthly, months, spec.taxable])
+  }, [v.kind, v.monthly, v.months, spec.taxable])
 
   return (
     <CalcShell
@@ -104,8 +107,8 @@ export function BenefitNet({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="지원 종류"
-          value={kind}
-          onChange={setKind}
+          value={v.kind}
+          onChange={(value) => set("kind", value)}
           options={(Object.keys(BENEFITS) as BenefitKind[]).map((value) => ({
             value,
             label: BENEFITS[value].label,
@@ -113,7 +116,7 @@ export function BenefitNet({ item }: { item: CalcItem }) {
         />
         <Hint>{spec.note}</Hint>
         <div className="space-y-2">
-          <MoneyField id="b" label="월 금액" value={monthly} onChange={setMonthly} />
+          <MoneyField id="b" label="월 금액" value={v.monthly} onChange={(value) => set("monthly", value)} />
           <AmountChips
             options={[
               { label: "150만", value: "150" },
@@ -121,11 +124,11 @@ export function BenefitNet({ item }: { item: CalcItem }) {
               { label: "200만", value: "200" },
               { label: "250만", value: "250" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="m" label="받는 기간" unit="개월" value={months} onChange={setMonths} />
+          <MoneyField id="m" label="받는 기간" unit="개월" value={v.months} onChange={(value) => set("months", value)} />
           <AmountChips
             options={[
               { label: "3개월", value: "3" },
@@ -133,7 +136,7 @@ export function BenefitNet({ item }: { item: CalcItem }) {
               { label: "6개월", value: "6" },
               { label: "9개월", value: "9" },
             ]}
-            onPick={setMonths}
+            onPick={(value) => set("months", value)}
           />
         </div>
       </div>

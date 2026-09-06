@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -12,6 +12,7 @@ import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcRetirementTax } from "@/lib/retirement-tax"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -25,15 +26,17 @@ const FAQ = [
 ]
 
 export function RetirementTax({ item }: { item: CalcItem }) {
-  const [payout, setPayout] = useState("10000")
-  const [years, setYears] = useState("10")
+  const [v, set] = useCalcPersist(item.slug, {
+    payout: "10000",
+    years: "10",
+  })
 
   const result = useMemo(() => {
     return calcRetirementTax({
-      payout: Math.round((Number(payout) || 0) * 10_000),
-      years: Number(years) || 0,
+      payout: Math.round((Number(v.payout) || 0) * 10_000),
+      years: Number(v.years) || 0,
     })
-  }, [payout, years])
+  }, [v])
 
   return (
     <CalcShell
@@ -79,7 +82,7 @@ export function RetirementTax({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="pay" label="퇴직금" value={payout} onChange={setPayout} />
+          <MoneyField id="pay" label="퇴직금" value={v.payout} onChange={(value) => set("payout", value)} />
           <AmountChips
             options={[
               { label: "3천만", value: "3000" },
@@ -87,10 +90,10 @@ export function RetirementTax({ item }: { item: CalcItem }) {
               { label: "1억", value: "10000" },
               { label: "2억", value: "20000" },
             ]}
-            onPick={setPayout}
+            onPick={(value) => set("payout", value)}
           />
         </div>
-        <MoneyField id="yr" label="근속연수" unit="년" value={years} onChange={setYears} />
+        <MoneyField id="yr" label="근속연수" unit="년" value={v.years} onChange={(value) => set("years", value)} />
         <Hint>
           중간정산·2013년 이전 근무분은 넣지 않았습니다. 명세서의 퇴직소득세와 몇 원 다를 수 있습니다.
         </Hint>

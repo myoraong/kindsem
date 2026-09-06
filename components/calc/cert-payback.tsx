@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -10,16 +10,19 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, manwonToWon } from "@/lib/format"
 import { PAYROLL, calcCertPayback } from "@/lib/payroll"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function CertPayback({ item }: { item: CalcItem }) {
-  const [cost, setCost] = useState("80")
-  const [now, setNow] = useState("3200")
-  const [after, setAfter] = useState("3600")
+  const [v, set] = useCalcPersist(item.slug, {
+    cost: "80",
+    now: "3200",
+    after: "3600",
+  })
 
   const result = useMemo(() => {
-    const currentAnnual = manwonToWon(Number(now) || 0)
-    const afterAnnual = manwonToWon(Number(after) || 0)
-    const costWon = manwonToWon(Number(cost) || 0)
+    const currentAnnual = manwonToWon(Number(v.now) || 0)
+    const afterAnnual = manwonToWon(Number(v.after) || 0)
+    const costWon = manwonToWon(Number(v.cost) || 0)
     if (costWon <= 0 || currentAnnual <= 0) return null
     return calcCertPayback({
       cost: costWon,
@@ -27,7 +30,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
       raiseAnnual: Math.max(0, afterAnnual - currentAnnual),
       mealExempt: true,
     })
-  }, [cost, now, after])
+  }, [v])
 
   return (
     <CalcShell
@@ -79,7 +82,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="cost" label="자격·수강 비용" value={cost} onChange={setCost} />
+          <MoneyField id="cost" label="자격·수강 비용" value={v.cost} onChange={(value) => set("cost", value)} />
           <AmountChips
             options={[
               { label: "50만", value: "50" },
@@ -87,29 +90,29 @@ export function CertPayback({ item }: { item: CalcItem }) {
               { label: "150만", value: "150" },
               { label: "300만", value: "300" },
             ]}
-            onPick={setCost}
+            onPick={(value) => set("cost", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="now" label="지금 연봉" value={now} onChange={setNow} />
+          <MoneyField id="now" label="지금 연봉" value={v.now} onChange={(value) => set("now", value)} />
           <AmountChips
             options={[
               { label: "3천만", value: "3000" },
               { label: "4천만", value: "4000" },
               { label: "5천만", value: "5000" },
             ]}
-            onPick={setNow}
+            onPick={(value) => set("now", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="after" label="자격 후 연봉" value={after} onChange={setAfter} />
+          <MoneyField id="after" label="자격 후 연봉" value={v.after} onChange={(value) => set("after", value)} />
           <AmountChips
             options={[
               { label: "4천만", value: "4000" },
               { label: "5천만", value: "5000" },
               { label: "6천만", value: "6000" },
             ]}
-            onPick={setAfter}
+            onPick={(value) => set("after", value)}
           />
         </div>
         <Hint>실수령은 이직 계산과 같은 4대보험 고시·소득세법 공제입니다. 식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}을 넣습니다.</Hint>

@@ -186,7 +186,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
     period: "year" as PayPeriod,
     current: "4000",
     offer: "4800",
-    commute: "0",
+    commute: "",
     years: "0",
     mealExempt: false,
     youth: "none" as YouthSide,
@@ -329,6 +329,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
             label="더 나가는 월 교통비"
             value={v.commute}
             onChange={(value) => set("commute", value)}
+            placeholder="없음"
           />
           <MoneyField id="years" label="지금 근속" unit="년" value={v.years} onChange={(value) => set("years", value)} />
         </div>

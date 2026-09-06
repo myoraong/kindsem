@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -11,6 +11,7 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { calcProratePay, monthDaysFor, type ProrateMethod } from "@/lib/prorate-pay"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -21,18 +22,20 @@ const FAQ = [
 
 export function ProratePay({ item }: { item: CalcItem }) {
   const now = new Date()
-  const [monthly, setMonthly] = useState("3000000")
-  const [workDays, setWorkDays] = useState("10")
-  const [method, setMethod] = useState<ProrateMethod>("calendar")
+  const [v, set] = useCalcPersist(item.slug, {
+    monthly: "3000000",
+    workDays: "",
+    method: "calendar" as ProrateMethod,
+  })
 
-  const monthDays = monthDaysFor(method, now.getFullYear(), now.getMonth())
+  const monthDays = monthDaysFor(v.method, now.getFullYear(), now.getMonth())
   const result = useMemo(() => {
     return calcProratePay({
-      monthly: Number(monthly),
-      workDays: Number(workDays),
+      monthly: Number(v.monthly),
+      workDays: Number(v.workDays),
       monthDays,
     })
-  }, [monthly, workDays, monthDays])
+  }, [v.monthly, v.workDays, monthDays])
 
   return (
     <CalcShell
@@ -49,7 +52,7 @@ export function ProratePay({ item }: { item: CalcItem }) {
           rows={
             result
               ? [
-                  { label: "월급", value: formatWon(Number(monthly)) },
+                  { label: "월급", value: formatWon(Number(v.monthly)) },
                   { label: "그 달 일수", value: `${result.monthDays}일` },
                   { label: "근무일", value: `${result.workDays}일` },
                 ]
@@ -61,7 +64,7 @@ export function ProratePay({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="monthly" label="월급" unit="원" value={monthly} onChange={setMonthly} />
+          <MoneyField id="monthly" label="월급" unit="원" value={v.monthly} onChange={(value) => set("monthly", value)} />
           <AmountChips
             options={[
               { label: "250만", value: "2500000" },
@@ -69,11 +72,11 @@ export function ProratePay({ item }: { item: CalcItem }) {
               { label: "350만", value: "3500000" },
               { label: "400만", value: "4000000" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="work-days" label="근무일" unit="일" value={workDays} onChange={setWorkDays} />
+          <MoneyField id="work-days" label="근무일" unit="일" value={v.workDays} onChange={(value) => set("workDays", value)} />
           <AmountChips
             options={[
               { label: "5일", value: "5" },
@@ -81,19 +84,22 @@ export function ProratePay({ item }: { item: CalcItem }) {
               { label: "15일", value: "15" },
               { label: "20일", value: "20" },
             ]}
-            onPick={setWorkDays}
+            onPick={(value) => set("workDays", value)}
           />
         </div>
         <ChoiceGroup
           label="나눌 일수"
-          value={method}
-          onChange={setMethod}
+          value={v.method}
+          onChange={(value) => set("method", value)}
           options={[
             { value: "calendar", label: `달력 ${monthDaysFor("calendar", now.getFullYear(), now.getMonth())}일` },
             { value: "thirty", label: "30일" },
           ]}
         />
-        <Hint>주휴·연차는 넣지 않습니다. 시급제는 알바 월급을 보세요.</Hint>
+        <Hint>
+          근무일은 기본을 비워 둡니다. 해당 일수만 넣으세요. 주휴·연차는 넣지 않습니다. 시급제는 알바
+          월급을 보세요.
+        </Hint>
       </div>
     </CalcShell>
   )

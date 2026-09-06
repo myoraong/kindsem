@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -13,6 +13,7 @@ import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcParentalLeave, type ParentalMode } from "@/lib/parental-leave"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -26,20 +27,22 @@ const FAQ = [
 ]
 
 export function ParentalLeave({ item }: { item: CalcItem }) {
-  const [monthly, setMonthly] = useState("300")
-  const [months, setMonths] = useState("12")
-  const [mode, setMode] = useState<ParentalMode>("general")
-  const [both, setBoth] = useState("")
+  const [v, set] = useCalcPersist(item.slug, {
+    monthly: "300",
+    months: "12",
+    mode: "general" as ParentalMode,
+    both: "",
+  })
 
   const result = useMemo(() => {
-    const ordinary = Math.round((Number(monthly) || 0) * 10_000)
+    const ordinary = Math.round((Number(v.monthly) || 0) * 10_000)
     return calcParentalLeave({
       monthlyOrdinary: ordinary,
-      months: Number(months) || 0,
-      mode,
-      bothMonths: both === "" ? Number(months) || 0 : Number(both) || 0,
+      months: Number(v.months) || 0,
+      mode: v.mode,
+      bothMonths: v.both === "" ? Number(v.months) || 0 : Number(v.both) || 0,
     })
-  }, [monthly, months, mode, both])
+  }, [v])
 
   return (
     <CalcShell
@@ -69,7 +72,7 @@ export function ParentalLeave({ item }: { item: CalcItem }) {
                   {
                     label: "적용",
                     value:
-                      mode === "both" ? "제95조의3 맞돌봄" : mode === "single" ? "제95조의3 한부모" : "제95조 일반",
+                      v.mode === "both" ? "제95조의3 맞돌봄" : v.mode === "single" ? "제95조의3 한부모" : "제95조 일반",
                   },
                 ]
               : []
@@ -83,8 +86,8 @@ export function ParentalLeave({ item }: { item: CalcItem }) {
           <MoneyField
             id="ordinary"
             label="월 통상임금"
-            value={monthly}
-            onChange={setMonthly}
+            value={v.monthly}
+            onChange={(value) => set("monthly", value)}
           />
           <AmountChips
             options={[
@@ -93,31 +96,31 @@ export function ParentalLeave({ item }: { item: CalcItem }) {
               { label: "300만", value: "300" },
               { label: "400만", value: "400" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="months" label="사용 개월" unit="개월" value={months} onChange={setMonths} />
+          <MoneyField id="months" label="사용 개월" unit="개월" value={v.months} onChange={(value) => set("months", value)} />
           <AmountChips
             options={[
               { label: "3개월", value: "3" },
               { label: "6개월", value: "6" },
               { label: "12개월", value: "12" },
             ]}
-            onPick={setMonths}
+            onPick={(value) => set("months", value)}
           />
         </div>
         <ChoiceGroup
           label="특례"
-          value={mode}
-          onChange={setMode}
+          value={v.mode}
+          onChange={(value) => set("mode", value)}
           options={[
             { value: "general", label: "일반" },
             { value: "both", label: "맞돌봄" },
             { value: "single", label: "한부모" },
           ]}
         />
-        {mode === "both" ? (
+        {v.mode === "both" ? (
           <details className="rounded-xl bg-secondary/60 px-3 py-2" open>
             <summary className="cursor-pointer text-sm font-medium">부모 각각 사용 개월</summary>
             <div className="mt-3">
@@ -125,9 +128,9 @@ export function ParentalLeave({ item }: { item: CalcItem }) {
                 id="both"
                 label="상대도 쓴 개월"
                 unit="개월"
-                value={both}
-                onChange={setBoth}
-                placeholder={months}
+                value={v.both}
+                onChange={(value) => set("both", value)}
+                placeholder={v.months}
               />
             </div>
           </details>

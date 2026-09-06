@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CheckRow } from "@/components/calc/check-row"
 import { ChoiceGroup } from "@/components/calc/choice-group"
@@ -141,19 +141,21 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
 }
 
 export function CorporateGainsCalc({ item }: { item: CalcItem }) {
-  const [buy, setBuy] = useState("40000")
-  const [sell, setSell] = useState("80000")
-  const [costs, setCosts] = useState("500")
-  const [land, setLand] = useState(false)
+  const [v, set] = useCalcPersist(item.slug, {
+    buy: "40000",
+    sell: "80000",
+    costs: "500",
+    land: false,
+  })
 
   const result = useMemo(() => {
     return calcCorporateGains({
-      buy: manwonToWon(Number(buy) || 0),
-      sell: manwonToWon(Number(sell) || 0),
-      costs: manwonToWon(Number(costs) || 0),
-      unbusinessLand: land,
+      buy: manwonToWon(Number(v.buy) || 0),
+      sell: manwonToWon(Number(v.sell) || 0),
+      costs: manwonToWon(Number(v.costs) || 0),
+      unbusinessLand: v.land,
     })
-  }, [buy, sell, costs, land])
+  }, [v])
 
   return (
     <CalcShell
@@ -188,7 +190,7 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="cbuy" label="취득가액" value={buy} onChange={setBuy} />
+          <MoneyField id="cbuy" label="취득가액" value={v.buy} onChange={(value) => set("buy", value)} />
           <AmountChips
             options={[
               { label: "3억", value: "30000" },
@@ -196,11 +198,11 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
               { label: "8억", value: "80000" },
               { label: "12억", value: "120000" },
             ]}
-            onPick={setBuy}
+            onPick={(value) => set("buy", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="csell" label="양도가액" value={sell} onChange={setSell} />
+          <MoneyField id="csell" label="양도가액" value={v.sell} onChange={(value) => set("sell", value)} />
           <AmountChips
             options={[
               { label: "6억", value: "60000" },
@@ -208,11 +210,11 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
-            onPick={setSell}
+            onPick={(value) => set("sell", value)}
           />
         </div>
-        <MoneyField id="ccost" label="소요경비" value={costs} onChange={setCosts} />
-        <CheckRow id="land" checked={land} onChange={setLand}>
+        <MoneyField id="ccost" label="소요경비" value={v.costs} onChange={(value) => set("costs", value)} />
+        <CheckRow id="land" checked={v.land} onChange={(value) => set("land", value)}>
           비사업용토지
         </CheckRow>
         <Hint>1주택 비과세는 없습니다. 비사업용토지면 추가과세가 붙습니다.</Hint>
@@ -637,15 +639,17 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
 }
 
 export function LicenseTaxCalc({ item }: { item: CalcItem }) {
-  const [value, setValue] = useState("40000")
-  const [kind, setKind] = useState<"inherit" | "gift">("gift")
+  const [v, set] = useCalcPersist(item.slug, {
+    value: "40000",
+    kind: "gift" as "inherit" | "gift",
+  })
 
   const result = useMemo(() => {
     return calcLicenseTax({
-      value: manwonToWon(Number(value) || 0),
-      kind,
+      value: manwonToWon(Number(v.value) || 0),
+      kind: v.kind,
     })
-  }, [value, kind])
+  }, [v])
 
   return (
     <CalcShell
@@ -680,14 +684,14 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="등기 원인"
-          value={kind}
-          onChange={setKind}
+          value={v.kind}
+          onChange={(value) => set("kind", value)}
           options={[
             { value: "inherit", label: "상속" },
             { value: "gift", label: "증여" },
           ]}
         />
-        <MoneyField id="lic" label="시가표준액" value={value} onChange={setValue} />
+        <MoneyField id="lic" label="시가표준액" value={v.value} onChange={(value) => set("value", value)} />
         <AmountChips
           options={[
             { label: "2억", value: "20000" },
@@ -695,7 +699,7 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
             { label: "8억", value: "80000" },
             { label: "12억", value: "120000" },
           ]}
-          onPick={setValue}
+          onPick={(value) => set("value", value)}
         />
         <Hint>상속 0.8%, 증여 1.5%입니다. 취득세 중과는 여기 없습니다.</Hint>
         <LawNote lines={[LAW_SOURCES.license]} />

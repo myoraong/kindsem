@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -17,32 +17,37 @@ import {
   type SideJobPresetId,
 } from "@/lib/payroll"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 export function SideJobTax({ item }: { item: CalcItem }) {
-  const [kind, setKind] = useState<SideJobPresetId>("parttime")
-  const [revenue, setRevenue] = useState("2400")
-  const [rate, setRate] = useState(String(Math.round(SIDE_JOB_PRESETS.parttime.expenseRate * 1000) / 10))
-  const [expenseMode, setExpenseMode] = useState<ExpenseMode>("rate")
-  const [expenseAmount, setExpenseAmount] = useState("0")
-  const [basic, setBasic] = useState("150")
+  const [v, set, setMany] = useCalcPersist(item.slug, {
+    kind: "parttime" as SideJobPresetId,
+    revenue: "2400",
+    rate: String(Math.round(SIDE_JOB_PRESETS.parttime.expenseRate * 1000) / 10),
+    expenseMode: "rate" as ExpenseMode,
+    expenseAmount: "",
+    basic: "150",
+  })
 
   function pickKind(next: SideJobPresetId) {
-    setKind(next)
-    setRate(String(Math.round(SIDE_JOB_PRESETS[next].expenseRate * 1000) / 10))
-    setExpenseMode("rate")
+    setMany({
+      kind: next,
+      rate: String(Math.round(SIDE_JOB_PRESETS[next].expenseRate * 1000) / 10),
+      expenseMode: "rate",
+    })
   }
 
   const result = useMemo(() => {
     return calcSideJobTax({
-      revenue: manwonToWon(Number(revenue) || 0),
-      expenseRate: (Number(rate) || 0) / 100,
-      expenseAmount: manwonToWon(Number(expenseAmount) || 0),
-      expenseMode,
-      basicDeduction: manwonToWon(Number(basic) || 0),
+      revenue: manwonToWon(Number(v.revenue) || 0),
+      expenseRate: (Number(v.rate) || 0) / 100,
+      expenseAmount: manwonToWon(Number(v.expenseAmount) || 0),
+      expenseMode: v.expenseMode,
+      basicDeduction: manwonToWon(Number(v.basic) || 0),
     })
-  }, [revenue, rate, expenseAmount, expenseMode, basic])
+  }, [v])
 
-  const preset = SIDE_JOB_PRESETS[kind]
+  const preset = SIDE_JOB_PRESETS[v.kind]
   const withhold = PAYROLL.bizWithholdingNational + PAYROLL.bizWithholdingLocal
 
   return (
@@ -112,7 +117,7 @@ export function SideJobTax({ item }: { item: CalcItem }) {
       <div className="space-y-5">
         <ChoiceGroup
           label="하는 일"
-          value={kind}
+          value={v.kind}
           onChange={pickKind}
           options={[
             { value: "parttime", label: SIDE_JOB_PRESETS.parttime.label },
@@ -122,7 +127,7 @@ export function SideJobTax({ item }: { item: CalcItem }) {
         />
         <Hint>{preset.note}</Hint>
         <div className="space-y-2">
-          <MoneyField id="rev" label="연 수입" value={revenue} onChange={setRevenue} />
+          <MoneyField id="rev" label="연 수입" value={v.revenue} onChange={(value) => set("revenue", value)} />
           <AmountChips
             options={[
               { label: "1,200만", value: "1200" },
@@ -130,24 +135,24 @@ export function SideJobTax({ item }: { item: CalcItem }) {
               { label: "3,600만", value: "3600" },
               { label: "5,000만", value: "5000" },
             ]}
-            onPick={setRevenue}
+            onPick={(value) => set("revenue", value)}
           />
         </div>
         <ChoiceGroup
           label="필요경비"
-          value={expenseMode}
-          onChange={setExpenseMode}
+          value={v.expenseMode}
+          onChange={(value) => set("expenseMode", value)}
           options={[
             { value: "rate", label: "단순경비율" },
             { value: "amount", label: "금액" },
           ]}
         />
-        {expenseMode === "rate" ? (
-          <MoneyField id="exp" label="단순경비율" unit="%" value={rate} onChange={setRate} />
+        {v.expenseMode === "rate" ? (
+          <MoneyField id="exp" label="단순경비율" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
         ) : (
-          <MoneyField id="exp-amt" label="필요경비" value={expenseAmount} onChange={setExpenseAmount} />
+          <MoneyField id="exp-amt" label="필요경비" value={v.expenseAmount} onChange={(value) => set("expenseAmount", value)} />
         )}
-        <MoneyField id="basic" label="기본공제" value={basic} onChange={setBasic} />
+        <MoneyField id="basic" label="기본공제" value={v.basic} onChange={(value) => set("basic", value)} />
         <Hint>
           원천 {formatPercent(withhold * 100, 1)}는 경비와 상관없이 떼이고, 종소세는 경비를 뺀 뒤
           누진합니다. 다른 소득이 있으면 합산과세라 이 화면보다 세액이 커질 수 있습니다.

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
@@ -9,6 +9,7 @@ import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -22,21 +23,23 @@ const FAQ = [
 ]
 
 export function YieldCalc({ item }: { item: CalcItem }) {
-  const [price, setPrice] = useState("45000")
-  const [deposit, setDeposit] = useState("5000")
-  const [monthly, setMonthly] = useState("90")
+  const [v, set] = useCalcPersist(item.slug, {
+    price: "45000",
+    deposit: "5000",
+    monthly: "90",
+  })
 
   const result = useMemo(() => {
-    const p = manwonToWon(Number(price) || 0)
-    const d = manwonToWon(Number(deposit) || 0)
-    const m = manwonToWon(Number(monthly) || 0)
+    const p = manwonToWon(Number(v.price) || 0)
+    const d = manwonToWon(Number(v.deposit) || 0)
+    const m = manwonToWon(Number(v.monthly) || 0)
     if (!p || !m) return null
     const invested = Math.max(p - d, 0)
     const yearly = m * 12
     const surface = (yearly / p) * 100
     const real = invested > 0 ? (yearly / invested) * 100 : 0
     return { invested, yearly, surface, real }
-  }, [price, deposit, monthly])
+  }, [v])
 
   return (
     <CalcShell
@@ -63,7 +66,7 @@ export function YieldCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-4">
-        <MoneyField id="price" label="매매가" value={price} onChange={setPrice} />
+        <MoneyField id="price" label="매매가" value={v.price} onChange={(value) => set("price", value)} />
         <AmountChips
           options={[
             { label: "3억", value: "30000" },
@@ -71,10 +74,10 @@ export function YieldCalc({ item }: { item: CalcItem }) {
             { label: "6억", value: "60000" },
             { label: "9억", value: "90000" },
           ]}
-          onPick={setPrice}
+          onPick={(value) => set("price", value)}
         />
         <div className="space-y-2">
-          <MoneyField id="deposit" label="보증금" value={deposit} onChange={setDeposit} />
+          <MoneyField id="deposit" label="보증금" value={v.deposit} onChange={(value) => set("deposit", value)} />
           <AmountChips
             options={[
               { label: "1천", value: "1000" },
@@ -82,11 +85,11 @@ export function YieldCalc({ item }: { item: CalcItem }) {
               { label: "5천", value: "5000" },
               { label: "1억", value: "10000" },
             ]}
-            onPick={setDeposit}
+            onPick={(value) => set("deposit", value)}
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="monthly" label="월세" value={monthly} onChange={setMonthly} />
+          <MoneyField id="monthly" label="월세" value={v.monthly} onChange={(value) => set("monthly", value)} />
           <AmountChips
             options={[
               { label: "50만", value: "50" },
@@ -94,7 +97,7 @@ export function YieldCalc({ item }: { item: CalcItem }) {
               { label: "90만", value: "90" },
               { label: "120만", value: "120" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <Hint>

@@ -47,6 +47,17 @@ export function mergeCalcState<T extends Record<string, CalcPersistValue>>(
   return next
 }
 
+/** 예전에 넣어 둔 0은 없는 것과 같다. 빈 칸으로 되돌린다. */
+export function sanitizePersistedValues<T extends Record<string, CalcPersistValue>>(
+  slug: string,
+  values: T,
+): T {
+  if (slug === "offer-compare" && "commute" in values && values.commute === "0") {
+    return { ...values, commute: "" }
+  }
+  return values
+}
+
 export function calcStateEquals<T extends Record<string, CalcPersistValue>>(left: T, right: T) {
   const keys = Object.keys(left)
   if (keys.length !== Object.keys(right).length) return false

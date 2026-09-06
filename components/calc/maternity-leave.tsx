@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo } from "react"
 import { AmountChips } from "@/components/calc/amount-chips"
 import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
@@ -14,6 +14,7 @@ import { LAW_SOURCES } from "@/lib/law-sources"
 import { MATERNITY_LEAVE } from "@/lib/policy.generated"
 import { calcMaternityLeave, type MaternityKind } from "@/lib/maternity-leave"
 import type { CalcItem } from "@/lib/catalog"
+import { useCalcPersist } from "@/lib/use-calc-persist"
 
 const FAQ = [
   {
@@ -31,17 +32,19 @@ function formatCap(won: number) {
 }
 
 export function MaternityLeave({ item }: { item: CalcItem }) {
-  const [monthly, setMonthly] = useState("300")
-  const [kind, setKind] = useState<MaternityKind>("standard")
-  const [firm, setFirm] = useState<"priority" | "large">("priority")
+  const [v, set] = useCalcPersist(item.slug, {
+    monthly: "300",
+    kind: "standard" as MaternityKind,
+    firm: "priority" as "priority" | "large",
+  })
 
   const result = useMemo(() => {
     return calcMaternityLeave({
-      monthlyOrdinary: Math.round((Number(monthly) || 0) * 10_000),
-      kind,
-      priorityFirm: firm === "priority",
+      monthlyOrdinary: Math.round((Number(v.monthly) || 0) * 10_000),
+      kind: v.kind,
+      priorityFirm: v.firm === "priority",
     })
-  }, [monthly, kind, firm])
+  }, [v])
 
   return (
     <CalcShell
@@ -90,8 +93,8 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
           <MoneyField
             id="ordinary"
             label="월 통상임금"
-            value={monthly}
-            onChange={setMonthly}
+            value={v.monthly}
+            onChange={(value) => set("monthly", value)}
           />
           <AmountChips
             options={[
@@ -100,13 +103,13 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
               { label: "300만", value: "300" },
               { label: "400만", value: "400" },
             ]}
-            onPick={setMonthly}
+            onPick={(value) => set("monthly", value)}
           />
         </div>
         <ChoiceGroup
           label="출산"
-          value={kind}
-          onChange={setKind}
+          value={v.kind}
+          onChange={(value) => set("kind", value)}
           options={[
             { value: "standard", label: "단태아 90일" },
             { value: "preterm", label: "미숙아 100일" },
@@ -115,8 +118,8 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
         />
         <ChoiceGroup
           label="사업장"
-          value={firm}
-          onChange={setFirm}
+          value={v.firm}
+          onChange={(value) => set("firm", value)}
           options={[
             { value: "priority", label: "우선지원" },
             { value: "large", label: "그 외" },

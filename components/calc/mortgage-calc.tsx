@@ -6,7 +6,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
-import { LimitSiblingHint, LoanSiblingHint } from "@/components/calc/sibling-hint"
+import { LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { equalPayment, equalPrincipal } from "@/lib/loan"
@@ -76,7 +76,6 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <LoanSiblingHint here="mortgage" />
-        <LimitSiblingHint here="mortgage" />
         <MoneyField id="p" label="대출 금액" value={v.principal} onChange={(value) => set("principal", value)} />
         <AmountChips
           options={[

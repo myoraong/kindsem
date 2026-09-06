@@ -7,6 +7,7 @@ import {
   encodeCalcQuery,
   mergeCalcState,
   readCalcStorage,
+  sanitizePersistedValues,
   writeCalcStorage,
   type CalcPersistValue,
 } from "./calc-persist.ts"
@@ -31,7 +32,10 @@ export function useCalcPersist<T extends Record<string, CalcPersistValue>>(slug:
     const stored = readCalcStorage<T>(slug)
     const hadQuery = window.location.search.length > 1
     const query = decodeCalcQuery(window.location.search, defaultsRef.current)
-    const merged = mergeCalcState(defaultsRef.current, stored, query) as WidenBool<T>
+    const merged = sanitizePersistedValues(
+      slug,
+      mergeCalcState(defaultsRef.current, stored, query),
+    ) as WidenBool<T>
     setValues(merged)
     writeCalcStorage(slug, merged)
     if (hadQuery || !calcStateEquals(merged, defaultsRef.current as WidenBool<T>)) {

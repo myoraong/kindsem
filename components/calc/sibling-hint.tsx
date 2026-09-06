@@ -55,11 +55,14 @@ export function LoanSiblingHint({ here }: { here: "mortgage" | "loan-interest" |
   const mortgage = <CalcLink slug="mortgage">주택담보대출</CalcLink>
   const loan = <CalcLink slug="loan-interest">대출 이자</CalcLink>
   const jeonse = <CalcLink slug="jeonse">전세대출 이자</CalcLink>
+  const ltv = <CalcLink slug="ltv">LTV</CalcLink>
+  const dsr = <CalcLink slug="dsr">DSR</CalcLink>
 
   if (here === "mortgage") {
     return (
       <Hint>
-        집 살 때 월 납입은 여기입니다. 신용·담보 일반은 {loan}, 전세 이자만은 {jeonse}입니다.
+        이미 빌릴 금액의 월 납입은 여기입니다. 한도는 {ltv}·{dsr}, 신용·담보는 {loan}, 전세 이자만은{" "}
+        {jeonse}입니다.
       </Hint>
     )
   }
@@ -80,7 +83,7 @@ export function LoanSiblingHint({ here }: { here: "mortgage" | "loan-interest" |
 }
 
 /** 담보 한도, 소득 대비 원리금, 월 납입을 가릅니다. */
-export function LimitSiblingHint({ here }: { here: "ltv" | "dsr" | "mortgage" }) {
+export function LimitSiblingHint({ here }: { here: "ltv" | "dsr" }) {
   const ltv = <CalcLink slug="ltv">LTV</CalcLink>
   const dsr = <CalcLink slug="dsr">DSR</CalcLink>
   const mortgage = <CalcLink slug="mortgage">주택담보대출</CalcLink>
@@ -94,17 +97,9 @@ export function LimitSiblingHint({ here }: { here: "ltv" | "dsr" | "mortgage" })
     )
   }
 
-  if (here === "dsr") {
-    return (
-      <Hint>
-        연소득 대비 원리금 한도는 여기입니다. 담보 한도는 {ltv}, 월 납입 계산은 {mortgage}입니다.
-      </Hint>
-    )
-  }
-
   return (
     <Hint>
-      이미 빌릴 금액이 있을 때 월 납입은 여기입니다. 얼마까지 가능한지는 {ltv}·{dsr}입니다.
+      연소득 대비 원리금 한도는 여기입니다. 담보 한도는 {ltv}, 월 납입 계산은 {mortgage}입니다.
     </Hint>
   )
 }

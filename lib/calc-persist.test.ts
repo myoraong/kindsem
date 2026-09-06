@@ -6,6 +6,7 @@ import {
   encodeCalcQuery,
   mergeCalcState,
   readCalcStorage,
+  sanitizePersistedValues,
   storageKeyForCalc,
   writeCalcStorage,
 } from "./calc-persist.ts"
@@ -47,6 +48,13 @@ test("예전 주소의 meal 칸은 식대 기본 끄기를 덮지 않는다", ()
   const defaults = { current: "4000", mealExempt: false as boolean }
   const query = decodeCalcQuery("?current=4500&meal=1", defaults)
   assert.deepEqual(query, { current: "4500" })
+})
+
+test("이직 교통비 0은 빈 칸으로 본다", () => {
+  const merged = mergeCalcState({ commute: "", current: "4000" }, { commute: "0", current: "4000" }, {})
+  const sanitized = sanitizePersistedValues("offer-compare", merged)
+  assert.equal(sanitized.commute, "")
+  assert.equal(sanitizePersistedValues("offer-compare", { commute: "20" }).commute, "20")
 })
 
 test("계산기 입력은 슬로그별로 기기에 남긴다", () => {
