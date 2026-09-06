@@ -35,7 +35,7 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
     monthly: "300",
     kind: "standard" as MaternityKind,
-    firm: "priority" as "priority" | "large",
+    firm: "large" as "priority" | "large",
   })
 
   const result = useMemo(() => {
@@ -126,8 +126,9 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
           ]}
         />
         <Hint>
-          통상임금은 휴가 시작일 기준입니다. 유산·사산 휴가, 기간제 계약 종료 후 잔여, 예술인·노무제공자는 이
-          화면에 없습니다. 사업주가 미리 준 금품은 제104조 감액이 있을 수 있습니다.
+          기본은 그 외 사업장입니다. 우선지원이면 고르세요. 통상임금은 휴가 시작일 기준입니다.
+          유산·사산 휴가, 기간제 계약 종료 후 잔여, 예술인·노무제공자는 이 화면에 없습니다. 사업주가 미리
+          준 금품은 제104조 감액이 있을 수 있습니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.maternityLeave]} />
       </div>

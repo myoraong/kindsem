@@ -8,7 +8,7 @@ import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, manwonToWon } from "@/lib/format"
-import { PAYROLL, calcCertPayback } from "@/lib/payroll"
+import { calcCertPayback } from "@/lib/payroll"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -28,7 +28,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
       cost: costWon,
       currentAnnual,
       raiseAnnual: Math.max(0, afterAnnual - currentAnnual),
-      mealExempt: true,
+      mealExempt: false,
     })
   }, [v])
 
@@ -40,7 +40,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
           items={[
             {
               q: "세전으로 나누나요?",
-              a: "아닙니다. 지금 연봉과 자격 후 연봉의 세후 실수령 차이로 비용을 나눕니다. 식대 비과세는 실수령·이직과 같습니다.",
+              a: "아닙니다. 지금 연봉과 자격 후 연봉의 세후 실수령 차이로 비용을 나눕니다. 식대 비과세는 넣지 않아 실수령·이직 기본과 같습니다.",
             },
             {
               q: "합격·이직을 보장하나요?",
@@ -115,7 +115,9 @@ export function CertPayback({ item }: { item: CalcItem }) {
             onPick={(value) => set("after", value)}
           />
         </div>
-        <Hint>실수령은 이직 계산과 같은 4대보험 고시·소득세법 공제입니다. 식대 비과세 월 {formatWon(PAYROLL.mealExemptMonthly)}을 넣습니다.</Hint>
+        <Hint>
+          실수령은 이직 계산과 같은 4대보험 고시·소득세법 공제입니다. 식대 비과세는 넣지 않습니다.
+        </Hint>
       </div>
     </CalcShell>
   )

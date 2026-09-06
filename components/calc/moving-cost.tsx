@@ -35,7 +35,7 @@ const MOVING_FAQ = [
   },
   {
     q: "대출이 없으면요?",
-    a: "빌릴 금액을 0으로 두면 대출 줄은 빠지고, 당일 현금만 보여 줍니다. 금리와 기간은 금액을 넣은 뒤에 나옵니다.",
+    a: "없으면 비워 두세요. 대출 줄은 빠지고 당일 현금만 보여 줍니다. 금리와 기간은 금액을 넣은 뒤에 나옵니다.",
   },
 ]
 
@@ -47,7 +47,7 @@ export function MovingCost({ item }: { item: CalcItem }) {
     move: "50",
     stuff: "30",
     insurance: "8",
-    loan: "0",
+    loan: "",
     rate: "3.5",
     years: "2",
     method: "interest-only" as MovingLoanMethod,
@@ -162,7 +162,13 @@ export function MovingCost({ item }: { item: CalcItem }) {
           value={v.insurance}
           onChange={(value) => set("insurance", value)}
         />
-        <MoneyField id="loan" label="빌릴 금액" value={v.loan} onChange={(value) => set("loan", value)} />
+        <MoneyField
+          id="loan"
+          label="빌릴 금액"
+          value={v.loan}
+          onChange={(value) => set("loan", value)}
+          placeholder="없음"
+        />
         {loanEntered ? (
           <>
             <MoneyField id="rate" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
@@ -178,7 +184,7 @@ export function MovingCost({ item }: { item: CalcItem }) {
             />
           </>
         ) : (
-          <Hint>빌릴 금액을 0으로 두면 대출 없이 당일 현금만 셉니다.</Hint>
+          <Hint>없으면 비워 두세요. 대출 없이 당일 현금만 셉니다.</Hint>
         )}
         <Hint>
           복비는 주택 임대차 법정 상한에 부가세 {formatPercent(VAT_RATE * 100, 0)}를 더한

@@ -34,7 +34,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
     weeklyHours: "40",
     weeklyDays: "5",
     monthly: String(MIN_WAGE.monthly),
-    unused: "0",
+    unused: "",
   })
 
   const result = useMemo(() => {
@@ -150,7 +150,14 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
           />
         </div>
         <div className="space-y-2">
-          <MoneyField id="unused" label="미사용 일수" unit="일" value={v.unused} onChange={(value) => set("unused", value)} />
+          <MoneyField
+            id="unused"
+            label="미사용 일수"
+            unit="일"
+            value={v.unused}
+            onChange={(value) => set("unused", value)}
+            placeholder="없음"
+          />
           <AmountChips
             options={[
               { label: "0일", value: "0" },

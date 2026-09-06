@@ -32,7 +32,7 @@ export function RentCredit({ item }: { item: CalcItem }) {
     salary: "4500",
     noHome: false,
     wageOnly: false,
-    globalIncome: "0",
+    globalIncome: "",
   })
 
   const result = useMemo(() => {
@@ -119,6 +119,7 @@ export function RentCredit({ item }: { item: CalcItem }) {
             hint="근로 외 합산"
             value={v.globalIncome}
             onChange={(value) => set("globalIncome", value)}
+            placeholder="없음"
           />
         )}
         <Hint>

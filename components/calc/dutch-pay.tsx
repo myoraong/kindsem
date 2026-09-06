@@ -16,7 +16,7 @@ export function DutchPay({ item }: { item: CalcItem }) {
   const [v, set] = useCalcPersist(item.slug, {
     total: "86000",
     people: "4",
-    tip: "0",
+    tip: "",
     ceil: true,
   })
 
@@ -95,7 +95,14 @@ export function DutchPay({ item }: { item: CalcItem }) {
             onPick={(value) => set("people", value)}
           />
         </div>
-        <MoneyField id="tip" label="팁·봉사료" unit="%" value={v.tip} onChange={(value) => set("tip", value)} />
+        <MoneyField
+          id="tip"
+          label="팁·봉사료"
+          unit="%"
+          value={v.tip}
+          onChange={(value) => set("tip", value)}
+          placeholder="없음"
+        />
         <CheckRow id="ceil" checked={v.ceil} onChange={(value) => set("ceil", value)}>
           원 단위 올림
         </CheckRow>

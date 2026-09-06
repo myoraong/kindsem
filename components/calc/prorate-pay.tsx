@@ -8,7 +8,7 @@ import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { formatWon, kakaoCopyLine } from "@/lib/format"
+import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { calcProratePay, monthDaysFor, type ProrateMethod } from "@/lib/prorate-pay"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
@@ -23,7 +23,7 @@ const FAQ = [
 export function ProratePay({ item }: { item: CalcItem }) {
   const now = new Date()
   const [v, set] = useCalcPersist(item.slug, {
-    monthly: "3000000",
+    pay: "300",
     workDays: "",
     method: "calendar" as ProrateMethod,
   })
@@ -31,11 +31,11 @@ export function ProratePay({ item }: { item: CalcItem }) {
   const monthDays = monthDaysFor(v.method, now.getFullYear(), now.getMonth())
   const result = useMemo(() => {
     return calcProratePay({
-      monthly: Number(v.monthly),
+      monthly: manwonToWon(Number(v.pay) || 0),
       workDays: Number(v.workDays),
       monthDays,
     })
-  }, [v.monthly, v.workDays, monthDays])
+  }, [v.pay, v.workDays, monthDays])
 
   return (
     <CalcShell
@@ -52,7 +52,7 @@ export function ProratePay({ item }: { item: CalcItem }) {
           rows={
             result
               ? [
-                  { label: "월급", value: formatWon(Number(v.monthly)) },
+                  { label: "월급", value: formatWon(manwonToWon(Number(v.pay) || 0)) },
                   { label: "그 달 일수", value: `${result.monthDays}일` },
                   { label: "근무일", value: `${result.workDays}일` },
                 ]
@@ -64,15 +64,15 @@ export function ProratePay({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <div className="space-y-2">
-          <MoneyField id="monthly" label="월급" unit="원" value={v.monthly} onChange={(value) => set("monthly", value)} />
+          <MoneyField id="monthly" label="월급" value={v.pay} onChange={(value) => set("pay", value)} />
           <AmountChips
             options={[
-              { label: "250만", value: "2500000" },
-              { label: "300만", value: "3000000" },
-              { label: "350만", value: "3500000" },
-              { label: "400만", value: "4000000" },
+              { label: "250만", value: "250" },
+              { label: "300만", value: "300" },
+              { label: "350만", value: "350" },
+              { label: "400만", value: "400" },
             ]}
-            onPick={(value) => set("monthly", value)}
+            onPick={(value) => set("pay", value)}
           />
         </div>
         <div className="space-y-2">

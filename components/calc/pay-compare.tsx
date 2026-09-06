@@ -187,7 +187,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
     current: "4000",
     offer: "4800",
     commute: "",
-    years: "0",
+    years: "",
     mealExempt: false,
     youth: "none" as YouthSide,
     quitKind: "voluntary" as QuitHealthKind,
@@ -331,7 +331,14 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
             onChange={(value) => set("commute", value)}
             placeholder="없음"
           />
-          <MoneyField id="years" label="지금 근속" unit="년" value={v.years} onChange={(value) => set("years", value)} />
+          <MoneyField
+            id="years"
+            label="지금 근속"
+            unit="년"
+            value={v.years}
+            onChange={(value) => set("years", value)}
+            placeholder="없음"
+          />
         </div>
         <DependentsField value={v.dependents} onChange={(value) => set("dependents", value)} />
         <ChoiceGroup

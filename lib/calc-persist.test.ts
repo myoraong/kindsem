@@ -57,6 +57,15 @@ test("이직 교통비 0은 빈 칸으로 본다", () => {
   assert.equal(sanitizePersistedValues("offer-compare", { commute: "20" }).commute, "20")
 })
 
+test("이직 근속·이사 대출·더치페이 팁의 0도 빈 칸으로 본다", () => {
+  assert.equal(sanitizePersistedValues("offer-compare", { years: "0" }).years, "")
+  assert.equal(sanitizePersistedValues("moving", { loan: "0" }).loan, "")
+  assert.equal(sanitizePersistedValues("dutch", { tip: "0" }).tip, "")
+  assert.equal(sanitizePersistedValues("annual-leave", { unused: "0" }).unused, "")
+  assert.equal(sanitizePersistedValues("rent-credit", { globalIncome: "0" }).globalIncome, "")
+  assert.equal(sanitizePersistedValues("moving", { loan: "5000" }).loan, "5000")
+})
+
 test("계산기 입력은 슬로그별로 기기에 남긴다", () => {
   const memory = new Map<string, string>()
   const storage = {
