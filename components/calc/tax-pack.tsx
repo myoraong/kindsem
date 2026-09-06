@@ -7,7 +7,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
-import { GiftSiblingHint } from "@/components/calc/sibling-hint"
+import { GiftSiblingHint, HouseTaxSiblingHint } from "@/components/calc/sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -90,6 +90,7 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <HouseTaxSiblingHint here="capital-gains" />
         <ChoiceGroup
           label="주택 수"
           value={v.homes}
@@ -190,6 +191,7 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <HouseTaxSiblingHint here="corporate-gains" />
         <div className="space-y-2">
           <MoneyField id="cbuy" label="취득가액" value={v.buy} onChange={(value) => set("buy", value)} />
           <AmountChips
@@ -273,6 +275,7 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <HouseTaxSiblingHint here="holding-tax" />
         <ChoiceGroup
           label="주택 수"
           value={v.homes}
@@ -687,6 +690,7 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <GiftSiblingHint here="license-tax" />
         <ChoiceGroup
           label="등기 원인"
           value={v.kind}

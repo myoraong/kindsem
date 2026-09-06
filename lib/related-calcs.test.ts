@@ -22,6 +22,18 @@ test("취득세 다음에 살 때 총비용", () => {
   assert.equal(relatedCalculators("acquisition")[0]?.slug, "closing-cost")
 })
 
+test("양도세 다음에는 보유세·취득세·법인 양도세", () => {
+  assert.deepEqual(
+    relatedCalculators("capital-gains").map((item) => item.slug).slice(0, 3),
+    ["holding-tax", "acquisition", "corporate-gains"],
+  )
+})
+
+test("등록면허세 다음에는 증여·상속", () => {
+  assert.equal(relatedCalculators("license-tax")[0]?.slug, "gift-tax")
+  assert.equal(relatedCalculators("license-tax")[1]?.slug, "inheritance")
+})
+
 test("퇴직금 다음에 퇴직소득세", () => {
   assert.equal(relatedCalculators("severance")[0]?.slug, "retirement-tax")
 })

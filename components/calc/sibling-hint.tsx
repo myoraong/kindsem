@@ -110,11 +110,13 @@ export function BuySiblingHint({ here }: { here: "acquisition" | "closing-cost" 
   const total = <CalcLink slug="closing-cost">살 때 총비용</CalcLink>
   const fee = <CalcLink slug="brokerage">중개보수</CalcLink>
   const move = <CalcLink slug="moving">이사 총액</CalcLink>
+  const hold = <CalcLink slug="holding-tax">보유세</CalcLink>
+  const gains = <CalcLink slug="capital-gains">양도세</CalcLink>
 
   if (here === "acquisition") {
     return (
       <Hint>
-        취득세만 보려면 여기입니다. 복비·인지세까지 합은 {total}입니다.
+        살 때 취득세만은 여기입니다. 복비·인지세 합은 {total}, 보유세는 {hold}, 양도세는 {gains}입니다.
       </Hint>
     )
   }
@@ -187,16 +189,22 @@ export function LeaveSiblingHint({ here }: { here: "parental-leave" | "maternity
   )
 }
 
-/** 생전 증여, 상속, 빚을 떠안은 증여를 가릅니다. */
-export function GiftSiblingHint({ here }: { here: "gift-tax" | "inheritance" | "encumbered-gift" }) {
+/** 생전 증여, 상속, 빚을 떠안은 증여, 등기 세금을 가릅니다. */
+export function GiftSiblingHint({
+  here,
+}: {
+  here: "gift-tax" | "inheritance" | "encumbered-gift" | "license-tax"
+}) {
   const gift = <CalcLink slug="gift-tax">증여세</CalcLink>
   const inherit = <CalcLink slug="inheritance">상속세</CalcLink>
   const debt = <CalcLink slug="encumbered-gift">부담부증여</CalcLink>
+  const license = <CalcLink slug="license-tax">등록면허세</CalcLink>
 
   if (here === "gift-tax") {
     return (
       <Hint>
-        살아 있을 때 주면 여기입니다. 상속은 {inherit}, 빚을 떠안은 증여는 {debt}입니다.
+        살아 있을 때 주면 여기입니다. 상속은 {inherit}, 빚을 떠안은 증여는 {debt}, 등기 세금은{" "}
+        {license}입니다.
       </Hint>
     )
   }
@@ -204,14 +212,57 @@ export function GiftSiblingHint({ here }: { here: "gift-tax" | "inheritance" | "
   if (here === "inheritance") {
     return (
       <Hint>
-        돌아가신 뒤 받으면 여기입니다. 생전 증여는 {gift}, 빚을 떠안은 증여는 {debt}입니다.
+        돌아가신 뒤 받으면 여기입니다. 생전 증여는 {gift}, 빚을 떠안은 증여는 {debt}, 등기 세금은{" "}
+        {license}입니다.
+      </Hint>
+    )
+  }
+
+  if (here === "encumbered-gift") {
+    return (
+      <Hint>
+        집과 빚을 같이 주면 여기입니다. 일반 증여는 {gift}, 상속은 {inherit}입니다.
       </Hint>
     )
   }
 
   return (
     <Hint>
-      집과 빚을 같이 주면 여기입니다. 일반 증여는 {gift}, 상속은 {inherit}입니다.
+      상속·증여 등기 때 등록세는 여기입니다. 증여세는 {gift}, 상속세는 {inherit}입니다.
+    </Hint>
+  )
+}
+
+/** 살 때 취득세, 갖고 있을 때 보유세, 팔 때 양도세를 가릅니다. */
+export function HouseTaxSiblingHint({
+  here,
+}: {
+  here: "holding-tax" | "capital-gains" | "corporate-gains"
+}) {
+  const buy = <CalcLink slug="acquisition">취득세</CalcLink>
+  const hold = <CalcLink slug="holding-tax">보유세</CalcLink>
+  const sell = <CalcLink slug="capital-gains">양도세</CalcLink>
+  const corp = <CalcLink slug="corporate-gains">법인 양도세</CalcLink>
+
+  if (here === "holding-tax") {
+    return (
+      <Hint>
+        갖고 있을 때 재산세·종부세는 여기입니다. 살 때 취득세는 {buy}, 팔 때 양도세는 {sell}입니다.
+      </Hint>
+    )
+  }
+
+  if (here === "capital-gains") {
+    return (
+      <Hint>
+        집을 팔 때 양도세는 여기입니다. 살 때 취득세는 {buy}, 보유세는 {hold}, 법인이면 {corp}입니다.
+      </Hint>
+    )
+  }
+
+  return (
+    <Hint>
+      법인 명의로 팔면 여기입니다. 개인 양도세는 {sell}입니다.
     </Hint>
   )
 }
