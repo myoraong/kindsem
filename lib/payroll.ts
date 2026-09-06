@@ -11,6 +11,16 @@ export const PAYROLL = {
   ...PAYROLL_DEDUCTIONS,
 } as const
 
+export type PayPeriod = "year" | "month"
+
+/** 연봉 칸과 월급 칸을 같은 세전으로 맞출 때. 만원 단위를 반올림합니다. */
+export function convertPayEntry(amount: string, from: PayPeriod, to: PayPeriod) {
+  if (from === to) return amount
+  const n = Number(amount)
+  if (!Number.isFinite(n) || n <= 0) return amount
+  return String(to === "month" ? Math.round(n / 12) : n * 12)
+}
+
 export const SIDE_JOB_PRESETS = {
   parttime: {
     id: "parttime" as const,

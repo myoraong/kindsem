@@ -47,9 +47,19 @@ test("예적금 다음에는 실수령·대출이자를 보여 준다", () => {
   assert.equal(relatedCalculators("deposit")[1]?.slug, "loan-interest")
 })
 
-test("자동차세 다음에는 취득세를 보여 준다", () => {
-  assert.equal(relatedCalculators("car-tax")[0]?.slug, "vehicle-tax")
-  assert.equal(relatedCalculators("car-tax")[1]?.slug, "acquisition")
+test("자동차세 다음에는 자동차 취득세·직구를 보여 준다", () => {
+  const slugs = relatedCalculators("car-tax").map((item) => item.slug)
+  assert.equal(slugs[0], "vehicle-tax")
+  assert.equal(slugs[1], "import-duty")
+  assert.ok(!slugs.includes("acquisition"))
+  assert.ok(!slugs.includes("closing-cost"))
+})
+
+test("자동차 취득세 이어서 보기는 주택 취득세로 새지 않는다", () => {
+  const slugs = relatedCalculators("vehicle-tax").map((item) => item.slug)
+  assert.equal(slugs[0], "car-tax")
+  assert.ok(!slugs.includes("acquisition"))
+  assert.ok(!slugs.includes("closing-cost"))
 })
 
 test("이어서 볼 것은 카탈로그에 있는 슬로그만", () => {

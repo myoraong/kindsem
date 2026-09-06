@@ -6,6 +6,7 @@ import { ChoiceGroup } from "@/components/calc/choice-group"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { calcLoanInterest, type Repayment } from "@/lib/loan"
@@ -75,6 +76,7 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <LoanSiblingHint here="loan-interest" />
         <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
         <AmountChips
           options={[

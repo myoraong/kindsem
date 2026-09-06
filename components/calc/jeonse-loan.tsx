@@ -5,6 +5,7 @@ import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
 import { interestOnly } from "@/lib/loan"
@@ -58,6 +59,7 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-4">
+        <LoanSiblingHint here="jeonse" />
         <MoneyField id="p" label="대출 금액" value={principal} onChange={setPrincipal} />
         <AmountChips
           options={[

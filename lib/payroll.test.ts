@@ -9,12 +9,20 @@ import {
   calcQuitHealth,
   calcSideJobTax,
   calcTakeHome,
+  convertPayEntry,
   earnedIncomeDeduction,
   earnedIncomeTaxCredit,
   fullHealthPremium,
   pensionBaseMonthly,
   personCountFromDependents,
 } from "./payroll.ts"
+
+test("연봉 칸을 월급으로 바꾸면 12로 나눈다", () => {
+  assert.equal(convertPayEntry("4000", "year", "month"), "333")
+  assert.equal(convertPayEntry("333", "month", "year"), "3996")
+  assert.equal(convertPayEntry("4000", "year", "year"), "4000")
+  assert.equal(convertPayEntry("", "year", "month"), "")
+})
 
 test("국민연금 기준소득월액은 2026.7 상한 659만", () => {
   assert.equal(pensionBaseMonthly(0), 0)

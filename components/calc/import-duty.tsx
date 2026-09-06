@@ -27,7 +27,7 @@ const FAQ = [
 ]
 
 export function ImportDuty({ item }: { item: CalcItem }) {
-  const [priceUsd, setPriceUsd] = useState("140")
+  const [priceUsd, setPriceUsd] = useState("")
   const [fx, setFx] = useState("")
   const [origin, setOrigin] = useState<"other" | "us">("other")
   const [excluded, setExcluded] = useState(false)
@@ -172,8 +172,9 @@ export function ImportDuty({ item }: { item: CalcItem }) {
           </div>
         </details>
         <Hint>
-          환율은 관세청 고시 환율이 아니라 직접 넣는 숫자입니다. 국제운송비가 물품가격과 명백히 구분되면
-          특송 고시는 그 운임을 빼 볼 수 있습니다. 여기 물품가격은 넣은 달러 그대로입니다.
+          달러만 넣으면 목록통관·소액면세 여부만 나옵니다. 기본은 비워 두었습니다. 140달러는 면세 경계
+          칩입니다. 환율은 관세청 고시가 아니라 직접 넣는 숫자입니다. 국제운송비가 물품가격과 명백히
+          구분되면 특송 고시는 그 운임을 빼 볼 수 있습니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.importDuty, LAW_SOURCES.importDeMinimis]} />
       </div>

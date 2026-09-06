@@ -5,6 +5,7 @@ import { AmountChips } from "@/components/calc/amount-chips"
 import { CalcShell } from "@/components/calc/calc-shell"
 import { FaqList } from "@/components/calc/faq-list"
 import { Hint } from "@/components/calc/hint"
+import { RentSiblingHint } from "@/components/calc/sibling-hint"
 import { LawNote } from "@/components/calc/law-note"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
@@ -47,7 +48,7 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
       faq={<FaqList items={FAQ} />}
       result={
         <ResultReceipt
-          title="법정 상한 월세"
+          title="전세 대비 월세 상한"
           amount={result?.monthlyCap ?? null}
           caption={
             result
@@ -89,6 +90,7 @@ export function JeonseVsRent({ item }: { item: CalcItem }) {
       }
     >
       <div className="space-y-5">
+        <RentSiblingHint here="jeonse-vs-rent" />
         <div className="space-y-2">
           <MoneyField id="jeonse" label="전세 보증금" value={jeonse} onChange={setJeonse} />
           <AmountChips

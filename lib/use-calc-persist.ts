@@ -48,5 +48,14 @@ export function useCalcPersist<T extends Record<string, CalcPersistValue>>(slug:
     })
   }, [slug])
 
-  return [values, set] as const
+  const setMany = useCallback((partial: Partial<WidenBool<T>>) => {
+    setValues((prev) => {
+      const next = { ...prev, ...partial }
+      writeCalcStorage(slug, next)
+      replaceSearch(encodeCalcQuery(next))
+      return next
+    })
+  }, [slug])
+
+  return [values, set, setMany] as const
 }

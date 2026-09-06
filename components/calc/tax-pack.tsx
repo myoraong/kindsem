@@ -33,9 +33,9 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
   const [sell, setSell] = useState("80000")
   const [costs, setCosts] = useState("500")
   const [years, setYears] = useState("8")
-  const [homes, setHomes] = useState<Homes>("1")
+  const [homes, setHomes] = useState<Homes>("2")
   const [adjusted, setAdjusted] = useState(false)
-  const [lived2y, setLived2y] = useState(true)
+  const [lived2y, setLived2y] = useState(false)
 
   const result = useMemo(() => {
     return calcCapitalGains({
@@ -57,7 +57,7 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
           items={[
             {
               q: "1주택이면 비과세인가요?",
-              a: "2년 이상 보유하고 양도가액 12억 이하면 비과세입니다. 조정대상지역은 2년 거주도 필요합니다. 12억을 넘으면 넘는 분에만 과세합니다.",
+              a: "기본은 2주택으로 과세합니다. 1세대1주택이면 1주택을 고르세요. 2년 이상 보유하고 양도가액 12억 이하면 비과세입니다. 조정대상지역은 2년 거주도 필요합니다. 12억을 넘으면 넘는 분에만 과세합니다.",
             },
             {
               q: "다주택 중과는요?",
@@ -128,8 +128,9 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
           조정대상지역
         </CheckRow>
         <Hint>
-          1주택·2년 보유·12억 이하는 비과세입니다. 조정대상지역은 2년 거주도 필요합니다. 다주택
-          중과는 2026년 5월 10일 이후 양도분이며, 중과 때는 장기보유특별공제를 적용하지 않습니다.
+          기본은 2주택입니다. 1세대1주택 비과세면 1주택을 고르세요. 2년 보유·12억 이하이면 비과세이고,
+          조정대상지역은 2년 거주도 필요합니다. 다주택 중과는 2026년 5월 10일 이후 양도분이며, 중과
+          때는 장기보유특별공제를 적용하지 않습니다.
         </Hint>
         <LawNote lines={[LAW_SOURCES.income]} />
       </div>

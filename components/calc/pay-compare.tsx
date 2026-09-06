@@ -15,6 +15,8 @@ import {
   calcOfferCompare,
   calcQuitHealth,
   calcTakeHome,
+  convertPayEntry,
+  type PayPeriod,
   type QuitHealthKind,
 } from "@/lib/payroll"
 import type { CalcItem } from "@/lib/catalog"
@@ -94,8 +96,8 @@ export function PayCompare({ item }: { item: CalcItem }) {
 }
 
 function TakeHomeForm({ item }: { item: CalcItem }) {
-  const [v, set] = useCalcPersist(item.slug, {
-    period: "year",
+  const [v, set, setMany] = useCalcPersist(item.slug, {
+    period: "year" as PayPeriod,
     current: "4000",
     meal: true,
     youth: "none",
@@ -121,7 +123,12 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
         <ChoiceGroup
           label="입력 단위"
           value={v.period}
-          onChange={(value) => set("period", value)}
+          onChange={(value) => {
+            setMany({
+              period: value,
+              current: convertPayEntry(v.current, v.period, value),
+            })
+          }}
           options={[
             { value: "year", label: "연봉" },
             { value: "month", label: "월급" },
