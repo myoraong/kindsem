@@ -96,6 +96,10 @@ export const ADS_TXT_COMMENT = `# Kindsem ads.txt
 # 다시 빌드하면 이 파일이 채워집니다. 가짜 pub- 값은 넣지 마세요.
 `
 
+export function adsTxtRecord(pub: string): string {
+  return `google.com, ${pub}, DIRECT, ${ADSENSE_ADS_TXT_CERT}\n`
+}
+
 export function renderAdsTxt(input: {
   envPub?: string | null
   envClient?: string | null
@@ -104,7 +108,8 @@ export function renderAdsTxt(input: {
   const pub =
     parseAdsensePublisherId(input.envPub) ??
     parseAdsensePublisherId(input.envClient) ??
-    existingAdsTxtPublisherId(input.existing ?? "")
+    existingAdsTxtPublisherId(input.existing ?? "") ??
+    parseAdsensePublisherId(ADSENSE_CLIENT)
   if (!pub) return ADS_TXT_COMMENT
-  return `${ADS_TXT_COMMENT}google.com, ${pub}, DIRECT, ${ADSENSE_ADS_TXT_CERT}\n`
+  return adsTxtRecord(pub)
 }

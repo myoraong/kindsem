@@ -4,6 +4,7 @@ import {
   ADS_TXT_COMMENT,
   ADSENSE_ADS_TXT_CERT,
   ADSENSE_CLIENT,
+  adsTxtRecord,
   ADSENSE_SLOT,
   adsenseClientIdFromEnv,
   adsenseScriptSrc,
@@ -75,11 +76,21 @@ test("인페이지 광고는 개인정보·문의 경로에는 넣지 않는다"
   assert.equal(shouldRenderAdOnPath("/contact/"), false)
 })
 
-test("ads.txt는 env가 없으면 주석만 넣고 google.com 줄을 넣지 않는다", () => {
+test("ads.txt는 env가 비어도 승인된 게시자 한 줄을 넣는다", () => {
   const text = renderAdsTxt({ envPub: "", envClient: "", existing: "" })
-  assert.equal(text, ADS_TXT_COMMENT)
-  assert.doesNotMatch(text, /^google\.com,/m)
-  assert.match(text, /가짜 pub- 값은 넣지 마세요/)
+  const pub = parseAdsensePublisherId(ADSENSE_CLIENT)
+  assert.equal(text, adsTxtRecord(pub ?? ""))
+  assert.match(text, /^google\.com, pub-1559116385038077, DIRECT, f08c47fec0942fa0$/m)
+  assert.doesNotMatch(text, /가짜 pub- 값은 넣지 마세요/)
+})
+
+test("ads.txt는 주석만 있는 옛 파일도 게시자 한 줄로 채운다", () => {
+  const text = renderAdsTxt({
+    envPub: "",
+    envClient: "",
+    existing: ADS_TXT_COMMENT,
+  })
+  assert.match(text, /^google\.com, pub-1559116385038077, DIRECT, f08c47fec0942fa0$/m)
 })
 
 test("ads.txt는 PUB 또는 CLIENT env로 google.com 한 줄을 채운다", () => {

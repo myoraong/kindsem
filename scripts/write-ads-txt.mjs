@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * NEXT_PUBLIC_ADSENSE_PUB / NEXT_PUBLIC_ADSENSE_CLIENT 가 있으면
  * public/ads.txt 에 Google ads.txt 한 줄을 채웁니다.
- * 값이 없으면 가짜 pub- 줄을 넣지 않고, 안내 주석만 유지합니다.
+ * env가 비어도 이미 있는 줄, 없으면 승인된 게시자 상수를 씁니다.
+ * 안내 주석만 있는 파일을 올리면 애드센스가 「찾을 수 없음」으로 봅니다.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs"
 import { dirname, join } from "node:path"
@@ -61,14 +61,17 @@ function existingPub(text) {
   return null
 }
 
+const FALLBACK_PUB = "pub-1559116385038077"
+
 const existing = existsSync(adsPath) ? readFileSync(adsPath, "utf8") : ""
 const pub =
   parsePub(process.env.NEXT_PUBLIC_ADSENSE_PUB) ||
   parsePub(process.env.NEXT_PUBLIC_ADSENSE_CLIENT) ||
-  existingPub(existing)
+  existingPub(existing) ||
+  FALLBACK_PUB
 
 const next = pub
-  ? `${COMMENT}google.com, ${pub}, DIRECT, f08c47fec0942fa0\n`
+  ? `google.com, ${pub}, DIRECT, f08c47fec0942fa0\n`
   : COMMENT
 
 if (next !== existing) writeFileSync(adsPath, next)
