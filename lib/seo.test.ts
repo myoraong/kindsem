@@ -18,7 +18,12 @@ test("계산기마다 검색어가 있고 제목에 계산기가 들어간다", 
   for (const item of CALCULATORS) {
     const seo = CALC_SEO[item.slug]
     assert.ok(seo, item.slug)
-    assert.match(seo.query, /계산기/)
+    if (item.slug === "ladder") {
+      assert.equal(seo.query, "사다리타기")
+      assert.doesNotMatch(seo.query, /계산기/)
+    } else {
+      assert.match(seo.query, /계산기/)
+    }
     assert.ok(seo.also.length >= 2, item.slug)
     assert.match(calcPath(item.slug), new RegExp(`/calc/${item.slug}/$`))
   }
@@ -32,7 +37,7 @@ test("실수령·퇴직금·복비는 사람들이 넣는 말로 제목을 단�
   assert.equal(calcSeo("brokerage").query, "중개수수료 계산기")
   assert.ok(calcSeo("brokerage").also.includes("복비 계산기"))
   assert.equal(calcSeo("acquisition").query, "취득세 계산기")
-  assert.equal(calcSeo("ladder").query, "사다리타기 계산기")
+  assert.equal(calcSeo("ladder").query, "사다리타기")
   assert.ok(calcSeo("ladder").also.includes("사다리게임"))
   assert.ok(calcSeo("ladder").also.includes("제비뽑기"))
   assert.ok(calcSeo("overtime-pay").also.includes("야근수당 계산기"))

@@ -1,6 +1,12 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { kakaoCopyLine, shareCopyText, formatGroupedInput, caretIndexAfterGroup } from "./format.ts"
+import {
+  kakaoCopyLine,
+  shareCopyText,
+  formatGroupedInput,
+  caretIndexAfterGroup,
+  formatRatePercent,
+} from "./format.ts"
 
 test("카카오 한 줄은 라벨·금액·짧은 주를 붙인다", () => {
   assert.equal(kakaoCopyLine("실수령", "3,210,000원", "주휴 포함"), "실수령 3,210,000원 · 주휴 포함")
@@ -13,6 +19,13 @@ test("결과 복사에는 주소를 다음 줄에 붙인다", () => {
     "실수령 3,210,000원\nhttps://kindsem.com/calc/take-home/?pay=4000",
   )
   assert.equal(shareCopyText("실수령 3,210,000원", ""), "실수령 3,210,000원")
+})
+
+test("요율 퍼센트는 부동소수점을 남기지 않는다", () => {
+  assert.equal(formatRatePercent(0.009), "0.9%")
+  assert.equal(formatRatePercent(0.1314), "13.14%")
+  assert.equal(formatRatePercent(0.0475), "4.75%")
+  assert.equal(formatRatePercent(0.03595), "3.595%")
 })
 
 test("입력칸 숫자는 천 단위로 띄운다", () => {

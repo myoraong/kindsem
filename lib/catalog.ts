@@ -205,7 +205,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "cert-payback",
     title: "자격",
-    blurb: "자격증 비용이 연봉 상승으로 몇 달에 회수되는지.",
+    blurb: "자격증 비용이 세후 연봉 상승으로 몇 달에 회수되는지.",
     when: "자격증 수강 전에",
     group: "work",
   },
@@ -352,7 +352,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "yield",
     title: "임대수익률",
-    blurb: "보증금을 뺀 실질 수익률을 바로.",
+    blurb: "연 월세 합을 매매가와 (매매가−보증금)으로 나눈 표면·실질.",
     when: "전월세 놓는 집, 투자 비교",
     group: "buy",
   },

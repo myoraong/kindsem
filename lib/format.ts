@@ -63,6 +63,12 @@ export function formatPercent(value: number, fractionDigits = 2): string {
   return `${value.toFixed(fractionDigits)}%`
 }
 
+/** 0~1 요율. 0.009 → "0.9%", 0.1314 → "13.14%" */
+export function formatRatePercent(rate: number): string {
+  if (!Number.isFinite(rate)) return "—"
+  return `${Number((rate * 100).toFixed(4))}%`
+}
+
 export function formatKoreanUnit(value: number): string {
   if (!Number.isFinite(value) || value === 0) return "0원"
   const sign = value < 0 ? "-" : ""

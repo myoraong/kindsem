@@ -10,7 +10,7 @@ import { Hint } from "@/components/calc/hint"
 import { PaySiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { PayOfferReceipt, PayTakeHomeReceipt } from "@/components/calc/pay-receipt"
-import { formatKoreanUnit, formatWon, manwonToWon } from "@/lib/format"
+import { formatKoreanUnit, formatRatePercent, formatWon, manwonToWon } from "@/lib/format"
 import {
   PAYROLL,
   calcOfferCompare,
@@ -64,10 +64,11 @@ function payGuide() {
     <div className="space-y-4 text-foreground">
       <p className="font-medium">2026 근로자 부담</p>
       <p>
-        국민연금 {PAYROLL.pensionEmployeeRate * 100}% (월 상한{" "}
-        {PAYROLL.pensionCeil.toLocaleString("ko-KR")}원), 건강보험 {PAYROLL.healthEmployeeRate * 100}
-        %, 장기요양 건보의 {PAYROLL.longTermCareOfHealth * 100}%, 고용보험{" "}
-        {PAYROLL.employmentEmployeeRate * 100}%.
+        국민연금 {formatRatePercent(PAYROLL.pensionEmployeeRate)} (월 상한{" "}
+        {PAYROLL.pensionCeil.toLocaleString("ko-KR")}원), 건강보험{" "}
+        {formatRatePercent(PAYROLL.healthEmployeeRate)}, 장기요양 건보의{" "}
+        {formatRatePercent(PAYROLL.longTermCareOfHealth)}, 고용보험{" "}
+        {formatRatePercent(PAYROLL.employmentEmployeeRate)}.
       </p>
     </div>
   )

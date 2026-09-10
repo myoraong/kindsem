@@ -13,7 +13,7 @@
 ## 계산기
 - 사칙연산 계산기: https://kindsem.com/calc/quick/
 - 더치페이 계산기: https://kindsem.com/calc/dutch/
-- 사다리타기 계산기: https://kindsem.com/calc/ladder/
+- 사다리타기: https://kindsem.com/calc/ladder/
 - 부가세 계산기: https://kindsem.com/calc/sale-vat/
 - 자동차 취득세 계산기: https://kindsem.com/calc/vehicle-tax/
 - 자동차세 계산기: https://kindsem.com/calc/car-tax/

@@ -25,7 +25,7 @@ export const CALC_SEO: Record<string, CalcSeo> = {
     also: ["엔빵 계산기", "n빵 계산기", "더치페이", "더치"],
   },
   ladder: {
-    query: "사다리타기 계산기",
+    query: "사다리타기",
     also: ["사다리게임", "사다리 타기", "제비뽑기"],
   },
   "sale-vat": {
