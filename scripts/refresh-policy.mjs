@@ -374,8 +374,9 @@ function ymd(value) {
   return s
 }
 
-function todayStamp() {
-  return new Date().toISOString().slice(0, 10)
+/** GitHub cron 15:00 UTC는 한국 자정이라, 날짜는 서울 달력을 씁니다. */
+export function todayStamp(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(now)
 }
 
 function tsLiteral(rows) {

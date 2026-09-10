@@ -8,6 +8,7 @@ import {
   lawUrlFallbacks,
   parseGiftDeductions,
   parseKoreanWon,
+  todayStamp,
   TransientFetchError,
 } from "./refresh-policy.mjs"
 import {
@@ -418,6 +419,12 @@ test("parseInheritancePersonal reads 상증세법 제20조 금액", () => {
   assert.equal(parsed.minorPerYear, 10_000_000)
   assert.equal(parsed.minorAgeCap, 19)
   assert.equal(parsed.elderly, 50_000_000)
+})
+
+test("todayStamp uses Seoul calendar so UTC midnight job is the next Korean date", () => {
+  assert.equal(todayStamp(new Date("2026-09-10T14:59:59.000Z")), "2026-09-10")
+  assert.equal(todayStamp(new Date("2026-09-10T15:00:00.000Z")), "2026-09-11")
+  assert.equal(todayStamp(new Date("2026-09-10T03:00:00.000Z")), "2026-09-10")
 })
 
 test("parseInheritanceFinance reads 상증세법 제22조 한도", () => {
