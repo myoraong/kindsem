@@ -54,22 +54,22 @@ export function LtvCalc({ item }: { item: CalcItem }) {
       item={item}
       faq={<FaqList items={LTV_FAQ} />}
       guide={
-        <div className="space-y-4 text-foreground">
-          <p className="font-medium text-foreground">일반 LTV</p>
+        <div className="space-y-2 text-foreground">
           <p>
-            비규제 {Math.round(LTV_POLICY.unregulated * 100)}%, 조정대상지역·투기지역·투기과열지구{" "}
+            <span className="font-medium text-foreground">일반 LTV</span> : 비규제{" "}
+            {Math.round(LTV_POLICY.unregulated * 100)}%, 조정대상지역·투기지역·투기과열지구{" "}
             {Math.round(LTV_POLICY.regulated * 100)}%입니다. 은행업감독규정 별표 6 기준입니다.
           </p>
-          <p className="font-medium text-foreground">생애최초 한도</p>
           <p>
-            생애최초는 {Math.round(LTV_POLICY.firstTime * 100)}%까지, 대출금은{" "}
+            <span className="font-medium text-foreground">생애최초 한도</span> : 생애최초는{" "}
+            {Math.round(LTV_POLICY.firstTime * 100)}%까지, 대출금은{" "}
             {Math.round(LTV_POLICY.firstTimeCap / 100_000_000)}억 원을 넘지 못합니다. 별표에 없는
             집값 구간 절대한도는 넣지 않습니다.
           </p>
-          <p className="font-medium text-foreground">차주</p>
           <p>
-            미처분 1주택 추가구입은 주택구입 주담대가 막혀 있습니다. 처분조건부는 일반 한도로 보고,
-            실제 약정은 은행이 정합니다.
+            <span className="font-medium text-foreground">차주</span> : 미처분 1주택 추가구입은
+            주택구입 주담대가 막혀 있습니다. 처분조건부는 일반 한도로 보고, 실제 약정은 은행이
+            정합니다.
           </p>
         </div>
       }

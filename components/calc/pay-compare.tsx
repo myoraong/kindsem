@@ -61,10 +61,10 @@ function payFaq() {
 
 function payGuide() {
   return (
-    <div className="space-y-4 text-foreground">
-      <p className="font-medium">2026 근로자 부담</p>
+    <div className="space-y-2 text-foreground">
       <p>
-        국민연금 {formatRatePercent(PAYROLL.pensionEmployeeRate)} (월 상한{" "}
+        <span className="font-medium text-foreground">2026 근로자 부담</span> : 국민연금{" "}
+        {formatRatePercent(PAYROLL.pensionEmployeeRate)} (월 상한{" "}
         {PAYROLL.pensionCeil.toLocaleString("ko-KR")}원), 건강보험{" "}
         {formatRatePercent(PAYROLL.healthEmployeeRate)}, 장기요양 건보의{" "}
         {formatRatePercent(PAYROLL.longTermCareOfHealth)}, 고용보험{" "}

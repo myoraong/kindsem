@@ -68,13 +68,15 @@ export function SideJobTax({ item }: { item: CalcItem }) {
         />
       }
       guide={
-        <div className="space-y-4 text-foreground">
-          <p className="font-medium">원천 3.3%</p>
-          <p>사업소득 지급액의 3%와 지방소득세 0.3%입니다. 경비와 상관없이 먼저 떼입니다.</p>
-          <p className="font-medium">종소세</p>
+        <div className="space-y-2 text-foreground">
           <p>
-            수입 − 필요경비(단순경비율) − 기본공제 후 소득세 누진, 지방소득세 10%입니다. 세율 구간은
-            법제처 소득세법 제55조를 따릅니다.
+            <span className="font-medium text-foreground">원천 3.3%</span> : 사업소득 지급액의 3%와
+            지방소득세 0.3%입니다. 경비와 상관없이 먼저 떼입니다.
+          </p>
+          <p>
+            <span className="font-medium text-foreground">종소세</span> : 수입 −
+            필요경비(단순경비율) − 기본공제 후 소득세 누진, 지방소득세 10%입니다. 세율 구간은 법제처
+            소득세법 제55조를 따릅니다.
           </p>
         </div>
       }

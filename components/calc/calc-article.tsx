@@ -23,7 +23,7 @@ export function CalcArticle({
           ))}
         </>
       ) : null}
-      {extra ? <div className="mt-4 space-y-3">{extra}</div> : null}
+      {extra ? <div className="mt-3">{extra}</div> : null}
     </article>
   )
 }

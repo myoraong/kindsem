@@ -48,10 +48,10 @@ export function DsrCalc({ item }: { item: CalcItem }) {
       item={item}
       faq={<FaqList items={DSR_FAQ} />}
       guide={
-        <div className="space-y-4 text-foreground">
-          <p className="font-medium text-foreground">차주 단위 DSR</p>
+        <div className="space-y-2 text-foreground">
           <p>
-            은행 {Math.round(DSR_POLICY.bank * 100)}%, 비은행 {Math.round(DSR_POLICY.nonbank * 100)}
+            <span className="font-medium text-foreground">차주 단위 DSR</span> : 은행{" "}
+            {Math.round(DSR_POLICY.bank * 100)}%, 비은행 {Math.round(DSR_POLICY.nonbank * 100)}
             %입니다. 주택담보만 보는 LTV와 달리, 갖고 있는 대출을 모두 더합니다. 스트레스 금리 가산은
             감독규정 별표에 없어 넣지 않습니다.
           </p>
