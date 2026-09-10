@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import type { CalcItem } from "./catalog.ts"
 import { CALCULATORS } from "./catalog.ts"
+import { CALC_GUIDES } from "./calc-guides.ts"
 import { SITE_NAME, SITE_URL } from "./site.ts"
 
 export type CalcSeo = {
@@ -255,7 +256,8 @@ export function calcJsonLd(item: CalcItem) {
   const group =
     item.group === "work" ? "급여" : item.group === "today" ? "생활" : "부동산"
   const groupPath = item.group === "today" ? "/#today" : item.group === "work" ? "/#work" : "/realty/"
-  return [
+  const guide = CALC_GUIDES[item.slug]
+  const nodes: Record<string, unknown>[] = [
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
@@ -285,6 +287,18 @@ export function calcJsonLd(item: CalcItem) {
       ],
     },
   ]
+  if (guide) {
+    nodes.push({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: guide.title,
+      inLanguage: "ko",
+      articleBody: guide.paragraphs.join("\n"),
+      url,
+      isPartOf: { "@type": "WebApplication", name: seo.query, url },
+    })
+  }
+  return nodes
 }
 
 export function faqJsonLd(items: { q: string; a: string }[]) {
@@ -368,6 +382,36 @@ export const CALC_INDEX_METADATA: Metadata = {
     "카인드셈 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
     "/calc/",
   ),
+}
+
+export const HOW_METADATA: Metadata = {
+  title: "숫자를 어떻게 받는지",
+  description:
+    "카인드셈이 법제처·금융위 현행본에서 세율을 읽는 방식, 빼 두는 공제, 혜택을 기본으로 켜지 않는 이유.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/how/", languages: { "ko-KR": "/how/" } },
+  openGraph: pageOpenGraph(
+    `숫자를 어떻게 받는지 · ${SITE_NAME}`,
+    "카인드셈이 법제처·금융위 현행본에서 세율을 읽는 방식, 빼 두는 공제, 혜택을 기본으로 켜지 않는 이유.",
+    "/how/",
+  ),
+}
+
+export function howJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: "숫자를 어떻게 받는지",
+    inLanguage: "ko",
+    description:
+      "카인드셈이 법제처·금융위 현행본에서 세율을 읽는 방식, 빼 두는 공제, 혜택을 기본으로 켜지 않는 이유.",
+    url: `${SITE_URL}/how/`,
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+    },
+  }
 }
 
 export const REALTY_METADATA: Metadata = {

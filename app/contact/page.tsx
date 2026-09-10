@@ -16,7 +16,15 @@ export default function ContactPage() {
       <div className="mt-6 max-w-xl space-y-4 text-sm leading-7 text-muted-foreground">
         <p>
           Kindsem은 생활·급여·부동산 계산기입니다. 더치페이·실수령·취득세처럼 일상에서 쓰는 숫자를
-          이 기기에서 계산합니다. 회원가입은 없습니다.
+          이 기기에서 계산합니다. 회원가입은 없습니다. 넣은 금액은 서버에 올리지 않습니다.
+        </p>
+        <p>
+          세율은 법제처와 금융위 현행본에서 읽습니다. 표에 없는 공제는 결과에 넣지 않습니다. 계산은
+          가늠이고, 세금 신고·대출 심사는 세무사·은행과 하세요. 세율 출처는{" "}
+          <Link href="/how/" className="text-foreground underline underline-offset-2">
+            숫자를 어떻게 받는지
+          </Link>
+          에 모아 두었습니다.
         </p>
         <p>
           운영자 {CONTACT_OPERATOR}. 메일은{" "}

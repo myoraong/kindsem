@@ -3,6 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import { CalcArticle } from "@/components/calc/calc-article"
 import { RelatedCalcs } from "@/components/calc/related-calcs"
 import type { CalcItem } from "@/lib/catalog"
 import { calcSeo } from "@/lib/seo"
@@ -15,7 +16,6 @@ import { AffiliatePreview } from "@/components/calc/affiliate-preview"
 import { AdSenseInPage } from "@/components/adsense-inpage"
 import { PolicyStamp } from "@/components/policy-stamp"
 import { SenaFigure } from "@/components/sena"
-import { cn } from "@/lib/utils"
 
 export function CalcShell({
   item,
@@ -30,7 +30,6 @@ export function CalcShell({
   faq?: ReactNode
   guide?: ReactNode
 }) {
-  const [tab, setTab] = useState<"calc" | "guide">("calc")
   const fallbackSection = homeSectionForGroup(item.group)
   const [back, setBack] = useState(backLinkFor(fallbackSection))
 
@@ -79,46 +78,13 @@ export function CalcShell({
         </div>
         <SenaFigure variant="calc" />
       </div>
-      {guide ? (
-        <div className="mb-5 flex gap-2">
-          <button
-            type="button"
-            onClick={() => setTab("calc")}
-            className={cn(
-              "h-9 rounded-full px-4 text-sm",
-              tab === "calc"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
-          >
-            계산기
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("guide")}
-            className={cn(
-              "h-9 rounded-full px-4 text-sm",
-              tab === "guide"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:text-foreground"
-            )}
-          >
-            안내·세율
-          </button>
-        </div>
-      ) : null}
-      {tab === "guide" && guide ? (
-        <section className="rounded-2xl bg-card p-5 text-sm leading-7 text-muted-foreground ring-1 ring-foreground/8 md:p-6">
-          {guide}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
+        <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
+          {children}
         </section>
-      ) : (
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
-          <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
-            {children}
-          </section>
-          {result}
-        </div>
-      )}
+        {result}
+      </div>
+      <CalcArticle slug={item.slug} extra={guide} />
       <AffiliatePreview slug={item.slug} />
       {/* 결과 카드 바로 아래. 입력칸·복사·키패드를 가리지 않고, FAQ·관련 계산기보다 위에 둡니다. */}
       <AdSenseInPage />

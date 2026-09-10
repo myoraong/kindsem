@@ -28,9 +28,15 @@ export default function RealtyPage() {
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">
         부동산 계산기
       </h1>
-      <p className="mt-3 max-w-xl text-sm leading-7 text-muted-foreground">
-        세율·공제 한도는 현행 법령입니다. 빠진 공제·사실관계가 있으면 신고 세액이 달라집니다. 신고는
-        세무사와 확인하세요.
+      <p className="mt-3 max-w-2xl space-y-3 text-pretty break-keep text-sm leading-7 text-muted-foreground">
+        <span className="block">
+          세율·공제 한도는 현행 법령입니다. 빠진 공제·사실관계가 있으면 신고 세액이 달라집니다. 신고는
+          세무사와 확인하세요.
+        </span>
+        <span className="mt-3 block">
+          취득세는 살 때, 재산세·종부세는 갖고 있을 때, 양도세는 팔 때입니다. 전월세 전환율과 월세
+          세액공제는 계약과 연말정산이 다릅니다. 각 계산기 본문에 그 차이를 적어 두었습니다.
+        </span>
       </p>
       <div className="mt-8">
         <RealtyCatalog />

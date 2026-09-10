@@ -11,6 +11,7 @@ export function publicPaths() {
     "/realty/",
     "/contact/",
     "/privacy/",
+    "/how/",
     ...CALCULATORS.map((item) => `/calc/${item.slug}/`),
   ]
 }
