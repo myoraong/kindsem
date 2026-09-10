@@ -81,7 +81,7 @@ export function ClosingCost({ item }: { item: CalcItem }) {
                 ]
               : []
           }
-          empty="매매가만 넣으면 잔금 전에 준비할 현금이 모여요."
+          empty="매매가만 넣으면 잔금 전에 준비할 현금이 모입니다."
         />
       }
     >

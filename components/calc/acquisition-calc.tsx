@@ -74,7 +74,7 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
                 ]
               : []
           }
-          empty="집값과 주택 수만 넣으면 살 때 세금이 바로 나옵니다."
+          empty="집값과 주택 수만 넣으면 살 때 세금이 나옵니다."
         />
       }
     >

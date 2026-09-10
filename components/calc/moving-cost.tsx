@@ -115,7 +115,7 @@ export function MovingCost({ item }: { item: CalcItem }) {
           amount={result?.cashOnDay ?? null}
           caption={caption}
           rows={rows}
-          empty="보증금이나 이사 비용만 넣어도 복비를 포함해 당일 현금이 나와요."
+          empty="보증금이나 이사 비용만 넣어도 복비를 포함해 당일 현금이 나옵니다."
         />
       }
     >

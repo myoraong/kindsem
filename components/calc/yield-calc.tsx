@@ -61,7 +61,7 @@ export function YieldCalc({ item }: { item: CalcItem }) {
                 ]
               : []
           }
-          empty="매매가와 월세만 넣으면 수익률이 바로 나옵니다."
+          empty="매매가와 월세만 넣으면 수익률이 나옵니다."
         />
       }
     >

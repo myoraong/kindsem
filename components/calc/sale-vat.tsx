@@ -78,7 +78,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
           title={v.mode === "sale" ? "할인된 가격" : v.vatMode === "add" ? "부가세 포함" : "공급가액"}
           amount={result?.amount ?? null}
           rows={result?.rows ?? []}
-          empty="금액만 넣으면 세일가와 부가세가 바로 나옵니다."
+          empty="금액만 넣으면 세일가와 부가세가 나옵니다."
         />
       }
     >

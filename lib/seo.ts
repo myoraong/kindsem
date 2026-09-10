@@ -208,7 +208,7 @@ export function calcUrl(slug: string) {
 
 export function calcDescription(item: CalcItem) {
   const seo = calcSeo(item.slug)
-  return `${item.blurb} ${seo.query}.`
+  return `${seo.query}. ${item.blurb}`
 }
 
 export function calcSearchText(slug: string) {

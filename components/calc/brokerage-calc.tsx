@@ -83,7 +83,7 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
                 ]
               : []
           }
-          empty="거래 유형과 금액만 넣으면 법정 상한이 바로 나옵니다."
+          empty="거래 유형과 금액만 넣으면 법정 상한이 나옵니다."
         />
       }
     >

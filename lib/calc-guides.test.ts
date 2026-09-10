@@ -25,6 +25,18 @@ test("안내는 검색어 나열이 아니라 문장이다", () => {
   }
 })
 
+test("본문 첫 문장은 한 줄 설명을 되풀이하지 않는다", () => {
+  for (const item of CALCULATORS) {
+    const guide = CALC_GUIDES[item.slug]
+    assert.ok(guide)
+    const needle = item.blurb.replace(/입니다\.$/, "").slice(0, 10)
+    assert.ok(
+      !guide.paragraphs[0].includes(needle),
+      `${item.slug} 본문이 한 줄과 겹침: ${needle}`,
+    )
+  }
+})
+
 test("모든 계산기에 고유 안내 제목과 본문이 있다", () => {
   const titles = new Set<string>()
   const openings = new Set<string>()

@@ -149,7 +149,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "overtime-pay",
     title: "연장·야간·휴일 수당",
-    blurb: "연장은 1.5배, 야간은 가산 50%, 휴일은 8시간까지 1.5배입니다.",
+    blurb: "연장은 1.5배, 야간은 가산 50%, 휴일은 8시간까지 1.5배·초과는 2배입니다.",
     when: "연장·야근·휴일 근무 정산",
     group: "work",
   },
