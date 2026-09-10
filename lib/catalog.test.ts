@@ -32,6 +32,16 @@ test("계산기마다 목록 두 번째 줄(언제)이 있다", () => {
   }
 })
 
+test("계산기 한 줄 설명은 끝나는 문장이다", () => {
+  const forbidden = /친절한|웰컴|최고|차별화|lorem|매칭합니다|한 장으로/i
+  for (const item of CALCULATORS) {
+    assert.match(item.blurb, /(다|요)\.$/, `${item.slug} 설명이 문장이 아님`)
+    assert.ok(item.blurb.length >= 14, `${item.slug} 설명 짧음`)
+    assert.doesNotMatch(item.blurb, forbidden)
+  }
+  assert.doesNotMatch(getCalculator("ladder")!.blurb, /계산기/)
+})
+
 test("미리보기 계산기가 카탈로그에 있다", () => {
   assert.equal(getCalculator("overtime-pay")?.title, "연장·야간·휴일 수당")
   assert.equal(getCalculator("jeonse-vs-rent")?.title, "전세 vs 월세")

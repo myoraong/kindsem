@@ -69,12 +69,9 @@ export function CalcShell({
                   : item.when}
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight md:text-3xl">{seo.query}</h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">{item.blurb}</p>
-          {seo.also.length > 0 ? (
-            <p className="mt-2 max-w-xl text-xs leading-6 text-muted-foreground">
-              {seo.also.join(" · ")}
-            </p>
-          ) : null}
+          <p className="mt-2 max-w-xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
+            {item.blurb}
+          </p>
         </div>
         <SenaFigure variant="calc" />
       </div>

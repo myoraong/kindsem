@@ -59,8 +59,8 @@ export default function CalcIndexPage() {
                       className="block px-4 py-3.5 hover:bg-accent sm:px-5"
                     >
                       <span className="block text-sm font-medium text-foreground">{seo.query}</span>
-                      <span className="mt-0.5 block text-xs leading-6 text-muted-foreground">
-                        {seo.also.join(" · ")}
+                      <span className="mt-0.5 block text-xs leading-6 text-pretty break-keep text-muted-foreground">
+                        {item.blurb}
                       </span>
                     </Link>
                   </li>

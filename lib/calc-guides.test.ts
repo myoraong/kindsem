@@ -14,6 +14,17 @@ test("사다리타기는 제목·본문에 계산기라는 말을 쓰지 않는�
   assert.doesNotMatch(calcSeo("ladder").query, /계산기/)
 })
 
+test("안내는 검색어 나열이 아니라 문장이다", () => {
+  for (const item of CALCULATORS) {
+    const guide = CALC_GUIDES[item.slug]
+    assert.ok(guide)
+    for (const paragraph of guide.paragraphs) {
+      assert.match(paragraph, /(다|요|까)\.$/, `${item.slug} 문장 아님`)
+      assert.doesNotMatch(paragraph, / · /, `${item.slug} 검색어 나열`)
+    }
+  }
+})
+
 test("모든 계산기에 고유 안내 제목과 본문이 있다", () => {
   const titles = new Set<string>()
   const openings = new Set<string>()
