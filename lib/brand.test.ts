@@ -35,6 +35,7 @@ test("세나 그림 파일이 공개 폴더에 있다", () => {
   assert.equal(existsSync(join(root, "kindsem-sena.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-face.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-icon.png")), true)
+  assert.equal(existsSync(join(root, "kindsem-sena-share.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-calc.png")), true)
   assert.equal(existsSync(join(root, "favicon.ico")), true)
   assert.equal(existsSync(join(root, "icon-48.png")), true)
@@ -44,6 +45,7 @@ test("세나 그림 파일이 공개 폴더에 있다", () => {
 
 test("구글 검색용 파비콘이 48픽셀 배수다", () => {
   const root = join(process.cwd(), "public")
+  assert.deepEqual(pngSize(join(root, "kindsem-sena-share.png")), { width: 1200, height: 1200 })
   assert.deepEqual(pngSize(join(root, "icon-48.png")), { width: 48, height: 48 })
   assert.deepEqual(pngSize(join(root, "icon-96.png")), { width: 96, height: 96 })
   assert.deepEqual(pngSize(join(root, "icon-192.png")), { width: 192, height: 192 })

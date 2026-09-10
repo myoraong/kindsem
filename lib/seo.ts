@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import type { CalcItem } from "./catalog.ts"
 import { CALCULATORS } from "./catalog.ts"
 import { CALC_GUIDES } from "./calc-guides.ts"
+import { MASCOT, MASCOT_SHARE } from "./brand.ts"
 import { SITE_NAME, SITE_URL } from "./site.ts"
 
 export type CalcSeo = {
@@ -224,6 +225,14 @@ function pageOpenGraph(title: string, description: string, url: string) {
     locale: "ko_KR" as const,
     type: "website" as const,
     siteName: SITE_NAME,
+    images: [
+      {
+        url: MASCOT_SHARE.src,
+        width: MASCOT_SHARE.width,
+        height: MASCOT_SHARE.height,
+        alt: MASCOT.alt,
+      },
+    ],
   }
 }
 
@@ -243,9 +252,10 @@ export function calcMetadata(item: CalcItem): Metadata {
     },
     openGraph: pageOpenGraph(`${title} · ${SITE_NAME}`, description, url),
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title,
       description,
+      images: [MASCOT_SHARE.src],
     },
   }
 }
@@ -268,6 +278,7 @@ export function calcJsonLd(item: CalcItem) {
       operatingSystem: "Any",
       inLanguage: "ko",
       isAccessibleForFree: true,
+      image: `${SITE_URL}${MASCOT_SHARE.src}`,
       offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
       publisher: {
         "@type": "Organization",
@@ -275,6 +286,7 @@ export function calcJsonLd(item: CalcItem) {
         alternateName: ["Kindsem", "카인드셈"],
         url: SITE_URL,
         logo: `${SITE_URL}/kindsem-sena-icon.png`,
+        image: `${SITE_URL}${MASCOT_SHARE.src}`,
       },
     },
     {
@@ -329,7 +341,9 @@ export function homeJsonLd() {
         alternateName: ["Kindsem", "카인드셈"],
         url: SITE_URL,
         logo: `${SITE_URL}/kindsem-sena-icon.png`,
+        image: `${SITE_URL}${MASCOT_SHARE.src}`,
       },
+      image: `${SITE_URL}${MASCOT_SHARE.src}`,
     },
     {
       "@context": "https://schema.org",

@@ -4,7 +4,7 @@ import { Providers } from "@/components/providers"
 import { AdSenseScript } from "@/components/adsense-script"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
-import { MASCOT } from "@/lib/brand"
+import { MASCOT, MASCOT_SHARE } from "@/lib/brand"
 import { ADSENSE_CLIENT } from "@/lib/adsense"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { THEME_BOOT_SCRIPT } from "@/lib/theme"
@@ -49,9 +49,9 @@ export const metadata: Metadata = {
       "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 표에 없는 공제는 넣지 않습니다.",
     images: [
       {
-        url: "/kindsem-sena-icon.png",
-        width: 512,
-        height: 512,
+        url: MASCOT_SHARE.src,
+        width: MASCOT_SHARE.width,
+        height: MASCOT_SHARE.height,
         alt: MASCOT.alt,
       },
     ],
