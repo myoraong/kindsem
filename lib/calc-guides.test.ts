@@ -1,5 +1,9 @@
+
 import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
+import { dirname, join } from "node:path"
 import test from "node:test"
+import { fileURLToPath } from "node:url"
 import { CALCULATORS } from "./catalog.ts"
 import { CALC_GUIDES } from "./calc-guides.ts"
 import { calcSeo } from "./seo.ts"
@@ -20,6 +24,12 @@ test("사다리타기는 제목·본문에 계산기라는 말을 쓰지 않는�
 
 test("사칙연산에는 안내 글을 붙이지 않는다", () => {
   assert.equal(CALC_GUIDES.quick, undefined)
+  const src = readFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), "../components/calc/quick-calc.tsx"),
+    "utf8",
+  )
+  assert.doesNotMatch(src, /식 아래 결과가 남는 사칙/)
+  assert.match(src, /기록은 이 기기에만 있고 서버로 보내지 않습니다/)
 })
 
 test("안내는 검색어 나열이 아니라 문장이다", () => {

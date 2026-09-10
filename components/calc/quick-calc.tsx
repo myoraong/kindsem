@@ -39,6 +39,9 @@ export function QuickCalc({ item }: { item: CalcItem }) {
               모두 지우기
             </button>
           </div>
+          <p className="mt-2 text-xs leading-5 text-muted-foreground">
+            기록은 이 기기에만 있고 서버로 보내지 않습니다.
+          </p>
 
           <div className="mt-4 rounded-xl bg-secondary/70 px-3 py-3">
             <div className="flex items-center justify-between gap-2">
