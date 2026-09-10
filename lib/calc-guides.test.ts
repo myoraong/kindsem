@@ -6,6 +6,10 @@ import { calcSeo } from "./seo.ts"
 
 const FORBIDDEN = /친절한|웰컴|최고|차별화|lorem|ipsum|Welcome/i
 
+function withGuide() {
+  return CALCULATORS.filter((item) => item.slug !== "quick")
+}
+
 test("사다리타기는 제목·본문에 계산기라는 말을 쓰지 않는다", () => {
   const guide = CALC_GUIDES.ladder
   assert.ok(guide)
@@ -14,8 +18,12 @@ test("사다리타기는 제목·본문에 계산기라는 말을 쓰지 않는�
   assert.doesNotMatch(calcSeo("ladder").query, /계산기/)
 })
 
+test("사칙연산에는 안내 글을 붙이지 않는다", () => {
+  assert.equal(CALC_GUIDES.quick, undefined)
+})
+
 test("안내는 검색어 나열이 아니라 문장이다", () => {
-  for (const item of CALCULATORS) {
+  for (const item of withGuide()) {
     const guide = CALC_GUIDES[item.slug]
     assert.ok(guide)
     for (const paragraph of guide.paragraphs) {
@@ -26,7 +34,7 @@ test("안내는 검색어 나열이 아니라 문장이다", () => {
 })
 
 test("본문 첫 문장은 한 줄 설명을 되풀이하지 않는다", () => {
-  for (const item of CALCULATORS) {
+  for (const item of withGuide()) {
     const guide = CALC_GUIDES[item.slug]
     assert.ok(guide)
     const needle = item.blurb.replace(/입니다\.$/, "").slice(0, 10)
@@ -37,10 +45,10 @@ test("본문 첫 문장은 한 줄 설명을 되풀이하지 않는다", () => {
   }
 })
 
-test("모든 계산기에 고유 안내 제목과 본문이 있다", () => {
+test("법령 계산기에 고유 안내 제목과 본문이 있다", () => {
   const titles = new Set<string>()
   const openings = new Set<string>()
-  for (const item of CALCULATORS) {
+  for (const item of withGuide()) {
     const guide = CALC_GUIDES[item.slug]
     assert.ok(guide, `${item.slug} 안내 없음`)
     assert.ok(guide.title.length >= 8, `${item.slug} 제목 짧음`)
