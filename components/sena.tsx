@@ -7,28 +7,28 @@ import { cn } from "@/lib/utils"
 
 const VARIANTS = {
   full: {
-    src: "/kindsem-sena.png",
+    src: "/kindsem-sena-live.png",
     alt: MASCOT.alt,
     width: 455,
     height: 659,
     className: "h-auto w-full bg-transparent",
   },
   calc: {
-    src: "/kindsem-sena-calc.png",
+    src: "/kindsem-sena-calc-live.png",
     alt: MASCOT.altCalc,
     width: 624,
     height: 960,
     className: "h-auto w-full bg-transparent",
   },
   face: {
-    src: "/kindsem-sena-face.png",
+    src: "/kindsem-sena-face-live.png",
     alt: MASCOT.name,
     width: 512,
     height: 512,
     className: "size-11 overflow-hidden rounded-full object-cover",
   },
   icon: {
-    src: "/kindsem-sena-icon.png",
+    src: "/kindsem-sena-mark.png",
     alt: MASCOT.name,
     width: 512,
     height: 512,

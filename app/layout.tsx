@@ -4,7 +4,7 @@ import { Providers } from "@/components/providers"
 import { AdSenseScript } from "@/components/adsense-script"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
-import { MASCOT, MASCOT_SHARE } from "@/lib/brand"
+import { MASCOT, MASCOT_FAVICON, MASCOT_MARK, MASCOT_SHARE } from "@/lib/brand"
 import { ADSENSE_CLIENT } from "@/lib/adsense"
 import { SITE_NAME, SITE_URL } from "@/lib/site"
 import { THEME_BOOT_SCRIPT } from "@/lib/theme"
@@ -31,13 +31,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon-48.png", type: "image/png", sizes: "48x48" },
-      { url: "/icon-96.png", type: "image/png", sizes: "96x96" },
-      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
-      { url: "/favicon.ico", sizes: "48x48" },
-      { url: "/kindsem-sena-icon.png", type: "image/png", sizes: "512x512" },
+      { url: MASCOT_FAVICON.png48, type: "image/png", sizes: "48x48" },
+      { url: MASCOT_FAVICON.png96, type: "image/png", sizes: "96x96" },
+      { url: MASCOT_FAVICON.png192, type: "image/png", sizes: "192x192" },
+      { url: MASCOT_FAVICON.ico, sizes: "48x48" },
+      { url: MASCOT_MARK.src, type: "image/png", sizes: "512x512" },
     ],
-    apple: [{ url: "/kindsem-sena-icon.png", sizes: "180x180" }],
+    apple: [{ url: MASCOT_MARK.src, sizes: "180x180" }],
   },
   openGraph: {
     type: "website",
