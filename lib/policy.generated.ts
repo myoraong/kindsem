@@ -1,5 +1,5 @@
 /* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
-export const POLICY_FETCHED_AT = "2026-09-17"
+export const POLICY_FETCHED_AT = "2026-09-18"
 
 export const POLICY_SOURCES = {
   "income": {
@@ -94,9 +94,9 @@ export const POLICY_SOURCES = {
     "query": "조세특례제한법",
     "id": "001584",
     "name": "조세특례제한법",
-    "enforced": "2026-07-01",
-    "promulgated": "2025-12-23",
-    "revision": "일부개정"
+    "enforced": "2026-09-18",
+    "promulgated": "2026-03-17",
+    "revision": "타법개정"
   },
   "laborStd": {
     "query": "근로기준법",
@@ -150,16 +150,16 @@ export const POLICY_SOURCES = {
     "query": "고용보험법 시행령",
     "id": "002249",
     "name": "고용보험법 시행령",
-    "enforced": "2026-07-01",
-    "promulgated": "2026-06-30",
+    "enforced": "2026-09-18",
+    "promulgated": "2026-08-18",
     "revision": "일부개정"
   },
   "eiLaw": {
     "query": "고용보험법",
     "id": "001761",
     "name": "고용보험법",
-    "enforced": "2026-08-20",
-    "promulgated": "2026-02-19",
+    "enforced": "2026-09-18",
+    "promulgated": "2026-03-17",
     "revision": "일부개정"
   },
   "customsRule": {
@@ -174,7 +174,7 @@ export const POLICY_SOURCES = {
     "query": "근로자퇴직급여 보장법",
     "id": "009883",
     "name": "근로자퇴직급여 보장법",
-    "enforced": "2026-07-01",
+    "enforced": "2026-09-18",
     "promulgated": "2026-03-17",
     "revision": "일부개정"
   },
