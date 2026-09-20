@@ -116,7 +116,7 @@
 <link>https://kindsem.com/calc/min-wage/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/min-wage/</guid>
 <pubDate>Sun, 20 Sep 2026 00:00:00 GMT</pubDate>
-<description>최저임금 계산기. 고시 시급·월급과, 넣은 시급을 월로 바꾼 값을 견줍니다. 최저시급 계산기, 시급 환산, 월급 시급 계산, 2026 최저임금</description>
+<description>최저임금 계산기. 고시 시급·월급과, 넣은 시급을 월로 바꾼 값을 비교합니다. 최저시급 계산기, 시급 환산, 월급 시급 계산, 2026 최저임금</description>
 </item>
 <item>
 <title>알바 월급 계산기</title>
@@ -214,7 +214,7 @@
 <link>https://kindsem.com/calc/jeonse/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/jeonse/</guid>
 <pubDate>Sun, 20 Sep 2026 00:00:00 GMT</pubDate>
-<description>전세대출 이자 계산기. 이자만 내는 전세자금의 월 이자를 가늠합니다. 전세자금대출 계산기, 전세자금대출 이자, 전세대출 월이자</description>
+<description>전세대출 이자 계산기. 이자만 내는 전세자금의 월 이자를 봅니다. 전세자금대출 계산기, 전세자금대출 이자, 전세대출 월이자</description>
 </item>
 <item>
 <title>전월세 전환율 계산기</title>
@@ -228,7 +228,7 @@
 <link>https://kindsem.com/calc/jeonse-vs-rent/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/jeonse-vs-rent/</guid>
 <pubDate>Sun, 20 Sep 2026 00:00:00 GMT</pubDate>
-<description>전세 월세 비교 계산기. 같은 집을 전세로 둘 때와 월세로 둘 때 월 부담을 견줍니다. 전세 vs 월세, 전세대비 월세, 전세월세 계산</description>
+<description>전세 월세 비교 계산기. 같은 집을 전세로 둘 때와 월세로 둘 때 월 부담을 비교합니다. 전세 vs 월세, 전세대비 월세, 전세월세 계산</description>
 </item>
 <item>
 <title>월세 세액공제 계산기</title>
@@ -256,14 +256,14 @@
 <link>https://kindsem.com/calc/corporate-gains/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/corporate-gains/</guid>
 <pubDate>Sun, 20 Sep 2026 00:00:00 GMT</pubDate>
-<description>법인 양도세 계산기. 법인이 부동산을 팔 때 법인세와 추가과세를 가늠합니다. 법인 부동산 양도, 법인세 추가과세</description>
+<description>법인 양도세 계산기. 법인이 부동산을 팔 때 법인세와 추가과세를 봅니다. 법인 부동산 양도, 법인세 추가과세</description>
 </item>
 <item>
 <title>재산세 계산기</title>
 <link>https://kindsem.com/calc/holding-tax/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/holding-tax/</guid>
 <pubDate>Sun, 20 Sep 2026 00:00:00 GMT</pubDate>
-<description>재산세 계산기. 재산세와 종합부동산세를 같이 가늠합니다. 종부세 계산기, 보유세 계산기, 종합부동산세</description>
+<description>재산세 계산기. 재산세와 종합부동산세를 같이 봅니다. 종부세 계산기, 보유세 계산기, 종합부동산세</description>
 </item>
 <item>
 <title>등록면허세 계산기</title>
@@ -284,7 +284,7 @@
 <link>https://kindsem.com/calc/inheritance/</link>
 <guid isPermaLink="true">https://kindsem.com/calc/inheritance/</guid>
 <pubDate>Sun, 20 Sep 2026 00:00:00 GMT</pubDate>
-<description>상속세 계산기. 일괄공제와 배우자공제부터 상속세를 가늠합니다. 상속세 얼마나, 일괄공제, 상속세 인적공제, 금융재산공제</description>
+<description>상속세 계산기. 일괄공제와 배우자공제부터 상속세를 봅니다. 상속세 얼마나, 일괄공제, 상속세 인적공제, 금융재산공제</description>
 </item>
 <item>
 <title>부담부증여 계산기</title>

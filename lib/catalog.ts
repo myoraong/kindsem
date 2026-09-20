@@ -101,7 +101,7 @@ export const CALCULATORS: CalcItem[] = [
     slug: "deposit",
     title: "예적금",
     blurb: "넣은 이율로 단리와 월복리를 세고, 세후면 이자에서 15.4%를 뗍니다.",
-    when: "예금·적금 만기 가늠",
+    when: "예금·적금 만기 참고",
     group: "today",
   },
   {
@@ -128,7 +128,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "min-wage",
     title: "최저임금",
-    blurb: "고시 시급·월급과, 넣은 시급을 월로 바꾼 값을 견줍니다.",
+    blurb: "고시 시급·월급과, 넣은 시급을 월로 바꾼 값을 비교합니다.",
     when: "시급·월급 계약이 최저인지",
     group: "work",
   },
@@ -226,8 +226,8 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "jeonse",
     title: "전세대출 이자",
-    blurb: "이자만 내는 전세자금의 월 이자를 가늠합니다.",
-    when: "전세 계약과 대출 한도 가늠",
+    blurb: "이자만 내는 전세자금의 월 이자를 봅니다.",
+    when: "전세 계약과 대출 한도",
     group: "rent",
   },
   {
@@ -240,7 +240,7 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "jeonse-vs-rent",
     title: "전세 vs 월세",
-    blurb: "같은 집을 전세로 둘 때와 월세로 둘 때 월 부담을 견줍니다.",
+    blurb: "같은 집을 전세로 둘 때와 월세로 둘 때 월 부담을 비교합니다.",
     when: "전세와 월세 중 고를 때",
     group: "rent",
   },
@@ -268,14 +268,14 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "corporate-gains",
     title: "법인 양도세",
-    blurb: "법인이 부동산을 팔 때 법인세와 추가과세를 가늠합니다.",
+    blurb: "법인이 부동산을 팔 때 법인세와 추가과세를 봅니다.",
     when: "법인 명의 매각",
     group: "buy",
   },
   {
     slug: "holding-tax",
     title: "보유세",
-    blurb: "재산세와 종합부동산세를 같이 가늠합니다.",
+    blurb: "재산세와 종합부동산세를 같이 봅니다.",
     when: "공시가격이 나온 뒤",
     group: "buy",
   },
@@ -296,8 +296,8 @@ export const CALCULATORS: CalcItem[] = [
   {
     slug: "inheritance",
     title: "상속세",
-    blurb: "일괄공제와 배우자공제부터 상속세를 가늠합니다.",
-    when: "상속세가 나올지 가늠",
+    blurb: "일괄공제와 배우자공제부터 상속세를 봅니다.",
+    when: "상속세가 나올지",
     group: "buy",
   },
   {
@@ -325,7 +325,7 @@ export const CALCULATORS: CalcItem[] = [
     slug: "ltv",
     title: "LTV",
     blurb: "집값의 몇 퍼센트까지 빌릴 수 있는지 봅니다. 규제지역이면 한도가 낮아집니다.",
-    when: "주택구입 주담대 한도 가늠",
+    when: "주택구입 주담대 한도",
     group: "loan",
   },
   {
