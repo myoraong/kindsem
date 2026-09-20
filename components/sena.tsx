@@ -28,7 +28,7 @@ const VARIANTS = {
     className: "size-11 overflow-hidden rounded-full object-cover",
   },
   icon: {
-    src: "/kindsem-sena-icon.png",
+    src: "/kindsem-sena-face-live.png",
     alt: MASCOT.name,
     width: 512,
     height: 512,
