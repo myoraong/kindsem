@@ -41,7 +41,7 @@ export default function HomePage() {
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-primary">생활 · 급여 · 부동산</p>
           <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl md:text-4xl">
-            카인드셈 생활·급여·부동산 계산기
+            카인드셈 종합계산기
           </h1>
           <p className="mt-3 max-w-xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
             명세서·계약서·고지서에 나오는 숫자를, 한국 법령 표에 있는 세율과 상한만으로 가늠합니다.

@@ -6,7 +6,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { MASCOT, MASCOT_FAVICON, MASCOT_MARK, MASCOT_SHARE } from "@/lib/brand"
 import { ADSENSE_CLIENT } from "@/lib/adsense"
-import { SITE_NAME, SITE_URL } from "@/lib/site"
+import { SITE_SEARCH_NAME, SITE_URL } from "@/lib/site"
 import { THEME_BOOT_SCRIPT } from "@/lib/theme"
 import "./globals.css"
 
@@ -17,9 +17,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  applicationName: SITE_SEARCH_NAME,
   title: {
-    default: `생활·급여·부동산 계산기 · ${SITE_NAME}`,
-    template: "%s · Kindsem 카인드셈",
+    default: SITE_SEARCH_NAME,
+    template: `%s · ${SITE_SEARCH_NAME}`,
   },
   description:
     "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 표에 없는 공제는 넣지 않습니다.",
@@ -43,8 +44,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: "/",
-    siteName: SITE_NAME,
-    title: `생활·급여·부동산 계산기 · ${SITE_NAME}`,
+    siteName: SITE_SEARCH_NAME,
+    title: SITE_SEARCH_NAME,
     description:
       "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 표에 없는 공제는 넣지 않습니다.",
     images: [

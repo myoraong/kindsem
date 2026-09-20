@@ -3,7 +3,13 @@ import type { CalcItem } from "./catalog.ts"
 import { CALCULATORS } from "./catalog.ts"
 import { CALC_GUIDES } from "./calc-guides.ts"
 import { MASCOT, MASCOT_MARK, MASCOT_SHARE } from "./brand.ts"
-import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "./site.ts"
+import {
+  CONTACT_EMAIL,
+  SITE_ALTERNATE_NAMES,
+  SITE_NAME,
+  SITE_SEARCH_NAME,
+  SITE_URL,
+} from "./site.ts"
 
 export type CalcSeo = {
   /** 검색창에 넣는 대표 말. 페이지 제목·H1. */
@@ -224,7 +230,7 @@ function pageOpenGraph(title: string, description: string, url: string) {
     url,
     locale: "ko_KR" as const,
     type: "website" as const,
-    siteName: SITE_NAME,
+    siteName: SITE_SEARCH_NAME,
     images: [
       {
         url: MASCOT_SHARE.src,
@@ -282,8 +288,8 @@ export function calcJsonLd(item: CalcItem) {
       offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
       publisher: {
         "@type": "Organization",
-        name: SITE_NAME,
-        alternateName: ["Kindsem", "카인드셈"],
+        name: SITE_SEARCH_NAME,
+        alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
         logo: `${SITE_URL}${MASCOT_MARK.src}`,
         image: `${SITE_URL}${MASCOT_SHARE.src}`,
@@ -330,15 +336,15 @@ export function homeJsonLd() {
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: SITE_NAME,
-      alternateName: ["Kindsem", "카인드셈"],
+      name: SITE_SEARCH_NAME,
+      alternateName: [...SITE_ALTERNATE_NAMES],
       url: SITE_URL,
       inLanguage: "ko",
       description: HOME_DESCRIPTION,
       publisher: {
         "@type": "Organization",
-        name: SITE_NAME,
-        alternateName: ["Kindsem", "카인드셈"],
+        name: SITE_SEARCH_NAME,
+        alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
         logo: `${SITE_URL}${MASCOT_MARK.src}`,
         image: `${SITE_URL}${MASCOT_SHARE.src}`,
@@ -359,7 +365,7 @@ export function homeJsonLd() {
   ]
 }
 
-const HOME_TITLE = `생활·급여·부동산 계산기 · ${SITE_NAME}`
+const HOME_TITLE = SITE_SEARCH_NAME
 const HOME_DESCRIPTION =
   "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 표에 없는 공제는 넣지 않습니다."
 

@@ -1,7 +1,7 @@
-# Kindsem 카인드셈
+# Kindsem 카인드셈 종합계산기
 # https://kindsem.com/
 
-생활·급여·부동산 계산기. 세율·상한은 법제처 현행 법령·고시입니다.
+생활·급여·부동산 종합계산기. 세율·상한은 법제처 현행 법령·고시입니다.
 
 - 홈: https://kindsem.com/
 - 계산기 목록: https://kindsem.com/calc/

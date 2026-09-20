@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url"
 import { CALCULATORS } from "../lib/catalog.ts"
 import { POLICY_FETCHED_AT } from "../lib/policy.generated.ts"
 import { calcDescription, calcSeo } from "../lib/seo.ts"
-import { SITE_NAME, SITE_URL } from "../lib/site.ts"
+import { SITE_NAME, SITE_SEARCH_NAME, SITE_URL } from "../lib/site.ts"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 const out = join(root, "public/rss.xml")
@@ -30,7 +30,7 @@ function rfc822(day) {
 const pubDate = rfc822(POLICY_FETCHED_AT)
 const items = [
   {
-    title: `생활·급여·부동산 계산기 · ${SITE_NAME}`,
+    title: SITE_SEARCH_NAME,
     url: `${SITE_URL}/`,
     description:
       "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다.",
@@ -65,7 +65,7 @@ const items = [
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
 <channel>
-<title>${escapeXml(`${SITE_NAME} 계산기`)}</title>
+<title>${escapeXml(SITE_SEARCH_NAME)}</title>
 <link>${SITE_URL}/</link>
 <description>${escapeXml("생활·급여·부동산 계산기. 세율·상한은 법제처 현행 법령·고시입니다.")}</description>
 <language>ko</language>
