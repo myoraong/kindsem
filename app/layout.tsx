@@ -38,7 +38,10 @@ export const metadata: Metadata = {
       { url: MASCOT_FAVICON.ico, sizes: "48x48" },
       { url: MASCOT_MARK.src, type: "image/png", sizes: "512x512" },
     ],
-    apple: [{ url: MASCOT_MARK.src, sizes: "180x180" }],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180" },
+      { url: MASCOT_MARK.src, sizes: "180x180" },
+    ],
   },
   openGraph: {
     type: "website",

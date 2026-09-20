@@ -2,7 +2,7 @@ import assert from "node:assert/strict"
 import { existsSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import test from "node:test"
-import { MASCOT } from "./brand.ts"
+import { MASCOT, MASCOT_FAVICON, MASCOT_MARK } from "./brand.ts"
 
 function pngSize(path: string) {
   const buf = readFileSync(path)
@@ -42,19 +42,31 @@ test("세나 그림 파일이 공개 폴더에 있다", () => {
   assert.equal(existsSync(join(root, "kindsem-sena-mark.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-fav-48.png")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-fav.ico")), true)
+  assert.equal(existsSync(join(root, "kindsem-sena-sage-48.png")), true)
+  assert.equal(existsSync(join(root, "kindsem-sena-sage-96.png")), true)
+  assert.equal(existsSync(join(root, "kindsem-sena-sage-192.png")), true)
+  assert.equal(existsSync(join(root, "kindsem-sena-sage.ico")), true)
   assert.equal(existsSync(join(root, "kindsem-sena-calc.png")), true)
   assert.equal(existsSync(join(root, "favicon.ico")), true)
+  assert.equal(existsSync(join(root, "apple-touch-icon.png")), true)
   assert.equal(existsSync(join(root, "icon-48.png")), true)
   assert.equal(existsSync(join(root, "icon-96.png")), true)
   assert.equal(existsSync(join(root, "icon-192.png")), true)
 })
 
-test("구글 검색용 파비콘이 48픽셀 배수다", () => {
+test("구글 검색용 파비콘이 세이지 세나고 48픽셀 배수다", () => {
   const root = join(process.cwd(), "public")
+  assert.equal(MASCOT_FAVICON.png48, "/kindsem-sena-sage-48.png")
+  assert.equal(MASCOT_FAVICON.png96, "/kindsem-sena-sage-96.png")
+  assert.equal(MASCOT_FAVICON.png192, "/kindsem-sena-sage-192.png")
+  assert.equal(MASCOT_FAVICON.ico, "/favicon.ico")
+  assert.equal(MASCOT_MARK.src, "/kindsem-sena-icon.png")
   assert.deepEqual(pngSize(join(root, "kindsem-sena-share-live.png")), { width: 1200, height: 1200 })
-  assert.deepEqual(pngSize(join(root, "kindsem-sena-mark.png")), { width: 512, height: 512 })
-  assert.deepEqual(pngSize(join(root, "kindsem-sena-fav-48.png")), { width: 48, height: 48 })
-  assert.deepEqual(pngSize(join(root, "kindsem-sena-fav-96.png")), { width: 96, height: 96 })
-  assert.deepEqual(pngSize(join(root, "kindsem-sena-fav-192.png")), { width: 192, height: 192 })
-  assert.ok(icoSizes(join(root, "kindsem-sena-fav.ico")).includes("48x48"))
+  assert.deepEqual(pngSize(join(root, "kindsem-sena-icon.png")), { width: 512, height: 512 })
+  assert.deepEqual(pngSize(join(root, "kindsem-sena-sage-48.png")), { width: 48, height: 48 })
+  assert.deepEqual(pngSize(join(root, "kindsem-sena-sage-96.png")), { width: 96, height: 96 })
+  assert.deepEqual(pngSize(join(root, "kindsem-sena-sage-192.png")), { width: 192, height: 192 })
+  assert.deepEqual(pngSize(join(root, "apple-touch-icon.png")), { width: 180, height: 180 })
+  assert.ok(icoSizes(join(root, "favicon.ico")).includes("48x48"))
+  assert.ok(icoSizes(join(root, "kindsem-sena-sage.ico")).includes("48x48"))
 })

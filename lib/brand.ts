@@ -13,16 +13,16 @@ export const MASCOT_SHARE = {
   height: 1200,
 } as const
 
-/** 구글 파비콘·조직 로고. 지금 세나 얼굴, 크림 배경. */
+/** 구글 파비콘·조직 로고. 세이지 배경 위 지금 세나. 예전 크림 얼굴과 주소를 갈라 둡니다. */
 export const MASCOT_MARK = {
-  src: "/kindsem-sena-mark.png",
+  src: "/kindsem-sena-icon.png",
   width: 512,
   height: 512,
 } as const
 
 export const MASCOT_FAVICON = {
-  png48: "/kindsem-sena-fav-48.png",
-  png96: "/kindsem-sena-fav-96.png",
-  png192: "/kindsem-sena-fav-192.png",
-  ico: "/kindsem-sena-fav.ico",
+  png48: "/kindsem-sena-sage-48.png",
+  png96: "/kindsem-sena-sage-96.png",
+  png192: "/kindsem-sena-sage-192.png",
+  ico: "/favicon.ico",
 } as const
