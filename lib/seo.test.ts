@@ -2,8 +2,12 @@ import assert from "node:assert/strict"
 import test from "node:test"
 import { CALCULATORS } from "./catalog.ts"
 import {
+  ABOUT_METADATA,
+  CALC_INDEX_METADATA,
   CALC_SEO,
   HOME_METADATA,
+  HOW_METADATA,
+  INDEX_ROBOTS,
   REALTY_METADATA,
   calcDescription,
   calcJsonLd,
@@ -100,6 +104,18 @@ test("홈·부동산 Open Graph에 사이트명과 설명이 있다", () => {
   )
   assert.equal(REALTY_METADATA.openGraph?.url, "/realty/")
   assert.match(String(REALTY_METADATA.keywords), /취득세 계산기/)
+})
+
+test("전 페이지 메타는 구글 이미지 색인을 끈다", () => {
+  assert.equal(INDEX_ROBOTS.googleBot.noimageindex, true)
+  const item = CALCULATORS.find((row) => row.slug === "take-home")
+  assert.ok(item)
+  assert.deepEqual(calcMetadata(item).robots, INDEX_ROBOTS)
+  assert.deepEqual(HOME_METADATA.robots, INDEX_ROBOTS)
+  assert.deepEqual(CALC_INDEX_METADATA.robots, INDEX_ROBOTS)
+  assert.deepEqual(HOW_METADATA.robots, INDEX_ROBOTS)
+  assert.deepEqual(ABOUT_METADATA.robots, INDEX_ROBOTS)
+  assert.deepEqual(REALTY_METADATA.robots, INDEX_ROBOTS)
 })
 
 test("계산기 Open Graph에 사이트명이 있다", () => {

@@ -201,6 +201,17 @@ export const CALC_SEO: Record<string, CalcSeo> = {
   },
 }
 
+/** 페이지는 검색에 두고, 구글 이미지 검색에는 예전 세나 썸네일이 안 나오게 합니다. */
+export const INDEX_ROBOTS = {
+  index: true,
+  follow: true,
+  googleBot: {
+    index: true,
+    follow: true,
+    noimageindex: true,
+  },
+} as const
+
 export function calcSeo(slug: string): CalcSeo {
   return CALC_SEO[slug] ?? { query: slug, also: [] }
 }
@@ -251,7 +262,7 @@ export function calcMetadata(item: CalcItem): Metadata {
     title,
     description,
     keywords: [title, ...seo.also, "카인드셈", "Kindsem"],
-    robots: { index: true, follow: true },
+    robots: INDEX_ROBOTS,
     alternates: {
       canonical: url,
       languages: { "ko-KR": url },
@@ -385,7 +396,7 @@ export const HOME_METADATA: Metadata = {
     "양도세 계산기",
     "자동차세 계산기",
   ],
-  robots: { index: true, follow: true },
+  robots: INDEX_ROBOTS,
   alternates: { canonical: "/", languages: { "ko-KR": "/" } },
   openGraph: pageOpenGraph(HOME_TITLE, HOME_DESCRIPTION, "/"),
 }
@@ -395,7 +406,7 @@ export const CALC_INDEX_METADATA: Metadata = {
   description:
     "카인드셈 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
   keywords: ["계산기 모음", "실수령액 계산기", "취득세 계산기", "카인드셈"],
-  robots: { index: true, follow: true },
+  robots: INDEX_ROBOTS,
   alternates: { canonical: "/calc/", languages: { "ko-KR": "/calc/" } },
   openGraph: pageOpenGraph(
     `계산기 목록 · ${SITE_NAME}`,
@@ -408,7 +419,7 @@ export const HOW_METADATA: Metadata = {
   title: "숫자를 어떻게 받는지",
   description:
     "카인드셈이 법제처·금융위 현행본에서 세율을 읽는 방식, 빼 두는 공제, 혜택을 기본으로 켜지 않는 이유.",
-  robots: { index: true, follow: true },
+  robots: INDEX_ROBOTS,
   alternates: { canonical: "/how/", languages: { "ko-KR": "/how/" } },
   openGraph: pageOpenGraph(
     `숫자를 어떻게 받는지 · ${SITE_NAME}`,
@@ -438,7 +449,7 @@ export const ABOUT_METADATA: Metadata = {
   title: "소개",
   description:
     "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
-  robots: { index: true, follow: true },
+  robots: INDEX_ROBOTS,
   alternates: { canonical: "/about/", languages: { "ko-KR": "/about/" } },
   openGraph: pageOpenGraph(
     `소개 · ${SITE_NAME}`,
@@ -470,7 +481,7 @@ export const REALTY_METADATA: Metadata = {
   description:
     "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
   keywords: ["부동산 계산기", "취득세 계산기", "양도세 계산기", "중개수수료 계산기", "DSR 계산기", "평수 계산기", "카인드셈"],
-  robots: { index: true, follow: true },
+  robots: INDEX_ROBOTS,
   alternates: { canonical: "/realty/", languages: { "ko-KR": "/realty/" } },
   openGraph: pageOpenGraph(
     `부동산 계산기 · ${SITE_NAME}`,

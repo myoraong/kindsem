@@ -1,11 +1,27 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { MASCOT, MASCOT_SHARE } from "@/lib/brand"
+import { INDEX_ROBOTS } from "@/lib/seo"
 import { CONTACT_EMAIL, CONTACT_OPERATOR, SITE_NAME } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "문의",
   description: `${SITE_NAME} 운영 연락처. 생활·급여·부동산 계산기 문의는 이메일로 받습니다.`,
   alternates: { canonical: "/contact/" },
+  robots: INDEX_ROBOTS,
+  openGraph: {
+    title: `문의 · ${SITE_NAME}`,
+    description: `${SITE_NAME} 운영 연락처. 생활·급여·부동산 계산기 문의는 이메일로 받습니다.`,
+    url: "/contact/",
+    images: [
+      {
+        url: MASCOT_SHARE.src,
+        width: MASCOT_SHARE.width,
+        height: MASCOT_SHARE.height,
+        alt: MASCOT.alt,
+      },
+    ],
+  },
 }
 
 export default function ContactPage() {

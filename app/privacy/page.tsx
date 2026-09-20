@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { MASCOT, MASCOT_SHARE } from "@/lib/brand"
+import { INDEX_ROBOTS } from "@/lib/seo"
 import { CONTACT_EMAIL } from "@/lib/site"
 
 export const metadata: Metadata = {
@@ -8,15 +9,7 @@ export const metadata: Metadata = {
   description:
     "Kindsem은 회원가입 없이 계산하며, 개인정보를 수집하지 않습니다.",
   alternates: { canonical: "/privacy/" },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      noimageindex: true,
-    },
-  },
+  robots: INDEX_ROBOTS,
   openGraph: {
     title: "개인정보 안내 · Kindsem 카인드셈",
     description:
