@@ -8,8 +8,8 @@ export function FaqList({ items }: { items: FaqItem[] }) {
     <section className="mt-8">
       <h2 className="text-lg font-semibold">자주 묻는 질문</h2>
       <div className="mt-3 divide-y divide-border overflow-hidden rounded-2xl bg-card ring-1 ring-foreground/8">
-        {items.map((item, index) => (
-          <details key={item.q} className="group" open={index === 0}>
+        {items.map((item) => (
+          <details key={item.q} className="group" open>
             <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 text-left text-sm font-medium marker:content-none [&::-webkit-details-marker]:hidden">
               {item.q}
               <span className="shrink-0 text-muted-foreground">

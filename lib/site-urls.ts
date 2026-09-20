@@ -12,6 +12,7 @@ export function publicPaths() {
     "/contact/",
     "/privacy/",
     "/how/",
+    "/about/",
     ...CALCULATORS.map((item) => `/calc/${item.slug}/`),
   ]
 }

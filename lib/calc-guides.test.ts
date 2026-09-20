@@ -6,6 +6,7 @@ import test from "node:test"
 import { fileURLToPath } from "node:url"
 import { CALCULATORS } from "./catalog.ts"
 import { CALC_GUIDES } from "./calc-guides.ts"
+import { CALC_GUIDE_MORE } from "./calc-guides-more.ts"
 import { calcSeo } from "./seo.ts"
 
 const FORBIDDEN = /친절한|웰컴|최고|차별화|lorem|ipsum|Welcome/i
@@ -62,14 +63,26 @@ test("법령 계산기에 고유 안내 제목과 본문이 있다", () => {
     const guide = CALC_GUIDES[item.slug]
     assert.ok(guide, `${item.slug} 안내 없음`)
     assert.ok(guide.title.length >= 8, `${item.slug} 제목 짧음`)
-    assert.ok(guide.paragraphs.length >= 3, `${item.slug} 문단 부족`)
+    assert.ok(guide.paragraphs.length >= 6, `${item.slug} 문단 부족`)
     const body = guide.paragraphs.join("")
-    assert.ok(body.length >= 150, `${item.slug} 본문 짧음`)
+    assert.ok(body.length >= 450, `${item.slug} 본문 짧음`)
     assert.doesNotMatch(guide.title, FORBIDDEN)
     assert.doesNotMatch(body, FORBIDDEN)
     assert.equal(titles.has(guide.title), false, `제목 중복 ${guide.title}`)
     titles.add(guide.title)
     assert.equal(openings.has(guide.paragraphs[0]), false, `첫 문단 중복 ${item.slug}`)
     openings.add(guide.paragraphs[0])
+  }
+})
+
+test("이어 붙인 본문은 계산기마다 있고 문장이다", () => {
+  for (const item of withGuide()) {
+    const extra = CALC_GUIDE_MORE[item.slug]
+    assert.ok(extra, `${item.slug} 추가 본문 없음`)
+    assert.ok(extra.length >= 4, `${item.slug} 추가 문단 부족`)
+    for (const paragraph of extra) {
+      assert.match(paragraph, /(다|요|까)\.$/, `${item.slug} 추가 문장 아님`)
+      assert.doesNotMatch(paragraph, / · /, `${item.slug} 추가 검색어 나열`)
+    }
   }
 })

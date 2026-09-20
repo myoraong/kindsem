@@ -36,11 +36,19 @@ export default function CalcIndexPage() {
         </p>
         <p>
           세율은 법제처·금융위 현행본입니다. 표에 없는 공제는 빼 둡니다. 각 계산기 아래에는 그 화면이
-          세는 것과 세지 않는 것을 글로 적어 두었습니다.{" "}
+          세는 것과 세지 않는 것을 글로 적어 두었습니다. 혜택 칸은 해당할 때만 켜고, 목록에서 바로 좋은
+          숫자가 보이게 하지 않습니다.
+        </p>
+        <p>
+          법령 출처와 빼 둔 항목은{" "}
           <Link href="/how/" className="text-foreground underline underline-offset-2">
             숫자를 어떻게 받는지
           </Link>
-          에서 출처와 빼 둔 항목을 모았습니다.
+          에, 운영자는{" "}
+          <Link href="/about/" className="text-foreground underline underline-offset-2">
+            소개
+          </Link>
+          에 있습니다.
         </p>
       </div>
 

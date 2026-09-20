@@ -55,6 +55,9 @@ export function SiteFooter() {
             <Link href="/how/" className="underline-offset-2 hover:text-foreground hover:underline">
               숫자를 어떻게 받는지
             </Link>
+            <Link href="/about/" className="underline-offset-2 hover:text-foreground hover:underline">
+              소개
+            </Link>
             <Link href="/privacy/" className="underline-offset-2 hover:text-foreground hover:underline">
               개인정보 안내
             </Link>

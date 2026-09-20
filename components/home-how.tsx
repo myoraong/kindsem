@@ -10,7 +10,8 @@ export function HomeHow() {
         <p>
           카인드셈은 생활·급여·부동산에서 반복해서 묻는 숫자를, 회원가입 없이 이 기기에서 계산합니다.
           실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR처럼 검색으로 들어오는
-          계산을 한곳에 모아 두었습니다.
+          계산을 한곳에 모아 두었습니다. 번역한 해외 계산기가 아니라, 한국 법령 표의 세율과 상한만
+          넣습니다.
         </p>
         <p>
           세율·상한·공제 한도는 법제처 국가법령정보와 금융위 감독규정 현행본을 읽어 넣습니다. 한국 시간
@@ -30,7 +31,11 @@ export function HomeHow() {
           <Link href="/how/" className="font-medium text-foreground underline underline-offset-2">
             숫자를 어떻게 받는지
           </Link>
-          에 법령 출처와 빼 둔 항목을 더 적어 두었습니다.
+          에 법령 출처와 빼 둔 항목을,{" "}
+          <Link href="/about/" className="font-medium text-foreground underline underline-offset-2">
+            소개
+          </Link>
+          에 운영자와 이 사이트가 세지 않는 일을 적어 두었습니다.
         </p>
       </div>
     </section>

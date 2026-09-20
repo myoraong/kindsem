@@ -37,6 +37,10 @@ export default function RealtyPage() {
           취득세는 살 때, 재산세·종부세는 갖고 있을 때, 양도세는 팔 때입니다. 전월세 전환율과 월세
           세액공제는 계약과 연말정산이 다릅니다. 각 계산기 본문에 그 차이를 적어 두었습니다.
         </span>
+        <span className="mt-3 block">
+          생애최초 감면, 1주택 비과세, 비규제 LTV는 기본으로 켜 두지 않습니다. 해당하면 그 화면에서
+          칸을 바꾸세요. 켜 둔 채로 열면 세금·한도가 실제보다 좋아 보입니다.
+        </span>
       </p>
       <div className="mt-8">
         <RealtyCatalog />

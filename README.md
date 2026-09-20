@@ -57,7 +57,7 @@ npm run build
 
 1. [adsense.google.com](https://adsense.google.com)에서 Google 계정으로 가입합니다. 사이트 주소는 `https://kindsem.com`, 언어는 한국어, 연락처는 운영 이메일입니다.
 2. 사이트 소유 확인은 보통 헤드의 `ca-pub-` 스크립트 또는 루트 `ads.txt`입니다. `NEXT_PUBLIC_ADSENSE_CLIENT`를 넣으면 레이아웃에 스크립트가 붙고, `public/ads.txt`에 Google이 준 한 줄을 넣으면 됩니다.
-3. 심사에는 개인정보 안내(`/privacy`), 문의(`/contact`), 실제 계산 본문이 있어야 합니다. 빈 사이트나 클릭 유도는 거절됩니다.
+3. 심사에는 소개(`/about`), 법령 출처(`/how`), 개인정보 안내(`/privacy`), 문의(`/contact`), 계산기마다 고유 안내 본문이 있어야 합니다. 빈 사이트나 클릭 유도는 거절됩니다. 목록·사칙·안내 페이지에는 인페이지 광고를 두지 않습니다.
 4. 승인 후 자동 광고 또는 광고 단위를 켜고, `https://kindsem.com/ads.txt`를 유지합니다.
 5. 부정 클릭은 금지입니다. 콘텐츠 정책은 [AdSense 프로그램 정책](https://support.google.com/adsense/answer/9724)을 따릅니다.
 

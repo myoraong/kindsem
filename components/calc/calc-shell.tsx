@@ -83,10 +83,10 @@ export function CalcShell({
       </div>
       <CalcArticle slug={item.slug} extra={guide} />
       <AffiliatePreview slug={item.slug} />
-      {/* 결과 카드 바로 아래. 입력칸·복사·키패드를 가리지 않고, FAQ·관련 계산기보다 위에 둡니다. */}
-      <AdSenseInPage />
       <RelatedCalcs slug={item.slug} />
       {faq}
+      {/* 안내·FAQ 뒤에 둡니다. 입력칸을 가리지 않고, 본문보다 광고가 먼저 보이지 않게 합니다. */}
+      <AdSenseInPage />
       <PolicyStamp />
     </div>
   )

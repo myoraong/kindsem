@@ -63,6 +63,31 @@ export default function HowPage() {
           세율은 광고와 섞지 않습니다.
         </p>
         <p>
+          같은 세율표를 쓰더라도 회사 간이세액표, 은행 내부 심사, 세무사 신고 프로그램과 몇 천 원에서
+          몇 만 원이 갈릴 수 있습니다. 그때는 이 화면이 틀린 것이 아니라, 원장에 있는 공제·특례가 여기
+          칸에 없기 때문입니다.
+        </p>
+
+        <h2 className="pt-2 text-base font-semibold text-foreground">반올림과 원 단위</h2>
+        <p>
+          세금·보험료는 원 미만을 버립니다. 이자·대출 월 납입은 보통 원 단위로 맞춥니다. 더치페이는
+          원 단위 올림을 기본으로 켜 두어 키오스크처럼 맞출 수 있게 했습니다. 평과 ㎡는 소수 넷째
+          자리까지 반올림합니다. 자릿수를 숨겨 좋게 보이게 하지 않습니다.
+        </p>
+
+        <h2 className="pt-2 text-base font-semibold text-foreground">운영</h2>
+        <p>
+          운영자와 이 사이트가 세지 않는 일은{" "}
+          <Link href="/about/" className="text-foreground underline underline-offset-2">
+            소개
+          </Link>
+          에 있습니다. 오류 메일은{" "}
+          <Link href="/contact/" className="text-foreground underline underline-offset-2">
+            문의
+          </Link>
+          로 받습니다.
+        </p>
+        <p>
           급여는{" "}
           <Link href={calcPath("take-home")} className="text-foreground underline underline-offset-2">
             실수령액

@@ -11,6 +11,8 @@ test("공개 URL은 홈·목록·계산기를 모두 포함한다", () => {
   assert.ok(paths.includes("/"))
   assert.ok(paths.includes("/calc/"))
   assert.ok(paths.includes("/realty/"))
+  assert.ok(paths.includes("/about/"))
+  assert.ok(paths.includes("/how/"))
   for (const item of CALCULATORS) {
     assert.ok(paths.includes(`/calc/${item.slug}/`), item.slug)
   }
@@ -31,6 +33,8 @@ test("robots.txt가 네이버 Yeti를 허용하고 사이트맵을 가리킨다"
 
 test("llms.txt에 계산기 URL이 있다", () => {
   const body = readFileSync(join(process.cwd(), "public", "llms.txt"), "utf8")
+  assert.match(body, /\/about\//)
+  assert.match(body, /\/how\//)
   for (const item of CALCULATORS) {
     assert.match(body, new RegExp(`/calc/${item.slug}/`))
   }

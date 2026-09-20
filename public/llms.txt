@@ -6,6 +6,8 @@
 - 홈: https://kindsem.com/
 - 계산기 목록: https://kindsem.com/calc/
 - 부동산: https://kindsem.com/realty/
+- 숫자를 어떻게 받는지: https://kindsem.com/how/
+- 소개: https://kindsem.com/about/
 - 문의: https://kindsem.com/contact/
 - 개인정보: https://kindsem.com/privacy/
 - 사이트맵: https://kindsem.com/sitemap.xml

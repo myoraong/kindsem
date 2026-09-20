@@ -2,6 +2,7 @@ import { AdSenseInPage } from "@/components/adsense-inpage"
 import { FaqList } from "@/components/calc/faq-list"
 import { HomeBrowse } from "@/components/home-browse"
 import { HomeHow } from "@/components/home-how"
+import { HomeUses } from "@/components/home-uses"
 import { HomeWhy } from "@/components/home-why"
 import { JsonLd } from "@/components/json-ld"
 import { SenaFigure } from "@/components/sena"
@@ -42,8 +43,10 @@ export default function HomePage() {
           <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl md:text-4xl">
             카인드셈 생활·급여·부동산 계산기
           </h1>
-          <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-            실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR.
+          <p className="mt-3 max-w-xl text-pretty break-keep text-sm leading-6 text-muted-foreground">
+            명세서·계약서·고지서에 나오는 숫자를, 한국 법령 표에 있는 세율과 상한만으로 가늠합니다.
+            표에 없는 공제는 넣지 않고, 혜택 칸은 해당할 때만 직접 켭니다. 운영자와 법령 출처는 소개와
+            숫자를 어떻게 받는지에 적어 두었습니다.
           </p>
         </div>
         <SenaFigure priority />
@@ -51,6 +54,7 @@ export default function HomePage() {
 
       <HomeBrowse />
       <HomeWhy />
+      <HomeUses />
       <HomeHow />
       <FaqList items={HOME_FAQ} />
       <AdSenseInPage />

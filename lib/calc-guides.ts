@@ -1,4 +1,6 @@
 /** 법령·세율 계산기 아래에 보이는 고유 안내. 사칙에는 붙이지 않습니다. */
+import { CALC_GUIDE_MORE } from "./calc-guides-more.ts"
+
 export type CalcGuide = {
   title: string
   paragraphs: string[]
@@ -349,6 +351,12 @@ export const CALC_GUIDES: Record<string, CalcGuide> = {
       "취득세·보유세를 반영하려면 살 때 총비용·보유세 결과를 따로 빼 보세요. 시세 상승은 넣지 않습니다.",
     ],
   },
+}
+
+for (const [slug, extra] of Object.entries(CALC_GUIDE_MORE)) {
+  const guide = CALC_GUIDES[slug]
+  if (!guide) continue
+  guide.paragraphs = [...guide.paragraphs, ...extra]
 }
 
 export function calcGuide(slug: string): CalcGuide | undefined {

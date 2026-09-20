@@ -3,7 +3,7 @@ import type { CalcItem } from "./catalog.ts"
 import { CALCULATORS } from "./catalog.ts"
 import { CALC_GUIDES } from "./calc-guides.ts"
 import { MASCOT, MASCOT_MARK, MASCOT_SHARE } from "./brand.ts"
-import { SITE_NAME, SITE_URL } from "./site.ts"
+import { CONTACT_EMAIL, SITE_NAME, SITE_URL } from "./site.ts"
 
 export type CalcSeo = {
   /** 검색창에 넣는 대표 말. 페이지 제목·H1. */
@@ -424,6 +424,37 @@ export function howJsonLd() {
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
+    },
+  }
+}
+
+export const ABOUT_METADATA: Metadata = {
+  title: "소개",
+  description:
+    "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
+  robots: { index: true, follow: true },
+  alternates: { canonical: "/about/", languages: { "ko-KR": "/about/" } },
+  openGraph: pageOpenGraph(
+    `소개 · ${SITE_NAME}`,
+    "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
+    "/about/",
+  ),
+}
+
+export function aboutJsonLd() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "카인드셈 소개",
+    inLanguage: "ko",
+    url: `${SITE_URL}/about/`,
+    description:
+      "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
+    mainEntity: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      email: CONTACT_EMAIL,
     },
   }
 }
