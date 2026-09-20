@@ -30,16 +30,18 @@ export const metadata: Metadata = {
     languages: { "ko-KR": "/" },
     types: { "application/rss+xml": "/rss.xml" },
   },
+  manifest: "/site.webmanifest",
   icons: {
     icon: [
-      { url: MASCOT_FAVICON.png48, type: "image/png", sizes: "48x48" },
-      { url: MASCOT_FAVICON.png96, type: "image/png", sizes: "96x96" },
-      { url: MASCOT_FAVICON.png192, type: "image/png", sizes: "192x192" },
-      { url: MASCOT_FAVICON.ico, sizes: "48x48" },
+      { url: `${MASCOT_FAVICON.png48}?v=sena`, type: "image/png", sizes: "48x48" },
+      { url: `${MASCOT_FAVICON.png96}?v=sena`, type: "image/png", sizes: "96x96" },
+      { url: `${MASCOT_FAVICON.png192}?v=sena`, type: "image/png", sizes: "192x192" },
+      { url: `${MASCOT_FAVICON.ico}?v=sena`, sizes: "48x48" },
       { url: MASCOT_MARK.src, type: "image/png", sizes: "512x512" },
     ],
+    shortcut: [{ url: `${MASCOT_FAVICON.png48}?v=sena`, type: "image/png" }],
     apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180" },
+      { url: "/apple-touch-icon.png?v=sena", sizes: "180x180" },
       { url: MASCOT_MARK.src, sizes: "180x180" },
     ],
   },
