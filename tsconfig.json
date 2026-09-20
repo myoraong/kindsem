@@ -33,11 +33,6 @@
   ],
   "exclude": [
     "node_modules",
-    "lib/payroll.test.ts",
-    "lib/moving.test.ts",
-    "lib/labor.test.ts",
-    "lib/rent-convert.test.ts",
-    "lib/vehicle.test.ts",
-    "lib/search.test.ts"
+    "**/*.test.ts"
   ]
 }

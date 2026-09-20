@@ -90,7 +90,7 @@ test("홈 JSON-LD에 카인드셈 별칭이 있다", () => {
 })
 
 test("홈·부동산 Open Graph에 사이트명과 설명이 있다", () => {
-  assert.equal(HOME_METADATA.title?.absolute ?? HOME_METADATA.title, "카인드셈 종합계산기")
+  assert.deepEqual(HOME_METADATA.title, { absolute: "카인드셈 종합계산기" })
   assert.equal(HOME_METADATA.openGraph?.siteName, "카인드셈 종합계산기")
   assert.match(String(HOME_METADATA.openGraph?.description), /실수령액/)
   assert.equal(HOME_METADATA.openGraph?.url, "/")
