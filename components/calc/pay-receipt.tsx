@@ -4,6 +4,7 @@ import type { ReactNode } from "react"
 import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
 import { useResultFlash } from "@/components/calc/use-result-flash"
+import { useResultTitle } from "@/components/calc/use-result-title"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
 import { paySlipNote, RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
@@ -105,6 +106,7 @@ function Frame({
   children?: ReactNode
 }) {
   const flash = useResultFlash(headline ?? "")
+  useResultTitle(headline ?? "", title)
 
   return (
     <aside
@@ -114,7 +116,11 @@ function Frame({
       <p className="text-sm text-muted-foreground">{title}</p>
       {headline ? (
         <>
-          <p className={cn("mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl", flash && "result-flash")}>
+          <p
+            aria-live="polite"
+            aria-atomic="true"
+            className={cn("mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl", flash && "result-flash")}
+          >
             {headline}
           </p>
           {caption ? <p className="mt-1 text-sm text-muted-foreground">{caption}</p> : null}

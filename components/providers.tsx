@@ -6,7 +6,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
-      <Toaster position="bottom-center" />
+      <Toaster position="bottom-center" mobileOffset={{ bottom: "6.5rem" }} />
     </>
   )
 }

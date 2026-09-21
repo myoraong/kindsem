@@ -63,6 +63,7 @@ export function MoneyField({
   const keepSpoken = useRef(false)
   const [draft, setDraft] = useState<string | null>(null)
   const [spokenMode, setSpokenMode] = useState(false)
+  const [undoValue, setUndoValue] = useState<string | null>(null)
   const canSpeak = unit === "만원" || unit === "원"
   const numeric = Number(value.replace(/,/g, ""))
   const preview =
@@ -76,6 +77,11 @@ export function MoneyField({
   useLayoutEffect(() => {
     setDraft(null)
   }, [value])
+
+  useLayoutEffect(() => {
+    if (undoValue == null || value === "") return
+    setUndoValue(null)
+  }, [value, undoValue])
 
   useLayoutEffect(() => {
     if (!draft) return
@@ -103,7 +109,7 @@ export function MoneyField({
       <div className="flex items-baseline justify-between gap-3">
         <Label htmlFor={id}>{label}</Label>
         {preview ? (
-          <span className="text-xs text-muted-foreground">{preview}</span>
+          <span className="shrink-0 text-sm font-medium tabular text-foreground">{preview}</span>
         ) : hint ? (
           <span className="text-xs text-muted-foreground">{hint}</span>
         ) : null}
@@ -181,8 +187,10 @@ export function MoneyField({
             )}
             onMouseDown={(event) => event.preventDefault()}
             onClick={() => {
+              const previous = value
               pendingDigits.current = null
               setDraft(null)
+              if (previous) setUndoValue(previous)
               onChange("")
             }}
           >
@@ -195,6 +203,18 @@ export function MoneyField({
           {unit}
         </span>
       </div>
+      {undoValue != null && value === "" ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          지웠습니다.{" "}
+          <button
+            type="button"
+            className="font-medium text-primary underline underline-offset-2"
+            onClick={() => onChange(undoValue)}
+          >
+            되돌리기
+          </button>
+        </p>
+      ) : null}
       {canSpeak && (spokenMode || draft) ? (
         <p className="text-xs leading-5 text-muted-foreground">
           {draft ? "만이나 억까지 치면 숫자로 바꿉니다." : "예: 4천만, 1억 2천만, 1.2만"}

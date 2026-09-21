@@ -3,6 +3,7 @@
 import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
 import { useResultFlash } from "@/components/calc/use-result-flash"
+import { useResultTitle } from "@/components/calc/use-result-title"
 import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
@@ -55,6 +56,7 @@ export function ResultReceipt({
     copyLine ??
     kakaoCopyLine(title, display, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
   const flash = useResultFlash(hasResult ? display : "")
+  useResultTitle(hasResult ? display : "", title)
 
   return (
     <aside
@@ -64,7 +66,11 @@ export function ResultReceipt({
       <p className="text-sm text-muted-foreground">{title}</p>
       {hasResult ? (
         <>
-          <p className={cn("mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl", flash && "result-flash")}>
+          <p
+            aria-live="polite"
+            aria-atomic="true"
+            className={cn("mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl", flash && "result-flash")}
+          >
             {display}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">
