@@ -27,6 +27,7 @@ export function SideJobTax({ item }: { item: CalcItem }) {
     expenseMode: "rate" as ExpenseMode,
     expenseAmount: "",
     basic: "150",
+    view: "compare" as "compare" | "withheld" | "settled",
   })
 
   function pickKind(next: SideJobPresetId) {
@@ -49,6 +50,30 @@ export function SideJobTax({ item }: { item: CalcItem }) {
 
   const preset = SIDE_JOB_PRESETS[v.kind]
   const withhold = PAYROLL.bizWithholdingNational + PAYROLL.bizWithholdingLocal
+  const afterWithheld = result.revenue - result.withheld
+  const afterComprehensive = result.revenue - result.comprehensive
+  const headline =
+    v.view === "withheld"
+      ? {
+          title: "3.3% 후 수령",
+          amount: afterWithheld,
+          caption: result.revenue ? "원천만 뗀 금액입니다. 5월에 다시 정산합니다." : undefined,
+        }
+      : v.view === "settled"
+        ? {
+            title: "종소세 후 수령",
+            amount: afterComprehensive,
+            caption: result.revenue ? "이 수입만 종소세로 봤을 때 남는 금액입니다." : undefined,
+          }
+        : {
+            title: result.settlement >= 0 ? "예상 환급" : "추가 납부",
+            amount: Math.abs(result.settlement),
+            caption: result.revenue
+              ? result.settlement >= 0
+                ? "원천징수가 종소세보다 많으면 돌려받습니다"
+                : "종소세가 원천보다 많으면 더 냅니다"
+              : undefined,
+          }
 
   return (
     <CalcShell
@@ -82,15 +107,9 @@ export function SideJobTax({ item }: { item: CalcItem }) {
       }
       result={
         <ResultReceipt
-          title={result.settlement >= 0 ? "예상 환급" : "추가 납부"}
-          amount={Math.abs(result.settlement)}
-          caption={
-            result.revenue
-              ? result.settlement >= 0
-                ? "원천징수가 종소세보다 많으면 돌려받습니다"
-                : "종소세가 원천보다 많으면 더 냅니다"
-              : undefined
-          }
+          title={headline.title}
+          amount={headline.amount}
+          caption={headline.caption}
           rows={[
                   { label: "수입", value: formatWon(result.revenue) },
                   { label: "원천 소득세 3%", value: formatWon(result.withheldNational) },
@@ -109,8 +128,8 @@ export function SideJobTax({ item }: { item: CalcItem }) {
                   },
                   { label: "지방소득세", value: formatWon(result.localTax) },
                   { label: "종소세 합", value: formatWon(result.comprehensive) },
-                  { label: "3.3% 후 수령", value: formatWon(result.revenue - result.withheld) },
-                  { label: "종소세 후 수령", value: formatWon(result.revenue - result.comprehensive) },
+                  { label: "3.3% 후 수령", value: formatWon(afterWithheld) },
+                  { label: "종소세 후 수령", value: formatWon(afterComprehensive) },
                 ]}
           empty=""
         />
@@ -128,6 +147,17 @@ export function SideJobTax({ item }: { item: CalcItem }) {
           ]}
         />
         <Hint>{preset.note}</Hint>
+        <ChoiceGroup
+          label="보는 금액"
+          value={v.view}
+          onChange={(value) => set("view", value)}
+          options={[
+            { value: "compare", label: "정산" },
+            { value: "withheld", label: "3.3% 후" },
+            { value: "settled", label: "종소세 후" },
+          ]}
+        />
+        <Hint>정산은 원천과 종소세의 차이입니다. 두 수령액은 어느 제목이든 아래에 같이 남습니다.</Hint>
         <div className="space-y-2">
           <MoneyField id="rev" label="연 수입" value={v.revenue} onChange={(value) => set("revenue", value)} />
           <AmountChips

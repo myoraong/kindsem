@@ -97,6 +97,52 @@ test("고소득 국민연금은 상한만 적용", () => {
   assert.equal(result.insurance.pension, Math.floor(PAYROLL.pensionCeil * PAYROLL.pensionEmployeeRate))
 })
 
+test("명세서를 고르면 간이세액표 세액과 지방소득세 10%를 쓴다", () => {
+  const settlement = calcTakeHome({ annualGross: 42_000_000 })
+  const slip = calcTakeHome({ annualGross: 42_000_000, taxMode: "withholding" })
+  assert.equal(settlement.taxMode, "settlement")
+  assert.equal(settlement.personDeduction, 1_500_000)
+  assert.equal(slip.taxMode, "withholding")
+  assert.equal(slip.personDeduction, 0)
+  assert.equal(slip.withholding?.tableMonthly, 127_220)
+  assert.equal(slip.withholding?.incomeMonthly, 127_220)
+  assert.equal(slip.withholding?.localMonthly, 12_722)
+  assert.equal(slip.monthlyTax, 127_220 + 12_722)
+  assert.equal(
+    slip.monthlyTakeHome,
+    slip.monthlyGross - slip.insurance.monthly - slip.monthlyTax,
+  )
+  assert.notEqual(slip.monthlyTakeHome, settlement.monthlyTakeHome)
+})
+
+test("명세서 자녀 2명과 청년감면은 표 세액에서만 뺀다", () => {
+  const slip = calcTakeHome({
+    annualGross: 42_000_000,
+    taxMode: "withholding",
+    children: 2,
+    youthSme: true,
+  })
+  const afterChild = 127_220 - 45_830
+  const youth = Math.min(Math.floor(afterChild * 0.9), Math.floor(2_000_000 / 12))
+  assert.equal(slip.withholding?.childCredit, 45_830)
+  assert.equal(slip.withholding?.youthMonthly, youth)
+  assert.equal(slip.withholding?.incomeMonthly, afterChild - youth)
+  assert.equal(slip.insurance.monthly, calcTakeHome({ annualGross: 42_000_000 }).insurance.monthly)
+})
+
+test("연봉 비교도 같은 세금 기준을 양쪽 제안에 쓴다", () => {
+  const result = calcOfferCompare({
+    currentAnnual: 42_000_000,
+    offerAnnual: 48_000_000,
+    taxMode: "withholding",
+    children: 0,
+    withholdingRate: 100,
+  })
+  assert.equal(result.current.withholding?.tableMonthly, 127_220)
+  assert.equal(result.offer.taxMode, "withholding")
+  assert.ok(result.offer.withholding && result.offer.withholding.tableMonthly > 127_220)
+})
+
 test("이직 제안 세후 차이와 교통비·퇴직금", () => {
   const result = calcOfferCompare({
     currentAnnual: 40_000_000,

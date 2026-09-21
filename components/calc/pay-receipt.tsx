@@ -6,7 +6,7 @@ import { ResultDock } from "@/components/calc/result-dock"
 import { Button } from "@/components/ui/button"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
-import { PAY_SLIP_NOTE, RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
+import { paySlipNote, RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
 
 function healthWon(row: TakeHomeResult) {
   return row.insurance.healthCapped
@@ -34,6 +34,49 @@ function CompareRow({
   )
 }
 
+function pairedTaxLines(now: TakeHomeResult, next: TakeHomeResult) {
+  const left = taxLines(now)
+  const right = taxLines(next)
+  const byLabel = new Map(right.map((item) => [item.label, item.value]))
+  const labels = [...left.map((item) => item.label), ...right.map((item) => item.label)]
+  const unique = labels.filter((label, index) => labels.indexOf(label) === index)
+  return unique.map((label) => ({
+    label,
+    now: left.find((item) => item.label === label)?.value ?? formatWon(0),
+    next: byLabel.get(label) ?? formatWon(0),
+  }))
+}
+
+function taxLines(row: TakeHomeResult) {
+  if (row.taxMode === "withholding" && row.withholding) {
+    const slip = row.withholding
+    const youth = slip.youthMonthly
+      ? [{ label: "청년감면(월)", value: formatWon(slip.youthMonthly) }]
+      : []
+    return [
+      { label: "간이세액(월)", value: formatWon(slip.tableMonthly) },
+      { label: "자녀공제", value: formatWon(slip.childCredit) },
+      { label: "원천 비율", value: `${slip.ratePercent}%` },
+      ...youth,
+      { label: "소득세(월)", value: formatWon(slip.incomeMonthly) },
+      { label: "지방소득세(월)", value: formatWon(slip.localMonthly) },
+    ]
+  }
+  const youth = row.youthRelief
+    ? [{ label: "청년감면(연)", value: formatWon(row.youthRelief) }]
+    : []
+  return [
+    { label: "근로소득공제", value: formatWon(row.earnedDeduction) },
+    { label: `기본공제 ${row.personCount}명`, value: formatWon(row.personDeduction) },
+    { label: "과세표준", value: formatWon(row.taxableBase) },
+    { label: "산출세액", value: formatWon(row.calculatedTax) },
+    { label: "근로세액공제", value: formatWon(row.earnedCredit) },
+    ...youth,
+    { label: "소득세(연)", value: formatWon(row.incomeTax) },
+    { label: "지방소득세(연)", value: formatWon(row.localTax) },
+  ]
+}
+
 function Line({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start justify-between gap-4 py-1.5 text-sm">
@@ -49,6 +92,7 @@ function Frame({
   caption,
   empty,
   copyValue,
+  note,
   children,
 }: {
   title: string
@@ -56,6 +100,7 @@ function Frame({
   caption?: string
   empty?: string
   copyValue?: string
+  note?: string
   children?: ReactNode
 }) {
   async function copy() {
@@ -72,7 +117,7 @@ function Frame({
           <p className="mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl">{headline}</p>
           {caption ? <p className="mt-1 text-sm text-muted-foreground">{caption}</p> : null}
           {children}
-          <p className="mt-4 text-xs leading-5 text-muted-foreground">{PAY_SLIP_NOTE}</p>
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">{note ?? paySlipNote("settlement")}</p>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">{RECEIPT_REFERENCE_NOTE}</p>
           {copyValue ? (
             <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
@@ -99,16 +144,13 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
     )
   }
 
-  const youth = row.youthRelief
-    ? [{ label: "청년감면(연)", value: formatWon(row.youthRelief) }]
-    : []
-
   return (
     <Frame
       title="월 실수령"
       headline={formatWon(row.monthlyTakeHome)}
       caption={`연 ${formatWon(row.annualTakeHome)} · ${formatKoreanUnit(row.annualTakeHome)}`}
       copyValue={kakaoCopyLine("실수령", formatWon(row.monthlyTakeHome), "4대보험·세금 공제")}
+      note={paySlipNote(row.taxMode)}
     >
       <div className="mt-5 space-y-0 border-t border-dashed border-border pt-3">
         <Line label="4대보험(월)" value={formatWon(row.insurance.monthly)} />
@@ -134,14 +176,7 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
             { label: "건강보험(월)", value: healthWon(row) },
             { label: "장기요양(월)", value: formatWon(row.insurance.longTermCare) },
             { label: "고용보험(월)", value: formatWon(row.insurance.employment) },
-            { label: "근로소득공제", value: formatWon(row.earnedDeduction) },
-            { label: `기본공제 ${row.personCount}명`, value: formatWon(row.personDeduction) },
-            { label: "과세표준", value: formatWon(row.taxableBase) },
-            { label: "산출세액", value: formatWon(row.calculatedTax) },
-            { label: "근로세액공제", value: formatWon(row.earnedCredit) },
-            ...youth,
-            { label: "소득세(연)", value: formatWon(row.incomeTax) },
-            { label: "지방소득세(연)", value: formatWon(row.localTax) },
+            ...taxLines(row),
           ].map((item) => (
             <Line key={item.label} label={item.label} value={item.value} />
           ))}
@@ -186,23 +221,13 @@ export function PayOfferReceipt({
 
   const feltMonthlyNow = now.monthlyTakeHome
   const feltMonthlyNext = next.monthlyTakeHome - commuteWon
-  const youth =
-    now.youthRelief || next.youthRelief
-      ? [
-          {
-            label: "청년감면(연)",
-            now: formatWon(now.youthRelief),
-            next: formatWon(next.youthRelief),
-          },
-        ]
-      : []
-
   return (
     <Frame
       title="세후 연 차이"
       headline={formatSignedWon(Math.round(annualDelta))}
       caption={`${annualDelta >= 0 ? "제안이" : "지금 직장이"} 세후로 더 남습니다 · 월 ${formatSignedWon(Math.round(monthlyDelta))}`}
       copyValue={kakaoCopyLine("세후 연 차이", formatSignedWon(Math.round(annualDelta)))}
+      note={paySlipNote(now.taxMode)}
     >
       <div className="mt-5 border-t border-dashed border-border pt-3">
         <div className="grid grid-cols-[minmax(5.5rem,0.95fr)_1fr_1fr] gap-2 text-xs text-muted-foreground">
@@ -306,42 +331,7 @@ export function PayOfferReceipt({
               now: formatWon(now.insurance.employment),
               next: formatWon(next.insurance.employment),
             },
-            {
-              label: "근로소득공제",
-              now: formatWon(now.earnedDeduction),
-              next: formatWon(next.earnedDeduction),
-            },
-            {
-              label: `기본공제 ${now.personCount}명`,
-              now: formatWon(now.personDeduction),
-              next: formatWon(next.personDeduction),
-            },
-            {
-              label: "과세표준",
-              now: formatWon(now.taxableBase),
-              next: formatWon(next.taxableBase),
-            },
-            {
-              label: "산출세액",
-              now: formatWon(now.calculatedTax),
-              next: formatWon(next.calculatedTax),
-            },
-            {
-              label: "근로세액공제",
-              now: formatWon(now.earnedCredit),
-              next: formatWon(next.earnedCredit),
-            },
-            ...youth,
-            {
-              label: "소득세(연)",
-              now: formatWon(now.incomeTax),
-              next: formatWon(next.incomeTax),
-            },
-            {
-              label: "지방소득세(연)",
-              now: formatWon(now.localTax),
-              next: formatWon(next.localTax),
-            },
+            ...pairedTaxLines(now, next),
           ].map((item) => (
             <CompareRow key={item.label} label={item.label} now={item.now} next={item.next} />
           ))}

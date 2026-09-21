@@ -1,5 +1,6 @@
 import { truncWon } from "./format.ts"
 import { INCOME_BRACKETS, PAYROLL_DEDUCTIONS, PAYROLL_INSURANCE } from "./policy.generated.ts"
+import { simplifiedWithholdingTax, withholdingRatePercent } from "./simplified-wage-tax.ts"
 
 export { truncWon }
 
@@ -154,6 +155,18 @@ export function calcQuitHealth(input: {
 
 export type QuitHealthResult = ReturnType<typeof calcQuitHealth>
 
+export type PayTaxMode = "settlement" | "withholding"
+
+export type WithholdingDetail = {
+  tableMonthly: number
+  childCredit: number
+  children: number
+  ratePercent: number
+  incomeMonthly: number
+  localMonthly: number
+  youthMonthly: number
+}
+
 export type TakeHomeResult = {
   annualGross: number
   monthlyGross: number
@@ -176,6 +189,8 @@ export type TakeHomeResult = {
   monthlyTax: number
   annualTakeHome: number
   monthlyTakeHome: number
+  taxMode: PayTaxMode
+  withholding: WithholdingDetail | null
 }
 
 export function personCountFromDependents(dependents = 0) {
@@ -189,6 +204,12 @@ export function calcTakeHome(input: {
   youthSme?: boolean
   /** 본인을 뺀 기본공제 대상 인원. 소득세법 제50조 1인 공제만. */
   dependents?: number
+  /** 기본은 연말정산 월평균. withholding은 간이세액표 이번 달 명세서. */
+  taxMode?: PayTaxMode
+  /** 8세 이상 20세 이하 자녀. 간이세액표에서만 뺀다. */
+  children?: number
+  /** 80 · 100 · 120. 그 밖은 100. */
+  withholdingRate?: number
 }) {
   const annualGross = Math.max(0, input.annualGross)
   const monthlyGross = truncWon(annualGross / 12)
@@ -196,9 +217,65 @@ export function calcTakeHome(input: {
   const taxableAnnual = Math.max(0, annualGross - mealExemptAnnual)
   const taxableMonthly = truncWon(taxableAnnual / 12)
   const insurance = calcEmployeeInsurance(taxableMonthly)
+  const personCount = personCountFromDependents(input.dependents)
+  const taxMode = input.taxMode === "withholding" ? "withholding" : "settlement"
+
+  if (taxMode === "withholding") {
+    const looked = simplifiedWithholdingTax({
+      monthlyWage: taxableMonthly,
+      family: personCount,
+      children: input.children,
+      ratePercent: input.withholdingRate,
+    })
+    const youthMonthly = input.youthSme
+      ? Math.min(
+          truncWon(looked.incomeMonthly * PAYROLL.youthReliefRate),
+          truncWon(PAYROLL.youthReliefCap / 12),
+        )
+      : 0
+    const incomeMonthly = Math.max(0, looked.incomeMonthly - youthMonthly)
+    const localMonthly = truncWon(incomeMonthly * PAYROLL.localIncomeRate)
+    const monthlyTax = incomeMonthly + localMonthly
+    const annualTax = monthlyTax * 12
+    const annualTakeHome = annualGross - insurance.annual - annualTax
+    const monthlyTakeHome = monthlyGross - insurance.monthly - monthlyTax
+    return {
+      annualGross,
+      monthlyGross,
+      mealExemptAnnual,
+      taxableAnnual,
+      taxableMonthly,
+      insurance,
+      earnedDeduction: 0,
+      earnedIncome: 0,
+      personDeduction: 0,
+      personCount,
+      taxableBase: 0,
+      calculatedTax: 0,
+      taxRate: 0,
+      earnedCredit: 0,
+      youthRelief: youthMonthly * 12,
+      incomeTax: incomeMonthly * 12,
+      localTax: localMonthly * 12,
+      annualTax,
+      monthlyTax,
+      annualTakeHome,
+      monthlyTakeHome,
+      taxMode,
+      withholding: {
+        tableMonthly: looked.tableMonthly,
+        childCredit: looked.childCredit,
+        children: Math.max(0, Math.floor(input.children ?? 0)),
+        ratePercent: withholdingRatePercent(input.withholdingRate),
+        incomeMonthly,
+        localMonthly,
+        youthMonthly,
+      },
+    } satisfies TakeHomeResult
+  }
+
   const earnedDeduction = earnedIncomeDeduction(taxableAnnual)
   const earnedIncome = Math.max(0, taxableAnnual - earnedDeduction)
-  const personCount = personCountFromDependents(input.dependents)
   const personDeduction = Math.min(PAYROLL.basicPersonDeduction * personCount, earnedIncome)
   const taxableBase = Math.max(0, earnedIncome - personDeduction)
   const { tax: calculatedTax, rate: taxRate } = progressiveIncomeTax(taxableBase)
@@ -235,6 +312,8 @@ export function calcTakeHome(input: {
     monthlyTax,
     annualTakeHome,
     monthlyTakeHome,
+    taxMode,
+    withholding: null,
   } satisfies TakeHomeResult
 }
 
@@ -248,18 +327,26 @@ export function calcOfferCompare(input: {
   offerCommuteMonthly?: number
   yearsOfService?: number
   dependents?: number
+  taxMode?: PayTaxMode
+  children?: number
+  withholdingRate?: number
 }) {
+  const shared = {
+    mealExempt: input.mealExempt,
+    dependents: input.dependents,
+    taxMode: input.taxMode,
+    children: input.children,
+    withholdingRate: input.withholdingRate,
+  }
   const current = calcTakeHome({
     annualGross: input.currentAnnual,
-    mealExempt: input.mealExempt,
     youthSme: input.currentYouthSme,
-    dependents: input.dependents,
+    ...shared,
   })
   const offer = calcTakeHome({
     annualGross: input.offerAnnual,
-    mealExempt: input.mealExempt,
     youthSme: input.offerYouthSme,
-    dependents: input.dependents,
+    ...shared,
   })
   const currentCommute = Math.max(0, input.currentCommuteMonthly ?? 0)
   const offerCommute = Math.max(0, input.offerCommuteMonthly ?? 0)

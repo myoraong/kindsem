@@ -18,8 +18,10 @@ import {
   calcTakeHome,
   convertPayEntry,
   type PayPeriod,
+  type PayTaxMode,
   type QuitHealthKind,
 } from "@/lib/payroll"
+import { CHILD_CREDIT_EXTRA, CHILD_CREDIT_ONE, CHILD_CREDIT_TWO } from "@/lib/simplified-wage-tax"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -44,7 +46,7 @@ function payFaq() {
         },
         {
           q: "명세서와 왜 조금 다른가요?",
-          a: "회사는 간이세액표로 원천징수합니다. 여기는 소득세법 제47조·제50조·제59조와, 넣은 부양가족 인원×150만 원 기본공제만 넣습니다. 신용카드·보험료는 빠져 있습니다.",
+          a: "연말정산 월평균은 소득세법 제47조·제50조·제59조와 부양가족×150만 원만 넣고 1년 세를 12로 나눕니다. 이번 달 명세서를 고르면 간이세액표를 봅니다. 신용카드·보험료는 어느 쪽이든 넣지 않습니다.",
         },
         {
           q: "퇴사 후 건보는 뭔가요?",
@@ -74,21 +76,97 @@ function payGuide() {
   )
 }
 
+const TAX_MODE_OPTIONS = [
+  { value: "settlement", label: "연말정산 월평균" },
+  { value: "withholding", label: "이번 달 명세서" },
+] as const
+
+const CHILD_OPTIONS = [
+  { value: "0", label: "없음" },
+  { value: "1", label: "1명" },
+  { value: "2", label: "2명" },
+  { value: "3", label: "3명" },
+  { value: "4", label: "4명" },
+  { value: "5", label: "5명" },
+] as const
+
+const WITHHOLD_RATE_OPTIONS = [
+  { value: "80", label: "80%" },
+  { value: "100", label: "100%" },
+  { value: "120", label: "120%" },
+] as const
+
 function DependentsField({
   value,
   onChange,
+  taxMode,
 }: {
   value: string
   onChange: (value: string) => void
+  taxMode: PayTaxMode
 }) {
   return (
     <div className="space-y-2">
       <ChoiceGroup label="부양가족" value={value} onChange={onChange} options={[...DEPENDENT_OPTIONS]} />
       <Hint>
-        본인 말고 기본공제 대상(배우자·자녀 등)입니다. 1명당 연{" "}
-        {formatKoreanUnit(PAYROLL.basicPersonDeduction)}입니다. 신용카드·보험료는 넣지 않습니다.
+        {taxMode === "withholding"
+          ? "본인을 뺀 공제대상가족입니다. 배우자·자녀·부모가 표의 가족 수에 들어갑니다."
+          : `본인 말고 기본공제 대상(배우자·자녀 등)입니다. 1명당 연 ${formatKoreanUnit(PAYROLL.basicPersonDeduction)}입니다. 신용카드·보험료는 넣지 않습니다.`}
       </Hint>
     </div>
+  )
+}
+
+function TaxBasisFields({
+  taxMode,
+  onTaxMode,
+  children,
+  onChildren,
+  rate,
+  onRate,
+}: {
+  taxMode: PayTaxMode
+  onTaxMode: (value: PayTaxMode) => void
+  children: string
+  onChildren: (value: string) => void
+  rate: string
+  onRate: (value: string) => void
+}) {
+  return (
+    <>
+      <ChoiceGroup
+        label="세금 기준"
+        value={taxMode}
+        onChange={onTaxMode}
+        options={[...TAX_MODE_OPTIONS]}
+      />
+      <Hint>
+        {taxMode === "withholding"
+          ? "소득세법 시행령 별표 2(2026.2.27.)입니다. 자녀 세액과 원천 비율을 적용한 뒤 10원 미만을 버립니다."
+          : "1년 소득세를 12로 나눈 월평균입니다. 회사 명세서와 맞추려면 이번 달 명세서를 고르세요."}
+      </Hint>
+      {taxMode === "withholding" ? (
+        <>
+          <ChoiceGroup
+            label="8~20세 자녀"
+            value={children}
+            onChange={onChildren}
+            options={[...CHILD_OPTIONS]}
+          />
+          <Hint>
+            표에서 따로 뺍니다. 1명 {formatWon(CHILD_CREDIT_ONE)}, 2명 {formatWon(CHILD_CREDIT_TWO)},
+            3명부터 1명당 {formatWon(CHILD_CREDIT_EXTRA)}입니다. 없으면 그대로 둡니다.
+          </Hint>
+          <ChoiceGroup
+            label="원천징수 비율"
+            value={rate}
+            onChange={onRate}
+            options={[...WITHHOLD_RATE_OPTIONS]}
+          />
+          <Hint>회사 원천징수 신고가 80%·100%·120% 중 무엇인지는 급여 담당에게 있습니다. 모르면 100%입니다.</Hint>
+        </>
+      ) : null}
+    </>
   )
 }
 
@@ -104,6 +182,9 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
     mealExempt: false,
     youth: "none",
     dependents: "0",
+    taxMode: "settlement" as PayTaxMode,
+    children: "0",
+    withholdRate: "100",
   })
 
   const packed = useMemo(() => {
@@ -114,8 +195,11 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
       mealExempt: v.mealExempt,
       youthSme: v.youth === "current" || v.youth === "both",
       dependents: Number(v.dependents) || 0,
+      taxMode: v.taxMode,
+      children: Number(v.children) || 0,
+      withholdingRate: Number(v.withholdRate) || 100,
     })
-  }, [v.period, v.current, v.mealExempt, v.youth, v.dependents])
+  }, [v.period, v.current, v.mealExempt, v.youth, v.dependents, v.taxMode, v.children, v.withholdRate])
 
   const now = packed.annualGross > 0 ? packed : null
 
@@ -165,7 +249,19 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
             onPick={(value) => set("current", value)}
           />
         </div>
-        <DependentsField value={v.dependents} onChange={(value) => set("dependents", value)} />
+        <TaxBasisFields
+          taxMode={v.taxMode}
+          onTaxMode={(value) => set("taxMode", value)}
+          children={v.children}
+          onChildren={(value) => set("children", value)}
+          rate={v.withholdRate}
+          onRate={(value) => set("withholdRate", value)}
+        />
+        <DependentsField
+          value={v.dependents}
+          onChange={(value) => set("dependents", value)}
+          taxMode={v.taxMode}
+        />
         <ChoiceGroup
           label="청년 중소기업 감면"
           value={v.youth}
@@ -196,6 +292,9 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
     quitKind: "voluntary" as QuitHealthKind,
     gapMonths: "1",
     dependents: "0",
+    taxMode: "settlement" as PayTaxMode,
+    children: "0",
+    withholdRate: "100",
   })
 
   const packed = useMemo(() => {
@@ -215,6 +314,9 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
       offerCommuteMonthly: commuteWon,
       yearsOfService: Number(v.years) || 0,
       dependents: Number(v.dependents) || 0,
+      taxMode: v.taxMode,
+      children: Number(v.children) || 0,
+      withholdingRate: Number(v.withholdRate) || 100,
     })
     const quitHealth = calcQuitHealth({
       taxableMonthly: result.current.taxableMonthly,
@@ -344,7 +446,19 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
             placeholder="없음"
           />
         </div>
-        <DependentsField value={v.dependents} onChange={(value) => set("dependents", value)} />
+        <TaxBasisFields
+          taxMode={v.taxMode}
+          onTaxMode={(value) => set("taxMode", value)}
+          children={v.children}
+          onChildren={(value) => set("children", value)}
+          rate={v.withholdRate}
+          onRate={(value) => set("withholdRate", value)}
+        />
+        <DependentsField
+          value={v.dependents}
+          onChange={(value) => set("dependents", value)}
+          taxMode={v.taxMode}
+        />
         <ChoiceGroup
           label="청년 중소기업 감면"
           value={v.youth}

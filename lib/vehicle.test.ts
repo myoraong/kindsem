@@ -1,6 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { calcCarTax, calcVehicleAcquisition } from "./vehicle.ts"
+import { calcCarTax, calcVehicleAcquisition, carPrepayFraction } from "./vehicle.ts"
 
 test("비영업용 승용 3천만 원은 취득세 7% + 교육세 1%", () => {
   const result = calcVehicleAcquisition({ base: 30_000_000, kind: "passenger" })
@@ -58,6 +58,41 @@ test("전기 비영업은 10만 원, 차령 경감을 쓰지 않는다", () => {
   assert.equal(result.tax, 100_000)
   assert.equal(result.education, 30_000)
   assert.equal(result.total, 130_000)
+})
+
+test("2026년 1월 연납은 334/365일에 이자 5%를 곱하고 교육세는 그 다음이다", () => {
+  const fraction = carPrepayFraction(2026, "jan")
+  assert.equal(fraction.numer, 334)
+  assert.equal(fraction.denom, 365)
+  const result = calcCarTax({ kind: "private", cc: 1998, ageYears: 1, prepay: "jan", year: 2026 })
+  assert.ok(result)
+  const discount = Math.floor((399_600 * 334 * 0.05) / 365)
+  assert.equal(discount, 18_283)
+  assert.equal(result.discount, discount)
+  assert.equal(result.payableTax, 399_600 - discount)
+  assert.equal(result.education, Math.round(result.payableTax * 0.3))
+  assert.equal(result.total, result.payableTax + result.education)
+  assert.equal(result.underPrepayMinimum, false)
+})
+
+test("9월 연납은 2기분만 92/184일에 5%를 곱한다", () => {
+  const fraction = carPrepayFraction(2026, "sep")
+  assert.equal(fraction.numer, 92)
+  assert.equal(fraction.denom, 184)
+  const leap = carPrepayFraction(2024, "jan")
+  assert.equal(leap.numer, 335)
+  assert.equal(leap.denom, 366)
+  const result = calcCarTax({ kind: "private", cc: 1998, ageYears: 1, prepay: "sep", year: 2026 })
+  assert.ok(result)
+  assert.equal(result.discount, Math.floor((199_800 * 92 * 0.05) / 184))
+  assert.equal(result.payableTax, 199_800 - result.discount)
+})
+
+test("연 세액 10만 원 미만은 표시만 하고 계산은 막지 않는다", () => {
+  const result = calcCarTax({ kind: "private", cc: 999, ageYears: 1, prepay: "jun", year: 2026 })
+  assert.ok(result)
+  assert.equal(result.underPrepayMinimum, true)
+  assert.ok(result.discount > 0)
 })
 
 test("영업용은 4%", () => {

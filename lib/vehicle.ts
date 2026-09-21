@@ -1,3 +1,4 @@
+import { truncWon } from "./format.ts"
 import { CAR_TAX, VEHICLE_ACQUISITION } from "./policy.generated.ts"
 
 /**
@@ -47,7 +48,47 @@ export function carAgeReliefRate(ageYears: number) {
   return 0.05 * (n - 2)
 }
 
-export function calcCarTax(input: { kind: CarTaxKind; cc: number; ageYears: number }) {
+export type CarPrepay = "none" | "jan" | "mar" | "jun" | "sep"
+
+/** 지방세법 시행령 제125조 제6항. 연납 공제 이자율 100분의 5. 개정 2024. 12. 31. */
+export const CAR_PREPAY_INTEREST = 0.05
+
+const CAR_PREPAYS: readonly CarPrepay[] = ["none", "jan", "mar", "jun", "sep"]
+
+export function asCarPrepay(value: string): CarPrepay {
+  return CAR_PREPAYS.includes(value as CarPrepay) ? (value as CarPrepay) : "none"
+}
+
+export function isLeapYear(year: number) {
+  return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
+}
+
+function inclusiveDays(year: number, startMonth: number, startDay: number, endMonth: number, endDay: number) {
+  return (Date.UTC(year, endMonth, endDay) - Date.UTC(year, startMonth, startDay)) / 86_400_000 + 1
+}
+
+/**
+ * 납부기한 다음 날부터 그 해 12월 31일까지.
+ * 9월은 2기분만: 10월 1일–12월 31일 / 7월 1일–12월 31일.
+ */
+export function carPrepayFraction(year: number, prepay: Exclude<CarPrepay, "none">) {
+  const yearDays = isLeapYear(year) ? 366 : 365
+  if (prepay === "jan") return { numer: inclusiveDays(year, 1, 1, 11, 31), denom: yearDays }
+  if (prepay === "mar") return { numer: inclusiveDays(year, 3, 1, 11, 31), denom: yearDays }
+  if (prepay === "jun") return { numer: inclusiveDays(year, 6, 1, 11, 31), denom: yearDays }
+  return {
+    numer: inclusiveDays(year, 9, 1, 11, 31),
+    denom: inclusiveDays(year, 6, 1, 11, 31),
+  }
+}
+
+export function calcCarTax(input: {
+  kind: CarTaxKind
+  cc: number
+  ageYears: number
+  prepay?: CarPrepay
+  year?: number
+}) {
   if (input.kind !== "ev" && input.cc <= 0) return null
   const age = Math.max(0, input.ageYears)
   let raw = 0
@@ -59,13 +100,29 @@ export function calcCarTax(input: { kind: CarTaxKind; cc: number; ageYears: numb
   }
   const reliefRate = input.kind === "private" ? carAgeReliefRate(age) : 0
   const tax = Math.round(raw * (1 - reliefRate))
-  const education = Math.round(tax * CAR_TAX_EDUCATION)
+  const prepay = input.prepay ?? "none"
+  const year = input.year ?? new Date().getFullYear()
+  const fraction = prepay === "none" ? { numer: 0, denom: 1 } : carPrepayFraction(year, prepay)
+  const base = prepay === "sep" ? Math.floor(tax / 2) : tax
+  const discount =
+    prepay === "none" ? 0 : truncWon((base * fraction.numer * CAR_PREPAY_INTEREST) / fraction.denom)
+  const payableTax = base - discount
+  const education = Math.round(payableTax * CAR_TAX_EDUCATION)
+  const due = payableTax + education
   return {
     raw,
     reliefRate,
     tax,
     education,
-    total: tax + education,
+    total: due,
+    prepay,
+    year,
+    discount,
+    payableTax,
+    due,
+    prepayNumer: fraction.numer,
+    prepayDenom: fraction.denom,
+    underPrepayMinimum: tax < 100_000,
   }
 }
 
