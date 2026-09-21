@@ -2,6 +2,8 @@
 
 import { Button } from "@/components/ui/button"
 import { copyResultLine, shareResultLine, useCanShare } from "@/components/calc/result-actions"
+import { useResultFlash } from "@/components/calc/use-result-flash"
+import { cn } from "@/lib/utils"
 
 export function ResultDock({
   title,
@@ -13,6 +15,7 @@ export function ResultDock({
   line: string
 }) {
   const canShare = useCanShare()
+  const flash = useResultFlash(display)
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 pt-2.5 backdrop-blur-md lg:hidden pb-[max(0.65rem,env(safe-area-inset-bottom))]">
@@ -26,7 +29,7 @@ export function ResultDock({
           }}
         >
           <span className="block text-[11px] text-muted-foreground">{title}</span>
-          <span className="block truncate text-lg font-semibold tabular">{display}</span>
+          <span className={cn("block truncate text-lg font-semibold tabular", flash && "result-flash")}>{display}</span>
         </button>
         <Button
           type="button"

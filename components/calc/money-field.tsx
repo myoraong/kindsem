@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
+import { fieldNeedsReveal } from "@/lib/field-reveal"
 import {
   caretIndexAfterGroup,
   formatCalcNumber,
@@ -13,6 +14,16 @@ import {
   manwonToWon,
   wonFromKorean,
 } from "@/lib/format"
+import { cn } from "@/lib/utils"
+
+function revealField(el: HTMLElement) {
+  const dock = window.matchMedia("(max-width: 1023px)").matches ? 96 : 16
+  const rect = el.getBoundingClientRect()
+  if (!fieldNeedsReveal(rect, window.innerHeight, 80, dock)) return
+  window.setTimeout(() => {
+    el.scrollIntoView({ block: "center", behavior: "smooth" })
+  }, 280)
+}
 
 function focusNextInput(current: HTMLInputElement) {
   const root = current.closest("section")
@@ -59,6 +70,8 @@ export function MoneyField({
       ? formatKoreanUnit(manwonToWon(numeric))
       : null
   const typedAsWon = unit === "만원" ? manwonIfTypedAsWon(value.replace(/,/g, "")) : null
+  const showClear = (draft ?? value) !== ""
+  const wideUnit = unit.length >= 3
 
   useLayoutEffect(() => {
     setDraft(null)
@@ -86,7 +99,7 @@ export function MoneyField({
   }, [value])
 
   return (
-    <div className="space-y-1.5">
+    <div className="scroll-mb-28 space-y-1.5 lg:scroll-mb-4">
       <div className="flex items-baseline justify-between gap-3">
         <Label htmlFor={id}>{label}</Label>
         {preview ? (
@@ -110,6 +123,7 @@ export function MoneyField({
             requestAnimationFrame(() => {
               if (document.activeElement === el) el.select()
             })
+            revealField(el)
           }}
           onMouseUp={(event) => {
             if (!selectOnFocus.current) return
@@ -152,8 +166,31 @@ export function MoneyField({
             setDraft(null)
             onChange(raw.replace(/[^\d.]/g, ""))
           }}
-          className="h-12 w-full rounded-xl border border-input bg-transparent pr-14 pl-3 text-lg tabular outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className={cn(
+            "h-12 w-full rounded-xl border border-input bg-transparent pl-3 text-lg tabular outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+            showClear ? (wideUnit ? "pr-28" : "pr-20") : "pr-14",
+          )}
         />
+        {showClear ? (
+          <button
+            type="button"
+            aria-label={`${label} 지우기`}
+            className={cn(
+              "absolute top-1/2 grid size-8 -translate-y-1/2 place-items-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground",
+              wideUnit ? "right-[4.75rem]" : "right-11",
+            )}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => {
+              pendingDigits.current = null
+              setDraft(null)
+              onChange("")
+            }}
+          >
+            <span aria-hidden="true" className="text-lg leading-none">
+              ×
+            </span>
+          </button>
+        ) : null}
         <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-sm text-muted-foreground">
           {unit}
         </span>

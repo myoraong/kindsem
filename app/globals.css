@@ -295,6 +295,22 @@
     animation: none;
     stroke-dashoffset: 0;
   }
+  .result-flash {
+    animation: none;
+  }
+}
+
+@keyframes kindsem-result-flash {
+  0% {
+    color: var(--primary);
+  }
+  100% {
+    color: inherit;
+  }
+}
+
+.result-flash {
+  animation: kindsem-result-flash 0.7s ease;
 }
 
 /* Google이 칸을 비웠을 때(unfilled) 빈 「광고」 상자를 남기지 않습니다. */

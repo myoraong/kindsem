@@ -3,9 +3,11 @@
 import type { ReactNode } from "react"
 import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
+import { useResultFlash } from "@/components/calc/use-result-flash"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
 import { paySlipNote, RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
+import { cn } from "@/lib/utils"
 
 function healthWon(row: TakeHomeResult) {
   return row.insurance.healthCapped
@@ -102,6 +104,8 @@ function Frame({
   note?: string
   children?: ReactNode
 }) {
+  const flash = useResultFlash(headline ?? "")
+
   return (
     <aside
       id="calc-result"
@@ -110,7 +114,9 @@ function Frame({
       <p className="text-sm text-muted-foreground">{title}</p>
       {headline ? (
         <>
-          <p className="mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl">{headline}</p>
+          <p className={cn("mt-2 text-3xl font-semibold tracking-tight tabular md:text-4xl", flash && "result-flash")}>
+            {headline}
+          </p>
           {caption ? <p className="mt-1 text-sm text-muted-foreground">{caption}</p> : null}
           {children}
           <p className="mt-4 text-xs leading-5 text-muted-foreground">{note ?? paySlipNote("settlement")}</p>
