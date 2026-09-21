@@ -65,6 +65,15 @@ export function MoneyField({
   }, [value])
 
   useLayoutEffect(() => {
+    if (!draft) return
+    const spoken = unit === "만원" ? manwonFromKorean(draft) : unit === "원" ? wonFromKorean(draft) : null
+    if (spoken == null) return
+    setDraft(null)
+    setSpokenMode(false)
+    onChange(formatCalcNumber(spoken))
+  }, [draft, unit, onChange])
+
+  useLayoutEffect(() => {
     const el = inputRef.current
     if (pendingDigits.current == null || !el) return
     if (document.activeElement !== el) {
