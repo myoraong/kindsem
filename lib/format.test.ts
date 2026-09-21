@@ -7,6 +7,8 @@ import {
   caretIndexAfterGroup,
   formatRatePercent,
   manwonIfTypedAsWon,
+  manwonFromKorean,
+  wonFromKorean,
 } from "./format.ts"
 
 test("카카오 한 줄은 라벨·금액·짧은 주를 붙인다", () => {
@@ -46,6 +48,22 @@ test("만원 칸에 원을 넣었으면 나눈 값만 제안한다", () => {
   assert.equal(manwonIfTypedAsWon("1234567"), null)
   assert.equal(manwonIfTypedAsWon(""), null)
   assert.equal(manwonIfTypedAsWon("4000.5"), null)
+})
+
+test("말한 금액은 만원 칸 숫자로 바뀐다", () => {
+  assert.equal(manwonFromKorean("4천만"), 4000)
+  assert.equal(manwonFromKorean("4,000만원"), 4000)
+  assert.equal(manwonFromKorean("4억"), 40000)
+  assert.equal(manwonFromKorean("1억 2천만"), 12000)
+  assert.equal(manwonFromKorean("1억5,000만"), 15000)
+  assert.equal(manwonFromKorean("5백만"), 500)
+  assert.equal(manwonFromKorean("3천5백만"), 3500)
+  assert.equal(manwonFromKorean("2억 3,500만"), 23500)
+  assert.equal(manwonFromKorean("4천"), null)
+  assert.equal(manwonFromKorean("4000"), null)
+  assert.equal(wonFromKorean("1.2만"), 12000)
+  assert.equal(wonFromKorean("2천원"), 2000)
+  assert.equal(wonFromKorean("10320"), null)
 })
 
 test("천 단위 쉼표 뒤에도 커서는 친 숫자 뒤에 남는다", () => {

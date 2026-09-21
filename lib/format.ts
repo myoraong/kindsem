@@ -104,6 +104,78 @@ export function manwonIfTypedAsWon(raw: string): number | null {
   return n / 10_000
 }
 
+const KOREAN_SMALL: readonly { mark: string; mult: number }[] = [
+  { mark: "천", mult: 1_000 },
+  { mark: "백", mult: 100 },
+  { mark: "십", mult: 10 },
+]
+
+/** 4천, 5백, 12, 4천5백 처럼 만 자리 앞의 수를 읽습니다. */
+function koreanSmallCount(head: string): number | null {
+  if (!head) return null
+  if (/^\d+(?:\.\d+)?$/.test(head)) return Number(head)
+  let rest = head
+  let total = 0
+  let used = false
+  for (const { mark, mult } of KOREAN_SMALL) {
+    const at = rest.indexOf(mark)
+    if (at < 0) continue
+    if (rest.indexOf(mark, at + 1) >= 0) return null
+    const numPart = rest.slice(0, at)
+    if (numPart !== "" && !/^\d+(?:\.\d+)?$/.test(numPart)) return null
+    total += (numPart === "" ? 1 : Number(numPart)) * mult
+    rest = rest.slice(at + mark.length)
+    used = true
+  }
+  if (!used) return null
+  if (rest === "") return total
+  if (/^\d+(?:\.\d+)?$/.test(rest)) return total + Number(rest)
+  return null
+}
+
+/**
+ * 4천만, 1억 2천만, 1.2만, 2천원처럼 말한 금액을 원으로 읽습니다.
+ * 숫자만 있으면 null입니다.
+ */
+export function wonFromKorean(raw: string): number | null {
+  const cleaned = raw.replace(/,/g, "").replace(/\s+/g, "").replace(/원/g, "")
+  if (!/[억만천백십]/.test(cleaned)) return null
+  if (!/^[0-9.억만천백십]+$/.test(cleaned)) return null
+  let rest = cleaned
+  let won = 0
+  const eok = /^(\d+(?:\.\d+)?)억/.exec(rest)
+  if (eok) {
+    won += Number(eok[1]) * 100_000_000
+    rest = rest.slice(eok[0].length)
+  } else if (rest.includes("억")) return null
+  if (!rest) return won
+  if (rest.endsWith("만")) {
+    const head = rest.slice(0, -1)
+    if (head === "") return won + 10_000
+    const count = koreanSmallCount(head)
+    if (count == null) return null
+    return won + count * 10_000
+  }
+  if (won > 0) return null
+  return koreanSmallCount(rest)
+}
+
+/** 만원 칸. 만 또는 억이 있을 때만 만원 값으로 바꿉니다. */
+export function manwonFromKorean(raw: string): number | null {
+  if (!/[억만]/.test(raw)) return null
+  const won = wonFromKorean(raw)
+  if (won == null) return null
+  const manwon = won / 10_000
+  if (!Number.isFinite(manwon) || manwon < 0) return null
+  return manwon
+}
+
+export function formatCalcNumber(value: number): string {
+  if (!Number.isFinite(value)) return ""
+  const rounded = Math.round(value * 10_000) / 10_000
+  return Object.is(rounded, -0) ? "0" : String(rounded)
+}
+
 export function wonToManwon(won: number): number {
   return won / 10_000
 }

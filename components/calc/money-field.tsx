@@ -1,15 +1,33 @@
 "use client"
 
-import { useLayoutEffect, useRef } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
 import {
   caretIndexAfterGroup,
+  formatCalcNumber,
   formatGroupedInput,
   formatKoreanUnit,
   formatPlain,
+  manwonFromKorean,
   manwonIfTypedAsWon,
   manwonToWon,
+  wonFromKorean,
 } from "@/lib/format"
+
+function focusNextInput(current: HTMLInputElement) {
+  const root = current.closest("section")
+  if (!root) {
+    current.blur()
+    return
+  }
+  const fields = [...root.querySelectorAll("input")].filter(
+    (el): el is HTMLInputElement =>
+      el instanceof HTMLInputElement && el.type !== "checkbox" && el.type !== "radio" && !el.disabled,
+  )
+  const next = fields[fields.indexOf(current) + 1]
+  if (next) next.focus()
+  else current.blur()
+}
 
 export function MoneyField({
   id,
@@ -31,12 +49,20 @@ export function MoneyField({
   const inputRef = useRef<HTMLInputElement>(null)
   const pendingDigits = useRef<number | null>(null)
   const selectOnFocus = useRef(false)
+  const keepSpoken = useRef(false)
+  const [draft, setDraft] = useState<string | null>(null)
+  const [spokenMode, setSpokenMode] = useState(false)
+  const canSpeak = unit === "만원" || unit === "원"
   const numeric = Number(value.replace(/,/g, ""))
   const preview =
     unit === "만원" && Number.isFinite(numeric) && value !== ""
       ? formatKoreanUnit(manwonToWon(numeric))
       : null
   const typedAsWon = unit === "만원" ? manwonIfTypedAsWon(value.replace(/,/g, "")) : null
+
+  useLayoutEffect(() => {
+    setDraft(null)
+  }, [value])
 
   useLayoutEffect(() => {
     const el = inputRef.current
@@ -64,10 +90,10 @@ export function MoneyField({
         <input
           id={id}
           ref={inputRef}
-          inputMode="decimal"
-          enterKeyHint="done"
+          inputMode={spokenMode ? "text" : "decimal"}
+          enterKeyHint="next"
           autoComplete="off"
-          value={formatGroupedInput(value)}
+          value={draft ?? formatGroupedInput(value)}
           placeholder={placeholder}
           onFocus={(event) => {
             const el = event.currentTarget
@@ -81,13 +107,41 @@ export function MoneyField({
             event.preventDefault()
             selectOnFocus.current = false
           }}
+          onBlur={() => {
+            setDraft(null)
+            if (!keepSpoken.current) setSpokenMode(false)
+          }}
+          onKeyDown={(event) => {
+            if (event.key !== "Enter") return
+            if ((event.nativeEvent as { isComposing?: boolean }).isComposing) return
+            event.preventDefault()
+            focusNextInput(event.currentTarget)
+          }}
           onChange={(event) => {
+            const raw = event.currentTarget.value
             const composing = (event.nativeEvent as { isComposing?: boolean }).isComposing
-            if (composing) return
+            if (composing) {
+              setDraft(raw)
+              return
+            }
+            const spoken =
+              unit === "만원" ? manwonFromKorean(raw) : unit === "원" ? wonFromKorean(raw) : null
+            if (spoken != null) {
+              pendingDigits.current = null
+              setDraft(null)
+              setSpokenMode(false)
+              onChange(formatCalcNumber(spoken))
+              return
+            }
+            if ((unit === "만원" || unit === "원") && /[억만천백십]/.test(raw)) {
+              setDraft(raw)
+              return
+            }
             const el = event.currentTarget
             const caret = el.selectionStart ?? el.value.length
             pendingDigits.current = el.value.slice(0, caret).replace(/[^\d.]/g, "").length
-            onChange(el.value.replace(/[^\d.]/g, ""))
+            setDraft(null)
+            onChange(raw.replace(/[^\d.]/g, ""))
           }}
           className="h-12 w-full rounded-xl border border-input bg-transparent pr-14 pl-3 text-lg tabular outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
@@ -95,6 +149,29 @@ export function MoneyField({
           {unit}
         </span>
       </div>
+      {canSpeak && (spokenMode || draft) ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          {draft ? "만이나 억까지 치면 숫자로 바꿉니다." : "예: 4천만, 1억 2천만, 1.2만"}
+        </p>
+      ) : canSpeak ? (
+        <button
+          type="button"
+          className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => {
+            keepSpoken.current = true
+            setSpokenMode(true)
+            const el = inputRef.current
+            el?.blur()
+            requestAnimationFrame(() => {
+              keepSpoken.current = false
+              el?.focus()
+            })
+          }}
+        >
+          {unit === "원" ? "1.2만처럼 말하기" : "4천만처럼 말하기"}
+        </button>
+      ) : null}
       {typedAsWon != null ? (
         <p className="text-xs leading-5 text-muted-foreground">
           이 칸은 만원입니다. 원으로 넣으셨다면{" "}
