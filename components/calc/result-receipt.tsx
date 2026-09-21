@@ -97,7 +97,7 @@ export function ResultReceipt({
             {RECEIPT_REFERENCE_NOTE}
           </p>
           <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
-            결과 복사
+            결과와 주소 복사
           </Button>
         </>
       ) : (

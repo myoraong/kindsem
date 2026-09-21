@@ -8,7 +8,15 @@ import type { HomeSection } from "@/lib/home-section"
 import { forgetRecentCalc, readRecentCalcs } from "@/lib/recent-calcs"
 import { calcPath, calcSeo } from "@/lib/seo"
 
-export function RecentCalcs({ from }: { from?: HomeSection }) {
+export function RecentCalcs({
+  from,
+  except,
+  className = "",
+}: {
+  from?: HomeSection
+  except?: string
+  className?: string
+}) {
   const [slugs, setSlugs] = useState<string[]>([])
 
   useEffect(() => {
@@ -20,18 +28,21 @@ export function RecentCalcs({ from }: { from?: HomeSection }) {
     setSlugs(readRecentCalcs(window.localStorage))
   }
 
-  const items = slugs.map((slug) => getCalculator(slug)).filter((item) => Boolean(item))
+  const items = slugs
+    .filter((slug) => slug !== except)
+    .map((slug) => getCalculator(slug))
+    .filter((item) => Boolean(item))
   if (items.length === 0) return null
 
   return (
-    <section aria-label="최근 본 계산기">
+    <section aria-label="최근 본 계산기" className={className}>
       <h2 className="text-sm font-medium text-muted-foreground">최근 본 계산기</h2>
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) =>
           item ? (
             <li
               key={item.slug}
-              className="inline-flex h-8 items-center rounded-full bg-card pl-3 pr-1 ring-1 ring-foreground/8 hover:bg-accent"
+              className="inline-flex h-10 items-center rounded-full bg-card pl-3.5 pr-1 ring-1 ring-foreground/8 hover:bg-accent"
             >
               <Link
                 href={calcPath(item.slug)}
@@ -44,7 +55,7 @@ export function RecentCalcs({ from }: { from?: HomeSection }) {
               </Link>
               <button
                 type="button"
-                className="-mr-0.5 grid size-6 shrink-0 place-items-center text-muted-foreground hover:text-foreground"
+                className="-mr-0.5 grid size-8 shrink-0 place-items-center text-muted-foreground hover:text-foreground"
                 aria-label={`${calcSeo(item.slug).query} 삭제`}
                 onClick={() => remove(item.slug)}
               >

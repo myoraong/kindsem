@@ -6,6 +6,8 @@ import {
   caretIndexAfterGroup,
   formatGroupedInput,
   formatKoreanUnit,
+  formatPlain,
+  manwonIfTypedAsWon,
   manwonToWon,
 } from "@/lib/format"
 
@@ -33,6 +35,7 @@ export function MoneyField({
     unit === "만원" && Number.isFinite(numeric) && value !== ""
       ? formatKoreanUnit(manwonToWon(numeric))
       : null
+  const typedAsWon = unit === "만원" ? manwonIfTypedAsWon(value.replace(/,/g, "")) : null
 
   useLayoutEffect(() => {
     const el = inputRef.current
@@ -77,6 +80,18 @@ export function MoneyField({
           {unit}
         </span>
       </div>
+      {typedAsWon != null ? (
+        <p className="text-xs leading-5 text-muted-foreground">
+          이 칸은 만원입니다. 원으로 넣으셨다면{" "}
+          <button
+            type="button"
+            className="font-medium text-primary underline underline-offset-2"
+            onClick={() => onChange(String(typedAsWon))}
+          >
+            {formatPlain(typedAsWon)}으로 바꾸기
+          </button>
+        </p>
+      ) : null}
     </div>
   )
 }

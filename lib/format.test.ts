@@ -6,6 +6,7 @@ import {
   formatGroupedInput,
   caretIndexAfterGroup,
   formatRatePercent,
+  manwonIfTypedAsWon,
 } from "./format.ts"
 
 test("카카오 한 줄은 라벨·금액·짧은 주를 붙인다", () => {
@@ -34,6 +35,17 @@ test("입력칸 숫자는 천 단위로 띄운다", () => {
   assert.equal(formatGroupedInput("3.3"), "3.3")
   assert.equal(formatGroupedInput("123."), "123.")
   assert.equal(formatGroupedInput(""), "")
+})
+
+test("만원 칸에 원을 넣었으면 나눈 값만 제안한다", () => {
+  assert.equal(manwonIfTypedAsWon("40000000"), 4000)
+  assert.equal(manwonIfTypedAsWon("3500000"), 350)
+  assert.equal(manwonIfTypedAsWon("1000000"), 100)
+  assert.equal(manwonIfTypedAsWon("4000"), null)
+  assert.equal(manwonIfTypedAsWon("150000"), null)
+  assert.equal(manwonIfTypedAsWon("1234567"), null)
+  assert.equal(manwonIfTypedAsWon(""), null)
+  assert.equal(manwonIfTypedAsWon("4000.5"), null)
 })
 
 test("천 단위 쉼표 뒤에도 커서는 친 숫자 뒤에 남는다", () => {

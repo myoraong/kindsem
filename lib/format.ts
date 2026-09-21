@@ -92,6 +92,18 @@ export function manwonToWon(manwon: number): number {
   return Math.round(manwon * 10_000)
 }
 
+/**
+ * 만원 칸에 원 금액을 그대로 넣었는지 봅니다.
+ * 숫자 자체가 1,000,000 이상(만원으로 읽으면 100억 이상)이고
+ * 만 원으로 나누어떨어질 때만, 원으로 친 만원 값을 돌려줍니다.
+ */
+export function manwonIfTypedAsWon(raw: string): number | null {
+  if (!raw || raw.includes(".")) return null
+  const n = Number(raw)
+  if (!Number.isInteger(n) || n < 1_000_000 || n % 10_000 !== 0) return null
+  return n / 10_000
+}
+
 export function wonToManwon(won: number): number {
   return won / 10_000
 }

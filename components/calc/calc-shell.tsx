@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 import { CalcArticle } from "@/components/calc/calc-article"
 import { RelatedCalcs } from "@/components/calc/related-calcs"
+import { RecentCalcs } from "@/components/recent-calcs"
 import type { CalcItem } from "@/lib/catalog"
 import { calcSeo } from "@/lib/seo"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
@@ -93,6 +94,7 @@ export function CalcShell({
         </section>
         {result}
       </div>
+      <RecentCalcs except={item.slug} className="mt-8" />
       <RelatedCalcs slug={item.slug} />
       <CalcArticle slug={item.slug} extra={guide} />
       <AffiliatePreview slug={item.slug} />
