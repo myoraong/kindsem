@@ -1,5 +1,5 @@
 /* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
-export const POLICY_FETCHED_AT = "2026-09-21"
+export const POLICY_FETCHED_AT = "2026-09-22"
 
 export const POLICY_SOURCES = {
   "income": {
@@ -220,10 +220,10 @@ export const POLICY_SOURCES = {
   },
   "maternityCapNotice": {
     "query": "출산전후휴가 급여등 상한액 고시",
-    "id": "2100000271634",
+    "id": "2100000285290",
     "name": "출산전후휴가 급여등 상한액 고시",
-    "enforced": "2026-01-01",
-    "promulgated": "2025-12-30",
+    "enforced": "2026-09-18",
+    "promulgated": "2026-09-17",
     "revision": "일부개정"
   }
 } as const

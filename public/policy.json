@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-09-21",
+  "fetchedAt": "2026-09-22",
   "source": "법제처 국가법령정보 공동활용",
   "sources": {
     "income": {
@@ -220,10 +220,10 @@
     },
     "maternityCapNotice": {
       "query": "출산전후휴가 급여등 상한액 고시",
-      "id": "2100000271634",
+      "id": "2100000285290",
       "name": "출산전후휴가 급여등 상한액 고시",
-      "enforced": "2026-01-01",
-      "promulgated": "2025-12-30",
+      "enforced": "2026-09-18",
+      "promulgated": "2026-09-17",
       "revision": "일부개정"
     }
   },
