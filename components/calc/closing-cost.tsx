@@ -95,6 +95,7 @@ export function ClosingCost({ item }: { item: CalcItem }) {
             { label: "9억", value: "90000" },
             { label: "12억", value: "120000" },
           ]}
+          value={v.price}
           onPick={(value) => set("price", value)}
         />
         <ChoiceGroup

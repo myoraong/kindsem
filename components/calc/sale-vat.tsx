@@ -108,6 +108,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
               { label: "10만", value: "100000" },
               { label: "50만", value: "500000" },
             ]}
+            value={v.price}
             onPick={(value) => set("price", value)}
           />
         </div>
@@ -121,6 +122,7 @@ export function SaleVat({ item }: { item: CalcItem }) {
                 { label: "30%", value: "30" },
                 { label: "50%", value: "50" },
               ]}
+              value={v.rate}
               onPick={(value) => set("rate", value)}
             />
           </div>

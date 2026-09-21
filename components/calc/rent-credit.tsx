@@ -91,6 +91,7 @@ export function RentCredit({ item }: { item: CalcItem }) {
               { label: "70만", value: "70" },
               { label: "100만", value: "100" },
             ]}
+            value={v.monthly}
             onPick={(value) => set("monthly", value)}
           />
         </div>
@@ -103,6 +104,7 @@ export function RentCredit({ item }: { item: CalcItem }) {
               { label: "5,500만", value: "5500" },
               { label: "7천만", value: "7000" },
             ]}
+            value={v.salary}
             onPick={(value) => set("salary", value)}
           />
         </div>

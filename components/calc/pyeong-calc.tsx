@@ -188,6 +188,7 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
                 { label: "15억", value: "150000" },
                 { label: "20억", value: "200000" },
               ]}
+              value={v.price}
               onPick={(value) => set("price", value)}
             />
           </div>
@@ -224,6 +225,7 @@ export function PyeongCalc({ item }: { item: CalcItem }) {
                     { label: "114㎡", value: "114" },
                   ]
             }
+            value={v.area}
             onPick={(value) => set("area", value)}
           />
         </div>

@@ -1,9 +1,8 @@
 "use client"
 
-import { toast } from "sonner"
+import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
-import { Button } from "@/components/ui/button"
-import { formatKoreanUnit, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
+import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
 import { RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
 
 export type ReceiptRow = {
@@ -50,14 +49,9 @@ export function ResultReceipt({
             ? `${amount.toFixed(amount % 1 === 0 ? 0 : 1)}일`
             : formatWon(Math.round(amount)))
 
-  async function copy() {
-    if (!hasResult) return
-    const line =
-      copyLine ??
-      kakaoCopyLine(title, display, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
-    await navigator.clipboard.writeText(shareCopyText(line))
-    toast.success("복사됨")
-  }
+  const line =
+    copyLine ??
+    kakaoCopyLine(title, display, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
 
   return (
     <aside
@@ -96,14 +90,12 @@ export function ResultReceipt({
           <p className={`${lawLine ? "mt-2" : "mt-4"} text-xs leading-5 text-muted-foreground`}>
             {RECEIPT_REFERENCE_NOTE}
           </p>
-          <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
-            결과와 주소 복사
-          </Button>
+          <ResultActions line={line} />
         </>
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
-      {hasResult ? <ResultDock title={title} display={display} onCopy={copy} /> : null}
+      {hasResult ? <ResultDock title={title} display={display} line={line} /> : null}
     </aside>
   )
 }

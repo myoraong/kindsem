@@ -116,6 +116,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
                 { label: "1.5만", value: "15000" },
                 { label: "2만", value: "20000" },
               ]}
+              value={v.hourly}
               onPick={(value) => set("hourly", value)}
             />
           </div>
@@ -134,6 +135,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
                 { label: "300만", value: "300" },
                 { label: "350만", value: "350" },
               ]}
+              value={v.ordinaryMan}
               onPick={(value) => set("ordinaryMan", value)}
             />
           </div>
@@ -152,6 +154,7 @@ export function WeeklyHoliday({ item }: { item: CalcItem }) {
             { label: "30시간", value: "30" },
             { label: "40시간", value: "40" },
           ]}
+          value={v.weeklyHours}
           onPick={(value) => set("weeklyHours", value)}
         />
         <CheckRow id="attended" checked={v.attended} onChange={(value) => set("attended", value)}>

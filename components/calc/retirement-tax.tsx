@@ -92,6 +92,7 @@ export function RetirementTax({ item }: { item: CalcItem }) {
               { label: "1억", value: "10000" },
               { label: "2억", value: "20000" },
             ]}
+            value={v.payout}
             onPick={(value) => set("payout", value)}
           />
         </div>

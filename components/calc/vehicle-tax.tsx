@@ -79,6 +79,7 @@ export function VehicleTax({ item }: { item: CalcItem }) {
             { label: "4천만", value: "4000" },
             { label: "5천만", value: "5000" },
           ]}
+          value={v.base}
           onPick={(value) => set("base", value)}
         />
         <ChoiceGroup

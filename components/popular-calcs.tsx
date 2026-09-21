@@ -19,7 +19,7 @@ export function PopularCalcs({ from }: { from?: HomeSection }) {
               onClick={() => {
                 if (from) rememberBackSection(from)
               }}
-              className="inline-flex h-9 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
+              className="inline-flex h-11 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
             >
               {calcSeo(item.slug).query}
             </Link>

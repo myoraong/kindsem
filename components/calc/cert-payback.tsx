@@ -90,6 +90,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
               { label: "150만", value: "150" },
               { label: "300만", value: "300" },
             ]}
+            value={v.cost}
             onPick={(value) => set("cost", value)}
           />
         </div>
@@ -101,6 +102,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
               { label: "4천만", value: "4000" },
               { label: "5천만", value: "5000" },
             ]}
+            value={v.now}
             onPick={(value) => set("now", value)}
           />
         </div>
@@ -112,6 +114,7 @@ export function CertPayback({ item }: { item: CalcItem }) {
               { label: "5천만", value: "5000" },
               { label: "6천만", value: "6000" },
             ]}
+            value={v.after}
             onPick={(value) => set("after", value)}
           />
         </div>

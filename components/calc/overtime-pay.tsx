@@ -103,6 +103,7 @@ export function OvertimePay({ item }: { item: CalcItem }) {
                 { label: "1.5만", value: "15000" },
                 { label: "2만", value: "20000" },
               ]}
+              value={v.hourly}
               onPick={(value) => set("hourly", value)}
             />
           </div>
@@ -121,6 +122,7 @@ export function OvertimePay({ item }: { item: CalcItem }) {
                 { label: "300만", value: "300" },
                 { label: "350만", value: "350" },
               ]}
+              value={v.ordinaryMan}
               onPick={(value) => set("ordinaryMan", value)}
             />
           </div>
@@ -134,6 +136,7 @@ export function OvertimePay({ item }: { item: CalcItem }) {
               { label: "10시간", value: "10" },
               { label: "20시간", value: "20" },
             ]}
+            value={v.overtime}
             onPick={(value) => set("overtime", value)}
           />
         </div>
@@ -145,6 +148,7 @@ export function OvertimePay({ item }: { item: CalcItem }) {
               { label: "4시간", value: "4" },
               { label: "8시간", value: "8" },
             ]}
+            value={v.night}
             onPick={(value) => set("night", value)}
           />
         </div>
@@ -156,6 +160,7 @@ export function OvertimePay({ item }: { item: CalcItem }) {
               { label: "8시간", value: "8" },
               { label: "16시간", value: "16" },
             ]}
+            value={v.holiday}
             onPick={(value) => set("holiday", value)}
           />
         </div>
@@ -177,6 +182,7 @@ export function OvertimePay({ item }: { item: CalcItem }) {
                   { label: "30시간", value: "30" },
                   { label: "40시간", value: "40" },
                 ]}
+                value={v.weeklyHours}
                 onPick={(value) => set("weeklyHours", value)}
               />
             </div>

@@ -134,6 +134,7 @@ export function Severance({ item }: { item: CalcItem }) {
             { label: "1,200만", value: "1200" },
             { label: "1,500만", value: "1500" },
           ]}
+          value={v.wage3m}
           onPick={(value) => set("wage3m", value)}
         />
         <MoneyField

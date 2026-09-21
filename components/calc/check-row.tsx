@@ -14,13 +14,13 @@ export function CheckRow({
   children: ReactNode
 }) {
   return (
-    <label htmlFor={id} className="flex cursor-pointer items-center gap-2 text-sm select-none">
+    <label htmlFor={id} className="flex min-h-11 cursor-pointer items-center gap-3 text-sm select-none">
       <input
         id={id}
         type="checkbox"
         checked={checked}
         onChange={(event) => onChange(event.target.checked)}
-        className="size-4 shrink-0 rounded-[4px] border border-input accent-primary"
+        className="size-5 shrink-0 rounded-[4px] border border-input accent-primary"
       />
       <span>{children}</span>
     </label>

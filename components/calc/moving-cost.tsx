@@ -139,6 +139,7 @@ export function MovingCost({ item }: { item: CalcItem }) {
               { label: "2억", value: "20000" },
               { label: "3억", value: "30000" },
             ]}
+            value={v.deposit}
             onPick={(value) => set("deposit", value)}
           />
         </div>
@@ -152,6 +153,7 @@ export function MovingCost({ item }: { item: CalcItem }) {
                 { label: "100만", value: "100" },
                 { label: "150만", value: "150" },
               ]}
+              value={v.monthly}
               onPick={(value) => set("monthly", value)}
             />
           </div>

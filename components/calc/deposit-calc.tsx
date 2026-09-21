@@ -108,6 +108,7 @@ export function DepositCalc({ item }: { item: CalcItem }) {
                 { label: "1천만", value: "1000" },
                 { label: "3천만", value: "3000" },
               ]}
+              value={v.principal}
               onPick={(value) => set("principal", value)}
             />
           </div>
@@ -121,6 +122,7 @@ export function DepositCalc({ item }: { item: CalcItem }) {
                 { label: "50만", value: "50" },
                 { label: "100만", value: "100" },
               ]}
+              value={v.monthly}
               onPick={(value) => set("monthly", value)}
             />
           </div>

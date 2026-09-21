@@ -71,6 +71,7 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
             { label: "2억", value: "20000" },
             { label: "3억", value: "30000" },
           ]}
+          value={v.principal}
           onPick={(value) => set("principal", value)}
         />
         <MoneyField id="r" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
@@ -83,6 +84,7 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
               { label: "3년", value: "3" },
               { label: "4년", value: "4" },
             ]}
+            value={v.years}
             onPick={(value) => set("years", value)}
           />
         </div>

@@ -42,7 +42,7 @@ export function RecentCalcs({
           item ? (
             <li
               key={item.slug}
-              className="inline-flex h-10 items-center rounded-full bg-card pl-3.5 pr-1 ring-1 ring-foreground/8 hover:bg-accent"
+              className="inline-flex h-11 items-center rounded-full bg-card pl-3.5 pr-1 ring-1 ring-foreground/8 hover:bg-accent"
             >
               <Link
                 href={calcPath(item.slug)}

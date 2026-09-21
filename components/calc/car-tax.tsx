@@ -145,6 +145,7 @@ export function CarTax({ item }: { item: CalcItem }) {
                 { label: "2000cc", value: "1999" },
                 { label: "2500cc", value: "2499" },
               ]}
+              value={v.cc}
               onPick={(value) => set("cc", value)}
             />
           </div>
@@ -159,6 +160,7 @@ export function CarTax({ item }: { item: CalcItem }) {
                 { label: "5년", value: "5" },
                 { label: "12년", value: "12" },
               ]}
+              value={v.age}
               onPick={(value) => set("age", value)}
             />
           </div>

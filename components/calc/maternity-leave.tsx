@@ -105,6 +105,7 @@ export function MaternityLeave({ item }: { item: CalcItem }) {
               { label: "300만", value: "300" },
               { label: "400만", value: "400" },
             ]}
+            value={v.monthly}
             onPick={(value) => set("monthly", value)}
           />
         </div>

@@ -92,6 +92,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "5년", value: "5" },
               { label: "10년", value: "10" },
             ]}
+            value={v.years}
             onPick={(value) => set("years", value)}
           />
         </div>
@@ -119,6 +120,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "30시간", value: "30" },
               { label: "40시간", value: "40" },
             ]}
+            value={v.weeklyHours}
             onPick={(value) => set("weeklyHours", value)}
           />
         </div>
@@ -145,6 +147,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "300만", value: "300" },
               { label: "350만", value: "350" },
             ]}
+            value={v.ordinaryMan}
             onPick={(value) => set("ordinaryMan", value)}
           />
         </div>
@@ -164,6 +167,7 @@ export function AnnualLeave({ item }: { item: CalcItem }) {
               { label: "10일", value: "10" },
               { label: "15일", value: "15" },
             ]}
+            value={v.unused}
             onPick={(value) => set("unused", value)}
           />
         </div>

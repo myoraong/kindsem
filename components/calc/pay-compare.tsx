@@ -254,6 +254,7 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
                     { label: "8천만", value: "8000" },
                   ]
             }
+            value={v.current}
             onPick={(value) => set("current", value)}
           />
         </div>
@@ -407,6 +408,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
                       { label: "8천만", value: "8000" },
                     ]
               }
+              value={v.current}
               onPick={(value) => set("current", value)}
             />
           </div>
@@ -433,6 +435,7 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
                       { label: "8천만", value: "8000" },
                     ]
               }
+              value={v.offer}
               onPick={(value) => set("offer", value)}
             />
           </div>

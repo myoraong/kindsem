@@ -166,6 +166,7 @@ export function LtvCalc({ item }: { item: CalcItem }) {
             { label: "10억", value: "100000" },
             { label: "15억", value: "150000" },
           ]}
+          value={v.collateral}
           onPick={(value) => set("collateral", value)}
         />
         <MoneyField

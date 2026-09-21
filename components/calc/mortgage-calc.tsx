@@ -84,6 +84,7 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
             { label: "5억", value: "50000" },
             { label: "8억", value: "80000" },
           ]}
+          value={v.principal}
           onPick={(value) => set("principal", value)}
         />
         <MoneyField id="r" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
@@ -95,6 +96,7 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
             { label: "30년", value: "30" },
             { label: "40년", value: "40" },
           ]}
+          value={v.years}
           onPick={(value) => set("years", value)}
         />
         <ChoiceGroup

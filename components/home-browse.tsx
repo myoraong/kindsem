@@ -52,7 +52,7 @@ function CategoryJump({
           href={`#${item.id}`}
           aria-current={item.id === section ? "true" : undefined}
           className={cn(
-            "inline-flex h-9 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
+            "inline-flex h-11 shrink-0 items-center rounded-full px-3.5 text-sm ring-1",
             homeChipClass(item.id, section),
           )}
           onClick={(event) => {

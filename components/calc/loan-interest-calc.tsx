@@ -88,6 +88,7 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
             { label: "5천만", value: "5000" },
             { label: "1억", value: "10000" },
           ]}
+          value={v.principal}
           onPick={(value) => set("principal", value)}
         />
         <MoneyField id="r" label="연 금리" unit="%" value={v.rate} onChange={(value) => set("rate", value)} />
@@ -99,6 +100,7 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
             { label: "36개월", value: "36" },
             { label: "60개월", value: "60" },
           ]}
+          value={v.months}
           onPick={(value) => set("months", value)}
         />
         <ChoiceGroup

@@ -145,6 +145,7 @@ export function ImportDuty({ item }: { item: CalcItem }) {
               { label: `${LIST_CLEARANCE_USD}달러`, value: String(LIST_CLEARANCE_USD) },
               { label: `${LIST_CLEARANCE_US_USD}달러`, value: String(LIST_CLEARANCE_US_USD) },
             ]}
+            value={v.priceUsd}
             onPick={(value) => set("priceUsd", value)}
           />
         </div>

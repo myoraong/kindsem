@@ -74,6 +74,7 @@ export function YieldCalc({ item }: { item: CalcItem }) {
             { label: "6억", value: "60000" },
             { label: "9억", value: "90000" },
           ]}
+          value={v.price}
           onPick={(value) => set("price", value)}
         />
         <div className="space-y-2">
@@ -85,6 +86,7 @@ export function YieldCalc({ item }: { item: CalcItem }) {
               { label: "5천", value: "5000" },
               { label: "1억", value: "10000" },
             ]}
+            value={v.deposit}
             onPick={(value) => set("deposit", value)}
           />
         </div>
@@ -97,6 +99,7 @@ export function YieldCalc({ item }: { item: CalcItem }) {
               { label: "90만", value: "90" },
               { label: "120만", value: "120" },
             ]}
+            value={v.monthly}
             onPick={(value) => set("monthly", value)}
           />
         </div>

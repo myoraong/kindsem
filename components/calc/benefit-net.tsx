@@ -124,6 +124,7 @@ export function BenefitNet({ item }: { item: CalcItem }) {
               { label: "200만", value: "200" },
               { label: "250만", value: "250" },
             ]}
+            value={v.monthly}
             onPick={(value) => set("monthly", value)}
           />
         </div>
@@ -136,6 +137,7 @@ export function BenefitNet({ item }: { item: CalcItem }) {
               { label: "6개월", value: "6" },
               { label: "9개월", value: "9" },
             ]}
+            value={v.months}
             onPick={(value) => set("months", value)}
           />
         </div>

@@ -90,6 +90,7 @@ export function AcquisitionCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
+            value={v.price}
             onPick={(value) => set("price", value)}
           />
         </div>

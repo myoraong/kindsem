@@ -109,6 +109,7 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
             { label: "8억", value: "80000" },
             { label: "12억", value: "120000" },
           ]}
+          value={v.buy}
           onPick={(value) => set("buy", value)}
         />
         <div className="space-y-2">
@@ -120,6 +121,7 @@ export function CapitalGainsCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
+            value={v.sell}
             onPick={(value) => set("sell", value)}
           />
         </div>
@@ -201,6 +203,7 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
               { label: "8억", value: "80000" },
               { label: "12억", value: "120000" },
             ]}
+            value={v.buy}
             onPick={(value) => set("buy", value)}
           />
         </div>
@@ -213,6 +216,7 @@ export function CorporateGainsCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
+            value={v.sell}
             onPick={(value) => set("sell", value)}
           />
         </div>
@@ -294,6 +298,7 @@ export function HoldingTaxCalc({ item }: { item: CalcItem }) {
             { label: "12억", value: "120000" },
             { label: "18억", value: "180000" },
           ]}
+          value={v.price}
           onPick={(value) => set("price", value)}
         />
         <Hint>
@@ -400,6 +405,7 @@ export function GiftTaxCalc({ item }: { item: CalcItem }) {
               { label: "3억", value: "30000" },
               { label: "6억", value: "60000" },
             ]}
+            value={v.amount}
             onPick={(value) => set("amount", value)}
           />
         </div>
@@ -580,6 +586,7 @@ export function InheritanceCalc({ item }: { item: CalcItem }) {
               { label: "20억", value: "200000" },
               { label: "30억", value: "300000" },
             ]}
+            value={v.estate}
             onPick={(value) => set("estate", value)}
           />
         </div>
@@ -708,6 +715,7 @@ export function LicenseTaxCalc({ item }: { item: CalcItem }) {
             { label: "8억", value: "80000" },
             { label: "12억", value: "120000" },
           ]}
+          value={v.value}
           onPick={(value) => set("value", value)}
         />
         <Hint>상속 0.8%, 증여 1.5%입니다. 취득세 중과는 여기 없습니다.</Hint>
@@ -789,6 +797,7 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
               { label: "12억", value: "120000" },
               { label: "15억", value: "150000" },
             ]}
+            value={v.property}
             onPick={(value) => set("property", value)}
           />
         </div>
@@ -801,6 +810,7 @@ export function EncumberedGiftCalc({ item }: { item: CalcItem }) {
               { label: "3억", value: "30000" },
               { label: "5억", value: "50000" },
             ]}
+            value={v.debt}
             onPick={(value) => set("debt", value)}
           />
         </div>

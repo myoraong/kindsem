@@ -14,7 +14,7 @@ export function RelatedCalcs({ slug }: { slug: string }) {
           <li key={item.slug}>
             <Link
               href={calcPath(item.slug)}
-              className="inline-flex h-9 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
+              className="inline-flex h-11 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
             >
               {calcSeo(item.slug).query}
             </Link>

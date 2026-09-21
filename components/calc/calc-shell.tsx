@@ -83,7 +83,7 @@ export function CalcShell({
             <div className="mb-4 flex justify-end">
               <button
                 type="button"
-                className="text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                className="inline-flex h-11 items-center px-1 text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground"
                 onClick={() => requestCalcReset(item.slug)}
               >
                 처음 값

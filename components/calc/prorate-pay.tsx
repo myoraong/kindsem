@@ -72,6 +72,7 @@ export function ProratePay({ item }: { item: CalcItem }) {
               { label: "350만", value: "350" },
               { label: "400만", value: "400" },
             ]}
+            value={v.pay}
             onPick={(value) => set("pay", value)}
           />
         </div>
@@ -84,6 +85,7 @@ export function ProratePay({ item }: { item: CalcItem }) {
               { label: "15일", value: "15" },
               { label: "20일", value: "20" },
             ]}
+            value={v.workDays}
             onPick={(value) => set("workDays", value)}
           />
         </div>

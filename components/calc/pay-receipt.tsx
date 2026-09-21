@@ -1,10 +1,9 @@
 "use client"
 
 import type { ReactNode } from "react"
-import { toast } from "sonner"
+import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
-import { Button } from "@/components/ui/button"
-import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine, shareCopyText } from "@/lib/format"
+import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
 import { PAYROLL, type QuitHealthResult, type TakeHomeResult } from "@/lib/payroll"
 import { paySlipNote, RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
 
@@ -103,12 +102,6 @@ function Frame({
   note?: string
   children?: ReactNode
 }) {
-  async function copy() {
-    if (!copyValue) return
-    await navigator.clipboard.writeText(shareCopyText(copyValue))
-    toast.success("복사됨")
-  }
-
   return (
     <aside
       id="calc-result"
@@ -122,16 +115,12 @@ function Frame({
           {children}
           <p className="mt-4 text-xs leading-5 text-muted-foreground">{note ?? paySlipNote("settlement")}</p>
           <p className="mt-2 text-xs leading-5 text-muted-foreground">{RECEIPT_REFERENCE_NOTE}</p>
-          {copyValue ? (
-            <Button type="button" variant="outline" className="mt-5 h-10 w-full" onClick={copy}>
-              결과와 주소 복사
-            </Button>
-          ) : null}
+          {copyValue ? <ResultActions line={copyValue} /> : null}
         </>
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
-      {headline ? <ResultDock title={title} display={headline} onCopy={copy} /> : null}
+      {headline && copyValue ? <ResultDock title={title} display={headline} line={copyValue} /> : null}
     </aside>
   )
 }

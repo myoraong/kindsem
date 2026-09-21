@@ -146,6 +146,7 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
                       { label: "5억", value: "50000" },
                     ]
               }
+              value={v.price}
               onPick={(value) => set("price", value)}
             />
           </div>
@@ -160,6 +161,7 @@ export function BrokerageCalc({ item }: { item: CalcItem }) {
                 { label: "80만", value: "80" },
                 { label: "100만", value: "100" },
               ]}
+              value={v.monthly}
               onPick={(value) => set("monthly", value)}
             />
           </div>

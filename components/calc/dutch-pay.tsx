@@ -78,6 +78,7 @@ export function DutchPay({ item }: { item: CalcItem }) {
               { label: "10만", value: "100000" },
               { label: "15만", value: "150000" },
             ]}
+            value={v.total}
             onPick={(value) => set("total", value)}
           />
         </div>
@@ -92,6 +93,7 @@ export function DutchPay({ item }: { item: CalcItem }) {
               { label: "6명", value: "6" },
               { label: "8명", value: "8" },
             ]}
+            value={v.people}
             onPick={(value) => set("people", value)}
           />
         </div>

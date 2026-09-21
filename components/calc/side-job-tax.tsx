@@ -167,6 +167,7 @@ export function SideJobTax({ item }: { item: CalcItem }) {
               { label: "3,600만", value: "3600" },
               { label: "5,000만", value: "5000" },
             ]}
+            value={v.revenue}
             onPick={(value) => set("revenue", value)}
           />
         </div>

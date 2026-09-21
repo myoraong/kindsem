@@ -110,6 +110,7 @@ export function DsrCalc({ item }: { item: CalcItem }) {
             { label: "7천만", value: "7000" },
             { label: "1억", value: "10000" },
           ]}
+          value={v.income}
           onPick={(value) => set("income", value)}
         />
         <Hint>주담대·기타 대출은 없으면 비워 두세요. 연소득만으로도 남는 한도가 나옵니다.</Hint>
@@ -127,6 +128,7 @@ export function DsrCalc({ item }: { item: CalcItem }) {
             { label: "150만", value: "150" },
             { label: "200만", value: "200" },
           ]}
+          value={v.mortgage}
           onPick={(value) => set("mortgage", value)}
         />
         <MoneyField

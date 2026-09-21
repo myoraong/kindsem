@@ -90,6 +90,7 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
               { label: "1.5만", value: "15000" },
               { label: "2만", value: "20000" },
             ]}
+            value={v.hourly}
             onPick={(value) => set("hourly", value)}
           />
         </div>
@@ -108,6 +109,7 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
               { label: "30시간", value: "30" },
               { label: "40시간", value: "40" },
             ]}
+            value={v.weeklyHours}
             onPick={(value) => set("weeklyHours", value)}
           />
         </div>
