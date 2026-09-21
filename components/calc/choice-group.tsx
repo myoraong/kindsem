@@ -18,7 +18,14 @@ export function ChoiceGroup<T extends string>({
   return (
     <fieldset className="space-y-2">
       <legend className="text-sm font-medium">{label}</legend>
-      <div className="flex flex-wrap gap-2">
+      <div
+        className={cn("gap-2", options.length <= 3 ? "grid" : "flex flex-wrap")}
+        style={
+          options.length <= 3
+            ? { gridTemplateColumns: `repeat(${options.length}, minmax(0, 1fr))` }
+            : undefined
+        }
+      >
         {options.map((option) => {
           const selected = option.value === value
           return (
@@ -28,7 +35,8 @@ export function ChoiceGroup<T extends string>({
               aria-pressed={selected}
               onClick={() => onChange(option.value)}
               className={cn(
-                "h-10 min-w-16 rounded-xl border px-3.5 text-sm transition-colors",
+                "min-h-11 rounded-xl border px-3 py-2 text-sm leading-5 break-keep transition-colors",
+                options.length > 3 && "min-w-16",
                 selected
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-border bg-card text-foreground hover:bg-muted"

@@ -116,6 +116,25 @@ export function CarTax({ item }: { item: CalcItem }) {
             { value: "ev", label: "전기·수소 등" },
           ]}
         />
+        <ChoiceGroup
+          label="납부"
+          value={asCarPrepay(v.prepay)}
+          onChange={(value) => set("prepay", value)}
+          options={[
+            { value: "none", label: "분할" },
+            { value: "jan", label: "1월" },
+            { value: "mar", label: "3월" },
+            { value: "jun", label: "6월" },
+            { value: "sep", label: "9월" },
+          ]}
+        />
+        {result?.underPrepayMinimum ? (
+          <Hint>
+            {v.prepay === "jun" || v.prepay === "sep"
+              ? "연 세액 10만 원 미만은 6월·9월 연납이 되지 않습니다. 이 숫자는 참고입니다."
+              : "연 세액 10만 원 미만은 1월·3월만 연납됩니다."}
+          </Hint>
+        ) : null}
         {v.kind === "ev" ? null : (
           <div className="space-y-2">
             <MoneyField id="cc" label="배기량" unit="cc" value={v.cc} onChange={(value) => set("cc", value)} />
@@ -144,18 +163,6 @@ export function CarTax({ item }: { item: CalcItem }) {
             />
           </div>
         ) : null}
-        <ChoiceGroup
-          label="납부"
-          value={asCarPrepay(v.prepay)}
-          onChange={(value) => set("prepay", value)}
-          options={[
-            { value: "none", label: "분할" },
-            { value: "jan", label: "1월" },
-            { value: "mar", label: "3월" },
-            { value: "jun", label: "6월" },
-            { value: "sep", label: "9월" },
-          ]}
-        />
         <Hint>
           비영업 승용은 1,000cc 이하 80원, 1,600cc 이하 140원, 초과 200원입니다. 차령 3년부터 매년 5%, 12년
           이상 50%입니다. 전기 등 배기량 없는 비영업 승용은 10만 원입니다. 연납 이자는 5%이고, 교육세는 공제

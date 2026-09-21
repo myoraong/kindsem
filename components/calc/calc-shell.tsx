@@ -8,6 +8,7 @@ import { RelatedCalcs } from "@/components/calc/related-calcs"
 import type { CalcItem } from "@/lib/catalog"
 import { calcSeo } from "@/lib/seo"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
+import { requestCalcReset } from "@/lib/use-calc-persist"
 import { backLinkFor, homeSectionForGroup, readBackSection } from "@/lib/home-back"
 import { categoryForSlug } from "@/lib/realty"
 import { isTodaySlug } from "@/lib/today"
@@ -77,13 +78,24 @@ export function CalcShell({
       </div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
         <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
+          {item.slug !== "quick" && item.slug !== "ladder" ? (
+            <div className="mb-4 flex justify-end">
+              <button
+                type="button"
+                className="text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground"
+                onClick={() => requestCalcReset(item.slug)}
+              >
+                처음 값
+              </button>
+            </div>
+          ) : null}
           {children}
         </section>
         {result}
       </div>
+      <RelatedCalcs slug={item.slug} />
       <CalcArticle slug={item.slug} extra={guide} />
       <AffiliatePreview slug={item.slug} />
-      <RelatedCalcs slug={item.slug} />
       {faq}
       {/* 안내·FAQ 뒤에 둡니다. 입력칸을 가리지 않고, 본문보다 광고가 먼저 보이지 않게 합니다. */}
       <AdSenseInPage />

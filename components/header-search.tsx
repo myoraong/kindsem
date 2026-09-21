@@ -125,7 +125,10 @@ export function HeaderSearch() {
                     className="flex min-h-11 w-full items-center rounded-xl px-2.5 py-2.5 text-left text-sm hover:bg-muted"
                     onClick={() => go(item.slug)}
                   >
-                    <span className="font-medium">{calcSeo(item.slug).query}</span>
+                    <span className="min-w-0">
+                      <span className="block font-medium">{calcSeo(item.slug).query}</span>
+                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.blurb}</span>
+                    </span>
                   </button>
                 </li>
               ))}

@@ -4,7 +4,13 @@ import { useEffect, useId, useLayoutEffect, useRef, useState, useSyncExternalSto
 import { createPortal } from "react-dom"
 import Link from "next/link"
 import { interceptHomeSectionClick } from "@/lib/home-section-snap"
-import { closeNavMenu, getOpenNavMenu, openNavMenu, subscribeNavMenu } from "@/lib/nav-menu-open"
+import {
+  closeNavMenu,
+  coarseNavClickOpensMenu,
+  getOpenNavMenu,
+  openNavMenu,
+  subscribeNavMenu,
+} from "@/lib/nav-menu-open"
 import { calcPath } from "@/lib/seo"
 import { cn } from "@/lib/utils"
 
@@ -160,8 +166,12 @@ export function NavMenu({
     <div
       ref={rootRef}
       className="relative"
-      onMouseEnter={show}
+      onMouseEnter={() => {
+        if (window.matchMedia("(pointer: coarse)").matches) return
+        show()
+      }}
       onMouseLeave={(event) => {
+        if (window.matchMedia("(pointer: coarse)").matches) return
         if (isInside(event.relatedTarget)) return
         hideSoon()
       }}
@@ -179,11 +189,20 @@ export function NavMenu({
             : "border-transparent text-muted-foreground hover:text-foreground",
         )}
         onClick={(event) => {
+          const coarse = window.matchMedia("(pointer: coarse)").matches
+          if (coarseNavClickOpensMenu(coarse, getOpenNavMenu() === menuId)) {
+            event.preventDefault()
+            show()
+            return
+          }
           hideNow()
           onNavigate?.()
           interceptHomeSectionClick(href, event)
         }}
-        onFocus={show}
+        onFocus={() => {
+          if (window.matchMedia("(pointer: coarse)").matches) return
+          show()
+        }}
         onBlur={(event) => {
           if (isInside(event.relatedTarget)) return
           hideNow()

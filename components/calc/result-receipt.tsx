@@ -60,7 +60,10 @@ export function ResultReceipt({
   }
 
   return (
-    <aside className="paper-rule rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20">
+    <aside
+      id="calc-result"
+      className="paper-rule scroll-mt-24 rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20"
+    >
       <p className="text-sm text-muted-foreground">{title}</p>
       {hasResult ? (
         <>

@@ -19,6 +19,12 @@ function replaceSearch(query: string) {
   if (next !== current) window.history.replaceState(window.history.state, "", next)
 }
 
+export const CALC_RESET_EVENT = "kindsem-calc-reset"
+
+export function requestCalcReset(slug: string) {
+  window.dispatchEvent(new CustomEvent(CALC_RESET_EVENT, { detail: slug }))
+}
+
 type WidenBool<T> = {
   [K in keyof T]: T[K] extends boolean ? boolean : T[K]
 }
@@ -27,6 +33,18 @@ export function useCalcPersist<T extends Record<string, CalcPersistValue>>(slug:
   const [values, setValues] = useState<WidenBool<T>>(defaults as WidenBool<T>)
   const defaultsRef = useRef(defaults)
   defaultsRef.current = defaults
+
+  useLayoutEffect(() => {
+    function onReset(event: Event) {
+      if (!(event instanceof CustomEvent) || event.detail !== slug) return
+      const defaults = defaultsRef.current
+      setValues(defaults as WidenBool<T>)
+      writeCalcStorage(slug, defaults)
+      replaceSearch("")
+    }
+    window.addEventListener(CALC_RESET_EVENT, onReset)
+    return () => window.removeEventListener(CALC_RESET_EVENT, onReset)
+  }, [slug])
 
   useLayoutEffect(() => {
     const stored = readCalcStorage<T>(slug)

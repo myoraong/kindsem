@@ -110,7 +110,10 @@ function Frame({
   }
 
   return (
-    <aside className="paper-rule rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20">
+    <aside
+      id="calc-result"
+      className="paper-rule scroll-mt-24 rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20"
+    >
       <p className="text-sm text-muted-foreground">{title}</p>
       {headline ? (
         <>
@@ -146,7 +149,7 @@ export function PayTakeHomeReceipt({ row }: { row: TakeHomeResult | null }) {
 
   return (
     <Frame
-      title="월 실수령"
+      title={row.taxMode === "withholding" ? "명세서 월 실수령" : "월 실수령"}
       headline={formatWon(row.monthlyTakeHome)}
       caption={`연 ${formatWon(row.annualTakeHome)} · ${formatKoreanUnit(row.annualTakeHome)}`}
       copyValue={kakaoCopyLine("실수령", formatWon(row.monthlyTakeHome), "4대보험·세금 공제")}
@@ -223,7 +226,7 @@ export function PayOfferReceipt({
   const feltMonthlyNext = next.monthlyTakeHome - commuteWon
   return (
     <Frame
-      title="세후 연 차이"
+      title={now.taxMode === "withholding" ? "명세서 세후 차이" : "세후 연 차이"}
       headline={formatSignedWon(Math.round(annualDelta))}
       caption={`${annualDelta >= 0 ? "제안이" : "지금 직장이"} 세후로 더 남습니다 · 월 ${formatSignedWon(Math.round(monthlyDelta))}`}
       copyValue={kakaoCopyLine("세후 연 차이", formatSignedWon(Math.round(annualDelta)))}

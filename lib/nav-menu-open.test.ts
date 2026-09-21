@@ -1,6 +1,12 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { closeNavMenu, getOpenNavMenu, openNavMenu, subscribeNavMenu } from "./nav-menu-open.ts"
+import {
+  closeNavMenu,
+  coarseNavClickOpensMenu,
+  getOpenNavMenu,
+  openNavMenu,
+  subscribeNavMenu,
+} from "./nav-menu-open.ts"
 
 test("헤더 메뉴는 한 번에 하나만 열린다", () => {
   closeNavMenu()
@@ -15,4 +21,10 @@ test("헤더 메뉴는 한 번에 하나만 열린다", () => {
   assert.equal(getOpenNavMenu(), null)
   assert.deepEqual(seen, ["work", "realty", null])
   stop()
+})
+
+test("터치 첫 탭은 메뉴를 열고, 열린 뒤의 탭은 이동합니다", () => {
+  assert.equal(coarseNavClickOpensMenu(true, false), true)
+  assert.equal(coarseNavClickOpensMenu(true, true), false)
+  assert.equal(coarseNavClickOpensMenu(false, false), false)
 })

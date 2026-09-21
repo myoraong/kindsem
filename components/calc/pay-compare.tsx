@@ -207,6 +207,14 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
     <CalcShell item={item} faq={payFaq()} guide={payGuide()} result={<PayTakeHomeReceipt row={now} />}>
       <div className="space-y-5">
         <PaySiblingHint here="take-home" />
+        <TaxBasisFields
+          taxMode={v.taxMode}
+          onTaxMode={(value) => set("taxMode", value)}
+          children={v.children}
+          onChildren={(value) => set("children", value)}
+          rate={v.withholdRate}
+          onRate={(value) => set("withholdRate", value)}
+        />
         <ChoiceGroup
           label="입력 단위"
           value={v.period}
@@ -249,14 +257,6 @@ function TakeHomeForm({ item }: { item: CalcItem }) {
             onPick={(value) => set("current", value)}
           />
         </div>
-        <TaxBasisFields
-          taxMode={v.taxMode}
-          onTaxMode={(value) => set("taxMode", value)}
-          children={v.children}
-          onChildren={(value) => set("children", value)}
-          rate={v.withholdRate}
-          onRate={(value) => set("withholdRate", value)}
-        />
         <DependentsField
           value={v.dependents}
           onChange={(value) => set("dependents", value)}
@@ -358,6 +358,14 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
     >
       <div className="space-y-5">
         <PaySiblingHint here="offer-compare" />
+        <TaxBasisFields
+          taxMode={v.taxMode}
+          onTaxMode={(value) => set("taxMode", value)}
+          children={v.children}
+          onChildren={(value) => set("children", value)}
+          rate={v.withholdRate}
+          onRate={(value) => set("withholdRate", value)}
+        />
         <ChoiceGroup
           label="입력 단위"
           value={v.period}
@@ -446,14 +454,6 @@ function OfferCompareForm({ item }: { item: CalcItem }) {
             placeholder="없음"
           />
         </div>
-        <TaxBasisFields
-          taxMode={v.taxMode}
-          onTaxMode={(value) => set("taxMode", value)}
-          children={v.children}
-          onChildren={(value) => set("children", value)}
-          rate={v.withholdRate}
-          onRate={(value) => set("withholdRate", value)}
-        />
         <DependentsField
           value={v.dependents}
           onChange={(value) => set("dependents", value)}

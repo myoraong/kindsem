@@ -28,6 +28,11 @@ export function openNavMenu(id: string) {
   emit()
 }
 
+/** 터치 화면은 첫 탭에 목록을 열고, 이미 열린 뒤의 탭이 분류로 이동합니다. */
+export function coarseNavClickOpensMenu(coarsePointer: boolean, alreadyOpen: boolean) {
+  return coarsePointer && !alreadyOpen
+}
+
 export function closeNavMenu(id?: string) {
   if (id && openId !== id) return
   if (openId === null) return
