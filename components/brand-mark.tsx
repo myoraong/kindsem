@@ -13,11 +13,9 @@ export function BrandMark() {
       />
       <span className="flex min-w-0 flex-col justify-center leading-none">
         <span className="flex items-baseline gap-1.5">
-          <span className="text-[15px] font-bold tracking-[-0.05em] [font-variant-numeric:tabular-nums]">
-            Kindsem
-          </span>
+          <span className="text-[15px] font-bold tracking-tight">카인드셈</span>
           <span className="hidden text-[11px] font-medium tracking-tight text-muted-foreground sm:inline">
-            카인드셈
+            Kindsem
           </span>
         </span>
         <span className="mt-0.5 hidden text-[11px] font-medium tracking-[0.02em] text-muted-foreground sm:block">
@@ -32,7 +30,7 @@ export function BrandLink() {
   return (
     <Link
       href="/#all"
-      aria-label="Kindsem 카인드셈 생활 계산기"
+      aria-label="카인드셈 생활 계산기"
       className="shrink-0 rounded-lg outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       onClick={(event) => {
         const path = window.location.pathname

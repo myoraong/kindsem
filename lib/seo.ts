@@ -6,6 +6,7 @@ import { MASCOT, MASCOT_MARK, MASCOT_SHARE } from "./brand.ts"
 import {
   CONTACT_EMAIL,
   SITE_ALTERNATE_NAMES,
+  SITE_BRAND_NAME,
   SITE_NAME,
   SITE_SEARCH_NAME,
   SITE_URL,
@@ -241,7 +242,7 @@ function pageOpenGraph(title: string, description: string, url: string) {
     url,
     locale: "ko_KR" as const,
     type: "website" as const,
-    siteName: SITE_SEARCH_NAME,
+    siteName: SITE_BRAND_NAME,
     images: [
       {
         url: MASCOT_SHARE.src,
@@ -299,7 +300,7 @@ export function calcJsonLd(item: CalcItem) {
       offers: { "@type": "Offer", price: "0", priceCurrency: "KRW" },
       publisher: {
         "@type": "Organization",
-        name: SITE_SEARCH_NAME,
+        name: SITE_BRAND_NAME,
         alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
         logo: `${SITE_URL}${MASCOT_MARK.src}`,
@@ -347,14 +348,14 @@ export function homeJsonLd() {
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: SITE_SEARCH_NAME,
+      name: SITE_BRAND_NAME,
       alternateName: [...SITE_ALTERNATE_NAMES],
-      url: SITE_URL,
+      url: `${SITE_URL}/`,
       inLanguage: "ko",
       description: HOME_DESCRIPTION,
       publisher: {
         "@type": "Organization",
-        name: SITE_SEARCH_NAME,
+        name: SITE_BRAND_NAME,
         alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
         logo: `${SITE_URL}${MASCOT_MARK.src}`,

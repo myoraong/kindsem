@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/site-header"
 import { MASCOT, MASCOT_FAVICON, MASCOT_MARK, MASCOT_SHARE } from "@/lib/brand"
 import { ADSENSE_CLIENT } from "@/lib/adsense"
 import { INDEX_ROBOTS } from "@/lib/seo"
-import { SITE_SEARCH_NAME, SITE_URL } from "@/lib/site"
+import { SITE_BRAND_NAME, SITE_SEARCH_NAME, SITE_URL } from "@/lib/site"
 import { THEME_BOOT_SCRIPT } from "@/lib/theme"
 import "./globals.css"
 
@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  applicationName: SITE_SEARCH_NAME,
+  applicationName: SITE_BRAND_NAME,
   title: {
     default: SITE_SEARCH_NAME,
     template: `%s · ${SITE_SEARCH_NAME}`,
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "ko_KR",
     url: "/",
-    siteName: SITE_SEARCH_NAME,
+    siteName: SITE_BRAND_NAME,
     title: SITE_SEARCH_NAME,
     description:
       "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다. 표에 없는 공제는 넣지 않습니다.",
