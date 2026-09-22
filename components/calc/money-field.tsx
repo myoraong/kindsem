@@ -3,6 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
 import { focusNextOrResult, hasNextTextInput } from "@/lib/field-focus"
+import { applyMoneyNudge, moneyNudge } from "@/lib/money-nudge"
 import { fieldNeedsReveal, MOBILE_RESULT_DOCK_PX } from "@/lib/field-reveal"
 import {
   caretIndexAfterGroup,
@@ -53,6 +54,7 @@ export function MoneyField({
   const [enterHint, setEnterHint] = useState<"next" | "done">("next")
   const canSpeak = unit === "만원" || unit === "원"
   const numeric = Number(value.replace(/,/g, ""))
+  const nudge = !spokenMode && !draft ? moneyNudge(unit, numeric) : null
   const preview =
     unit === "만원" && Number.isFinite(numeric) && value !== ""
       ? formatKoreanUnit(manwonToWon(numeric))
@@ -101,6 +103,33 @@ export function MoneyField({
           <span className="text-xs text-muted-foreground">{hint}</span>
         ) : null}
       </div>
+      {nudge ? (
+        <div data-money-nudge className="flex scroll-mb-36 gap-2">
+          <button
+            type="button"
+            className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-muted text-sm disabled:opacity-40"
+            aria-label={`${label} ${nudge.label} 빼기`}
+            disabled={numeric - nudge.step <= 0}
+            onClick={() => {
+              const next = applyMoneyNudge(numeric, -nudge.step)
+              if (next) onChange(next)
+            }}
+          >
+            −{nudge.label}
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-11 flex-1 items-center justify-center rounded-xl bg-muted text-sm"
+            aria-label={`${label} ${nudge.label} 더하기`}
+            onClick={() => {
+              const next = applyMoneyNudge(numeric, nudge.step)
+              if (next) onChange(next)
+            }}
+          >
+            +{nudge.label}
+          </button>
+        </div>
+      ) : null}
       <div className="relative">
         <input
           id={id}
