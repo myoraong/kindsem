@@ -2,6 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
+import { focusNextOrResult, hasNextTextInput } from "@/lib/field-focus"
 import { fieldNeedsReveal, MOBILE_RESULT_DOCK_PX } from "@/lib/field-reveal"
 import {
   caretIndexAfterGroup,
@@ -23,21 +24,6 @@ function revealField(el: HTMLElement) {
   window.setTimeout(() => {
     el.scrollIntoView({ block: "center", behavior: "smooth" })
   }, 280)
-}
-
-function focusNextInput(current: HTMLInputElement) {
-  const root = current.closest("section")
-  if (!root) {
-    current.blur()
-    return
-  }
-  const fields = [...root.querySelectorAll("input")].filter(
-    (el): el is HTMLInputElement =>
-      el instanceof HTMLInputElement && el.type !== "checkbox" && el.type !== "radio" && !el.disabled,
-  )
-  const next = fields[fields.indexOf(current) + 1]
-  if (next) next.focus()
-  else current.blur()
 }
 
 export function MoneyField({
@@ -64,6 +50,7 @@ export function MoneyField({
   const [draft, setDraft] = useState<string | null>(null)
   const [spokenMode, setSpokenMode] = useState(false)
   const [undoValue, setUndoValue] = useState<string | null>(null)
+  const [enterHint, setEnterHint] = useState<"next" | "done">("next")
   const canSpeak = unit === "만원" || unit === "원"
   const numeric = Number(value.replace(/,/g, ""))
   const preview =
@@ -119,13 +106,14 @@ export function MoneyField({
           id={id}
           ref={inputRef}
           inputMode={spokenMode ? "text" : "decimal"}
-          enterKeyHint="next"
+          enterKeyHint={enterHint}
           autoComplete="off"
           value={draft ?? formatGroupedInput(value)}
           placeholder={placeholder}
           onFocus={(event) => {
             const el = event.currentTarget
             selectOnFocus.current = true
+            setEnterHint(hasNextTextInput(el) ? "next" : "done")
             requestAnimationFrame(() => {
               if (document.activeElement === el) el.select()
             })
@@ -144,7 +132,7 @@ export function MoneyField({
             if (event.key !== "Enter") return
             if ((event.nativeEvent as { isComposing?: boolean }).isComposing) return
             event.preventDefault()
-            focusNextInput(event.currentTarget)
+            focusNextOrResult(event.currentTarget)
           }}
           onChange={(event) => {
             const raw = event.currentTarget.value

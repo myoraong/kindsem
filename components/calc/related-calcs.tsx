@@ -1,7 +1,11 @@
 "use client"
 
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useCalcSlug } from "@/components/calc/calc-slug"
 import { useRecentResult } from "@/components/recent-result-context"
+import { carryQuery } from "@/lib/calc-carry"
+import { readCalcStorage, type CalcPersistValue } from "@/lib/calc-persist"
 import { relatedCalculators } from "@/lib/related-calcs"
 import { calcPath, calcSeo } from "@/lib/seo"
 
@@ -25,10 +29,21 @@ export function RelatedCalcs({ slug }: { slug: string }) {
 
 function RelatedLink({ slug }: { slug: string }) {
   const result = useRecentResult(slug)
+  const here = useCalcSlug()
+  const router = useRouter()
+  const href = calcPath(slug)
   return (
     <Link
-      href={calcPath(slug)}
+      href={href}
       className="inline-flex min-h-11 max-w-[16rem] flex-col justify-center rounded-full bg-card px-3.5 py-1 text-sm ring-1 ring-foreground/8 hover:bg-accent"
+      onClick={(event) => {
+        if (!here) return
+        const stored = readCalcStorage<Record<string, CalcPersistValue>>(here)
+        const query = carryQuery(here, slug, stored)
+        if (!query) return
+        event.preventDefault()
+        router.push(`${href}${query}`)
+      }}
     >
       <span className="truncate">{calcSeo(slug).query}</span>
       {result ? (

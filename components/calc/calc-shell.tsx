@@ -10,6 +10,7 @@ import type { CalcItem } from "@/lib/catalog"
 import { calcSeo } from "@/lib/seo"
 import { CalcSlugProvider } from "@/components/calc/calc-slug"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
+import { focusNextOrResult } from "@/lib/field-focus"
 import { requestCalcReset } from "@/lib/use-calc-persist"
 import { backLinkFor, homeSectionForGroup, readBackSection } from "@/lib/home-back"
 import { categoryForSlug } from "@/lib/realty"
@@ -80,7 +81,18 @@ export function CalcShell({
         <SenaFigure variant="calc" />
       </div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
-        <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
+        <section
+          className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6"
+          onKeyDown={(event) => {
+            if (event.key !== "Enter" || event.defaultPrevented) return
+            if ((event.nativeEvent as { isComposing?: boolean }).isComposing) return
+            const target = event.target
+            if (!(target instanceof HTMLInputElement)) return
+            if (target.type === "checkbox" || target.type === "radio") return
+            event.preventDefault()
+            focusNextOrResult(target)
+          }}
+        >
           <div className="mb-4 flex items-center justify-between gap-3">
             <a
               href="#calc-result"
