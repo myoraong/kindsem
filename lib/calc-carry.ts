@@ -28,6 +28,10 @@ function pickCarry(from: string, to: string, values: Partial<Bag>): Bag {
   if (loan) return pickLoan(from, to, values)
   const prorate = proratePair(from, to)
   if (prorate) return pickProrate(from, values)
+  const move = movePair(from, to)
+  if (move) return pickMove(from, values)
+  const sale = salePair(from, to)
+  if (sale) return pickSale(from, to, values)
   return {}
 }
 
@@ -146,6 +150,50 @@ function pickProrate(from: string, values: Partial<Bag>): Bag {
   const out: Bag = {}
   if (typeof values.current === "string") out.pay = values.current
   return out
+}
+
+function movePair(from: string, to: string) {
+  return (
+    (from === "brokerage" && to === "moving") || (from === "moving" && to === "brokerage")
+  )
+}
+
+/** 전세·월세 보증금만 이사 총액과 복비 사이에서 옮깁니다. 매매가·분양권은 보증금이 아닙니다. */
+function pickMove(from: string, values: Partial<Bag>): Bag {
+  if (from === "brokerage") {
+    if (values.property === "presale") return {}
+    if (values.deal !== "jeonse" && values.deal !== "wolse") return {}
+    const out: Bag = { deal: values.deal }
+    if (typeof values.price === "string" && values.price !== "") out.deposit = values.price
+    if (values.deal === "wolse" && typeof values.monthly === "string" && values.monthly !== "") {
+      out.monthly = values.monthly
+    }
+    return out
+  }
+  if (values.deal !== "jeonse" && values.deal !== "wolse") return {}
+  const out: Bag = { deal: values.deal, property: "house" }
+  if (typeof values.deposit === "string" && values.deposit !== "") out.price = values.deposit
+  if (values.deal === "wolse" && typeof values.monthly === "string" && values.monthly !== "") {
+    out.monthly = values.monthly
+  }
+  return out
+}
+
+function salePair(from: string, to: string) {
+  const buy = from === "acquisition" || from === "closing-cost" || to === "acquisition" || to === "closing-cost"
+  const fee = from === "brokerage" || to === "brokerage"
+  return buy && fee
+}
+
+/** 살 때 매매가와 매매 복비의 거래금액만 옮깁니다. */
+function pickSale(from: string, to: string, values: Partial<Bag>): Bag {
+  if (to === "brokerage") {
+    if (typeof values.price !== "string" || values.price === "") return {}
+    return { deal: "sale", property: "house", price: values.price }
+  }
+  if (values.deal !== "sale") return {}
+  if (typeof values.price !== "string" || values.price === "") return {}
+  return { price: values.price }
 }
 
 function pickKeys(values: Partial<Bag>, keys: string[]): Bag {

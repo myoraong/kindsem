@@ -105,6 +105,74 @@ test("집값과 전월세와 대출 원금은 짝 계산기로만 간다", () =>
   assert.equal(carryQuery("take-home", "offer-compare", null), "")
 })
 
+test("전월세 보증금은 복비와 이사 총액 사이에서만 옮긴다", () => {
+  const toMove = new URLSearchParams(
+    carryQuery("brokerage", "moving", {
+      deal: "wolse",
+      property: "house",
+      price: "5000",
+      monthly: "65",
+      vat: true,
+    }).slice(1),
+  )
+  assert.equal(toMove.get("deal"), "wolse")
+  assert.equal(toMove.get("deposit"), "5000")
+  assert.equal(toMove.get("monthly"), "65")
+  assert.equal(toMove.get("price"), null)
+  assert.equal(toMove.get("vat"), null)
+
+  assert.equal(
+    carryQuery("brokerage", "moving", { deal: "sale", property: "house", price: "50000" }),
+    "",
+  )
+  assert.equal(
+    carryQuery("brokerage", "moving", { deal: "jeonse", property: "presale", price: "8000" }),
+    "",
+  )
+
+  const toFee = new URLSearchParams(
+    carryQuery("moving", "brokerage", {
+      deal: "jeonse",
+      deposit: "20000",
+      monthly: "50",
+      loan: "10000",
+    }).slice(1),
+  )
+  assert.equal(toFee.get("deal"), "jeonse")
+  assert.equal(toFee.get("price"), "20000")
+  assert.equal(toFee.get("property"), "house")
+  assert.equal(toFee.get("monthly"), null)
+  assert.equal(toFee.get("loan"), null)
+})
+
+test("살 때 매매가는 매매 복비로, 전세 보증금은 매매가로 쓰지 않는다", () => {
+  const toFee = new URLSearchParams(
+    carryQuery("closing-cost", "brokerage", { price: "65000", homes: "1", first: true }).slice(1),
+  )
+  assert.equal(toFee.get("deal"), "sale")
+  assert.equal(toFee.get("property"), "house")
+  assert.equal(toFee.get("price"), "65000")
+  assert.equal(toFee.get("homes"), null)
+  assert.equal(toFee.get("first"), null)
+
+  const back = new URLSearchParams(
+    carryQuery("brokerage", "acquisition", {
+      deal: "sale",
+      property: "officetel",
+      price: "80000",
+      monthly: "65",
+    }).slice(1),
+  )
+  assert.equal(back.get("price"), "80000")
+  assert.equal(back.get("deal"), null)
+  assert.equal(back.get("monthly"), null)
+
+  assert.equal(
+    carryQuery("brokerage", "closing-cost", { deal: "wolse", price: "5000", monthly: "65" }),
+    "",
+  )
+})
+
 test("월급 실수령은 일할 계산으로, 연봉 입력은 옮기지 않는다", () => {
   const month = new URLSearchParams(
     carryQuery("take-home", "prorate-pay", { period: "month", current: "320" }).slice(1),
