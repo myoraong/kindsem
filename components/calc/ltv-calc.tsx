@@ -9,9 +9,10 @@ import { Hint } from "@/components/calc/hint"
 import { LimitSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
-import { calculateLtv, type LtvBorrower, type LtvZone } from "@/lib/ltv"
+import { calculateLtv, mortgagePrincipalQuery, type LtvBorrower, type LtvZone } from "@/lib/ltv"
 import { formatPercent, formatWon, manwonToWon } from "@/lib/format"
 import { LTV_POLICY } from "@/lib/policy.generated"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -48,6 +49,8 @@ export function LtvCalc({ item }: { item: CalcItem }) {
       borrower: v.borrower,
     })
   }, [v])
+
+  const payQuery = result && result.maxLoan > 0 ? mortgagePrincipalQuery(result.maxLoan) : ""
 
   return (
     <CalcShell
@@ -112,6 +115,15 @@ export function LtvCalc({ item }: { item: CalcItem }) {
               : []
           }
           empty="담보가치만 넣으면 한도가 나옵니다."
+          next={
+            payQuery
+              ? {
+                  href: `${calcPath("mortgage")}${payQuery}`,
+                  label: "이 한도로 월 납입",
+                  note: "최대 한도를 대출 금액으로 넘깁니다.",
+                }
+              : undefined
+          }
         />
       }
     >

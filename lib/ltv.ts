@@ -1,3 +1,5 @@
+import { encodeCalcQuery } from "./calc-persist.ts"
+import { wonToManwonField } from "./format.ts"
 import { LTV_POLICY } from "./policy.generated.ts"
 
 export type LtvZone = "unregulated" | "adjusted" | "speculation"
@@ -66,4 +68,14 @@ export function calculateLtv(input: LtvInput): LtvResult | null {
     allowed: desiredWon > 0 ? allowed : false,
     note,
   }
+}
+
+/**
+ * LTV 최대 한도(원)를 주택담보대출 금액 칸으로 넘깁니다.
+ * 대출 금액만 주소에 실어, 금리·기간은 그대로 둡니다.
+ * 한도가 없으면 빈 문자열입니다.
+ */
+export function mortgagePrincipalQuery(loanWon: number): string {
+  if (!Number.isFinite(loanWon) || loanWon <= 0) return ""
+  return encodeCalcQuery({ principal: wonToManwonField(loanWon) })
 }
