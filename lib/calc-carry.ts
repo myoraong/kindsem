@@ -32,6 +32,8 @@ function pickCarry(from: string, to: string, values: Partial<Bag>): Bag {
   if (move) return pickMove(from, values)
   const sale = salePair(from, to)
   if (sale) return pickSale(from, to, values)
+  const gains = gainsPair(from, to)
+  if (gains) return pickGains(from, to, values)
   return {}
 }
 
@@ -194,6 +196,45 @@ function pickSale(from: string, to: string, values: Partial<Bag>): Bag {
   if (values.deal !== "sale") return {}
   if (typeof values.price !== "string" || values.price === "") return {}
   return { price: values.price }
+}
+
+const GAINS = new Set(["capital-gains", "corporate-gains"])
+const BUY_HOUSE = new Set(["acquisition", "closing-cost"])
+
+function gainsPair(from: string, to: string) {
+  if (BUY_HOUSE.has(from) && BUY_HOUSE.has(to)) return false
+  const fromOk = GAINS.has(from) || BUY_HOUSE.has(from)
+  const toOk = GAINS.has(to) || BUY_HOUSE.has(to)
+  return fromOk && toOk
+}
+
+function filled(values: Partial<Bag>, key: string) {
+  const value = values[key]
+  return typeof value === "string" && value !== "" ? value : null
+}
+
+/**
+ * 취득가액은 취득세·살 때 총비용과 양도세 취득가 사이에서 옮깁니다.
+ * 양도가액은 개인·법인 양도세끼리만 옮기고, 공시가격으로는 쓰지 않습니다.
+ */
+function pickGains(from: string, to: string, values: Partial<Bag>): Bag {
+  if (GAINS.has(from) && GAINS.has(to)) {
+    const out: Bag = {}
+    for (const key of ["buy", "sell", "costs"]) {
+      const value = filled(values, key)
+      if (value) out[key] = value
+    }
+    return out
+  }
+  if (BUY_HOUSE.has(from) && GAINS.has(to)) {
+    const price = filled(values, "price")
+    return price ? { buy: price } : {}
+  }
+  if (GAINS.has(from) && BUY_HOUSE.has(to)) {
+    const buy = filled(values, "buy")
+    return buy ? { price: buy } : {}
+  }
+  return {}
 }
 
 function pickKeys(values: Partial<Bag>, keys: string[]): Bag {

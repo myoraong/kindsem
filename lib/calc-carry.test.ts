@@ -173,6 +173,51 @@ test("살 때 매매가는 매매 복비로, 전세 보증금은 매매가로 �
   )
 })
 
+test("취득가액은 양도세 취득가로 가고 공시가격이나 양도가액으로는 쓰지 않는다", () => {
+  const toGains = new URLSearchParams(
+    carryQuery("acquisition", "capital-gains", {
+      price: "65000",
+      homes: "1",
+      first: true,
+      adjusted: false,
+    }).slice(1),
+  )
+  assert.equal(toGains.get("buy"), "65000")
+  assert.equal(toGains.get("price"), null)
+  assert.equal(toGains.get("homes"), null)
+  assert.equal(toGains.get("sell"), null)
+
+  const back = new URLSearchParams(
+    carryQuery("capital-gains", "closing-cost", {
+      buy: "40000",
+      sell: "80000",
+      costs: "500",
+      homes: "2",
+    }).slice(1),
+  )
+  assert.equal(back.get("price"), "40000")
+  assert.equal(back.get("sell"), null)
+  assert.equal(back.get("homes"), null)
+
+  const corp = new URLSearchParams(
+    carryQuery("capital-gains", "corporate-gains", {
+      buy: "40000",
+      sell: "80000",
+      costs: "500",
+      years: "8",
+      homes: "2",
+    }).slice(1),
+  )
+  assert.equal(corp.get("buy"), "40000")
+  assert.equal(corp.get("sell"), "80000")
+  assert.equal(corp.get("costs"), "500")
+  assert.equal(corp.get("years"), null)
+  assert.equal(corp.get("homes"), null)
+
+  assert.equal(carryQuery("acquisition", "holding-tax", { price: "65000", homes: "1" }), "")
+  assert.equal(carryQuery("holding-tax", "capital-gains", { price: "90000", homes: "2" }), "")
+})
+
 test("월급 실수령은 일할 계산으로, 연봉 입력은 옮기지 않는다", () => {
   const month = new URLSearchParams(
     carryQuery("take-home", "prorate-pay", { period: "month", current: "320" }).slice(1),
