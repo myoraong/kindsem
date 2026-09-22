@@ -13,7 +13,7 @@ export const MASCOT_SHARE = {
   height: 1200,
 } as const
 
-/** 구글 파비콘·조직 로고. 사이트와 같은 세나 얼굴. */
+/** 사이트 안 동그란 자리의 세나 얼굴. 검색 작은 아이콘은 전신이다. */
 export const MASCOT_MARK = {
   src: "/kindsem-sena-face-live.png",
   width: 512,
@@ -24,5 +24,6 @@ export const MASCOT_FAVICON = {
   png48: "/kindsem-sena-face-fav-48.png",
   png96: "/kindsem-sena-face-fav-96.png",
   png192: "/kindsem-sena-face-fav-192.png",
+  png512: "/kindsem-sena-favicon-512.png",
   ico: "/favicon.ico",
 } as const

@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import type { CalcItem } from "./catalog.ts"
 import { CALCULATORS } from "./catalog.ts"
 import { CALC_GUIDES } from "./calc-guides.ts"
-import { MASCOT, MASCOT_MARK, MASCOT_SHARE } from "./brand.ts"
+import { MASCOT, MASCOT_FAVICON, MASCOT_SHARE } from "./brand.ts"
 import {
   CONTACT_EMAIL,
   SITE_ALTERNATE_NAMES,
@@ -303,7 +303,7 @@ export function calcJsonLd(item: CalcItem) {
         name: SITE_BRAND_NAME,
         alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
-        logo: `${SITE_URL}${MASCOT_MARK.src}`,
+        logo: `${SITE_URL}${MASCOT_FAVICON.png512}`,
         image: `${SITE_URL}${MASCOT_SHARE.src}`,
       },
     },
@@ -358,7 +358,7 @@ export function homeJsonLd() {
         name: SITE_BRAND_NAME,
         alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
-        logo: `${SITE_URL}${MASCOT_MARK.src}`,
+        logo: `${SITE_URL}${MASCOT_FAVICON.png512}`,
         image: `${SITE_URL}${MASCOT_SHARE.src}`,
       },
       image: `${SITE_URL}${MASCOT_SHARE.src}`,

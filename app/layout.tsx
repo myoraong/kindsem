@@ -4,7 +4,7 @@ import { Providers } from "@/components/providers"
 import { AdSenseScript } from "@/components/adsense-script"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
-import { MASCOT, MASCOT_FAVICON, MASCOT_MARK, MASCOT_SHARE } from "@/lib/brand"
+import { MASCOT, MASCOT_FAVICON, MASCOT_SHARE } from "@/lib/brand"
 import { ADSENSE_CLIENT } from "@/lib/adsense"
 import { INDEX_ROBOTS } from "@/lib/seo"
 import { SITE_BRAND_NAME, SITE_SEARCH_NAME, SITE_URL } from "@/lib/site"
@@ -34,17 +34,14 @@ export const metadata: Metadata = {
   manifest: "/site.webmanifest",
   icons: {
     icon: [
-      { url: `${MASCOT_FAVICON.png48}?v=sena`, type: "image/png", sizes: "48x48" },
-      { url: `${MASCOT_FAVICON.png96}?v=sena`, type: "image/png", sizes: "96x96" },
-      { url: `${MASCOT_FAVICON.png192}?v=sena`, type: "image/png", sizes: "192x192" },
-      { url: `${MASCOT_FAVICON.ico}?v=sena`, sizes: "48x48" },
-      { url: MASCOT_MARK.src, type: "image/png", sizes: "512x512" },
+      { url: `${MASCOT_FAVICON.png48}?v=sena2`, type: "image/png", sizes: "48x48" },
+      { url: `${MASCOT_FAVICON.png96}?v=sena2`, type: "image/png", sizes: "96x96" },
+      { url: `${MASCOT_FAVICON.png192}?v=sena2`, type: "image/png", sizes: "192x192" },
+      { url: `${MASCOT_FAVICON.png512}?v=sena2`, type: "image/png", sizes: "512x512" },
+      { url: `${MASCOT_FAVICON.ico}?v=sena2`, sizes: "48x48" },
     ],
-    shortcut: [{ url: `${MASCOT_FAVICON.png48}?v=sena`, type: "image/png" }],
-    apple: [
-      { url: "/apple-touch-icon.png?v=sena", sizes: "180x180" },
-      { url: MASCOT_MARK.src, sizes: "180x180" },
-    ],
+    shortcut: [{ url: `${MASCOT_FAVICON.ico}?v=sena2` }],
+    apple: [{ url: "/apple-touch-icon.png?v=sena2", sizes: "180x180" }],
   },
   openGraph: {
     type: "website",

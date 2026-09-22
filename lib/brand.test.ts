@@ -53,18 +53,21 @@ test("세나 그림 파일이 공개 폴더에 있다", () => {
   assert.equal(existsSync(join(root, "icon-192.png")), true)
 })
 
-test("구글 검색용 파비콘이 사이트 세나 얼굴이고 48픽셀 배수다", () => {
+test("검색 작은 아이콘은 세나 전신이고 48픽셀 배수다", () => {
   const root = join(process.cwd(), "public")
   assert.equal(MASCOT_FAVICON.png48, "/kindsem-sena-face-fav-48.png")
   assert.equal(MASCOT_FAVICON.png96, "/kindsem-sena-face-fav-96.png")
   assert.equal(MASCOT_FAVICON.png192, "/kindsem-sena-face-fav-192.png")
   assert.equal(MASCOT_FAVICON.ico, "/favicon.ico")
+  assert.equal(MASCOT_FAVICON.png512, "/kindsem-sena-favicon-512.png")
   assert.equal(MASCOT_MARK.src, "/kindsem-sena-face-live.png")
   assert.deepEqual(pngSize(join(root, "kindsem-sena-share-live.png")), { width: 1200, height: 1200 })
   assert.deepEqual(pngSize(join(root, "kindsem-sena-face-live.png")), { width: 512, height: 512 })
   assert.deepEqual(pngSize(join(root, "kindsem-sena-face-fav-48.png")), { width: 48, height: 48 })
   assert.deepEqual(pngSize(join(root, "kindsem-sena-face-fav-96.png")), { width: 96, height: 96 })
   assert.deepEqual(pngSize(join(root, "kindsem-sena-face-fav-192.png")), { width: 192, height: 192 })
+  assert.deepEqual(pngSize(join(root, "kindsem-sena-favicon-512.png")), { width: 512, height: 512 })
+  assert.equal(existsSync(join(root, "kindsem-sena-favicon-512.png")), true)
   assert.deepEqual(pngSize(join(root, "apple-touch-icon.png")), { width: 180, height: 180 })
   assert.ok(icoSizes(join(root, "favicon.ico")).includes("48x48"))
 })
