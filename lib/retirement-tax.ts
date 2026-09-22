@@ -1,3 +1,4 @@
+import { encodeCalcQuery } from "./calc-persist.ts"
 import { truncWon } from "./format.ts"
 import { INTEREST_TAX, RETIREMENT } from "./policy.generated.ts"
 import { INCOME_BRACKETS, progressiveTax } from "./tax-brackets.ts"
@@ -47,4 +48,31 @@ export function calcRetirementTax(input: { payout: number; years: number }) {
     local,
     total: national + local,
   }
+}
+
+/** 원 금액을 퇴직소득세 만원 칸 문자열로 바꿉니다. 다시 원으로 곱하면 같은 원입니다. */
+export function wonToManwonField(won: number): string {
+  const rounded = Math.round(won)
+  const abs = Math.abs(rounded)
+  const whole = Math.trunc(abs / 10_000)
+  const frac = abs % 10_000
+  const body =
+    frac === 0 ? String(whole) : `${whole}.${String(frac).padStart(4, "0").replace(/0+$/, "")}`
+  return rounded < 0 ? `-${body}` : body
+}
+
+/**
+ * 법정 퇴직금(원)과 근속년수를 퇴직소득세 주소로 넘깁니다.
+ * 근속은 계산기가 쓰는 년 단위(1년 미만은 버림)만 보냅니다.
+ * 1년 미만이거나 금액이 없으면 빈 문자열입니다.
+ */
+export function retirementTaxQuery(amountWon: number, serviceYears: number): string {
+  if (!Number.isFinite(amountWon) || amountWon <= 0) return ""
+  if (!Number.isFinite(serviceYears) || serviceYears < 1) return ""
+  const years = Math.floor(serviceYears)
+  if (years < 1) return ""
+  return encodeCalcQuery({
+    payout: wonToManwonField(amountWon),
+    years: String(years),
+  })
 }

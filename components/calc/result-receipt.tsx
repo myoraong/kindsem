@@ -1,10 +1,12 @@
 "use client"
 
+import Link from "next/link"
 import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
 import { useRememberRecentResult } from "@/components/calc/use-remember-result"
 import { useResultFlash } from "@/components/calc/use-result-flash"
 import { useResultTitle } from "@/components/calc/use-result-title"
+import { buttonVariants } from "@/components/ui/button"
 import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import { RECEIPT_REFERENCE_NOTE } from "@/lib/receipt-note"
@@ -26,6 +28,7 @@ export function ResultReceipt({
   copyLine,
   copyNote,
   lawLine,
+  next,
 }: {
   title: string
   amount: number | null
@@ -38,6 +41,8 @@ export function ResultReceipt({
   copyLine?: string
   copyNote?: string
   lawLine?: string
+  /** 이 결과로 다음 계산기를 엽니다. */
+  next?: { href: string; label: string; note?: string }
 }) {
   const hasResult = amount !== null || Boolean(headline)
 
@@ -85,6 +90,20 @@ export function ResultReceipt({
             {display}
           </p>
           <p className="mt-1 text-sm text-muted-foreground">{spoken}</p>
+          {next ? (
+            <div className="mt-4">
+              <Link
+                href={next.href}
+                data-next-calc
+                className={cn(buttonVariants({ variant: "default" }), "h-11 w-full")}
+              >
+                {next.label}
+              </Link>
+              {next.note ? (
+                <p className="mt-2 text-xs leading-5 text-muted-foreground">{next.note}</p>
+              ) : null}
+            </div>
+          ) : null}
           <div className="mt-5 space-y-2.5 border-t border-dashed border-border pt-4">
             {rows.map((row, index) => (
               <div key={`${index}-${row.label}`} className="flex items-start justify-between gap-4 text-sm">

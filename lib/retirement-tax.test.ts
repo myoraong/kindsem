@@ -1,9 +1,12 @@
 import assert from "node:assert/strict"
 import test from "node:test"
+import { manwonToWon } from "./format.ts"
 import {
   calcRetirementTax,
   convertedSalaryDeduction,
+  retirementTaxQuery,
   serviceYearsDeduction,
+  wonToManwonField,
 } from "./retirement-tax.ts"
 
 test("근속연수공제는 제48조 표와 같다", () => {
@@ -37,4 +40,22 @@ test("퇴직금 1억·근속 10년은 환산급여 1억 200만이다", () => {
   assert.equal(r.national, 3_875_000)
   assert.equal(r.local, 387_500)
   assert.equal(r.total, 4_262_500)
+})
+
+test("퇴직금 원을 퇴직소득세 만원 칸으로 넘기면 같은 원으로 돌아온다", () => {
+  for (const won of [10_000, 9_000_000, 9_016_438, 1]) {
+    assert.equal(manwonToWon(Number(wonToManwonField(won))), won)
+  }
+  assert.equal(wonToManwonField(9_000_000), "900")
+  assert.equal(wonToManwonField(9_016_438), "901.6438")
+})
+
+test("1년 이상 퇴직금만 퇴직소득세 주소로 넘긴다", () => {
+  const query = retirementTaxQuery(9_016_438, 3.005479)
+  const params = new URLSearchParams(query.slice(1))
+  assert.equal(params.get("payout"), "901.6438")
+  assert.equal(params.get("years"), "3")
+  assert.equal(retirementTaxQuery(9_000_000, 0.9), "")
+  assert.equal(retirementTaxQuery(0, 3), "")
+  assert.equal(retirementTaxQuery(9_000_000, 1), "?payout=900&years=1")
 })

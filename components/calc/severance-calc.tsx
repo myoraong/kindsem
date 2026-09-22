@@ -12,6 +12,8 @@ import { ResultReceipt } from "@/components/calc/result-receipt"
 import { formatWon, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { calcSeverance, dailyOrdinaryWage, serviceDays } from "@/lib/labor"
+import { retirementTaxQuery } from "@/lib/retirement-tax"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -66,6 +68,8 @@ export function Severance({ item }: { item: CalcItem }) {
     })
   }, [v])
 
+  const taxQuery = result?.eligible ? retirementTaxQuery(result.amount, result.years) : ""
+
   return (
     <CalcShell
       item={item}
@@ -96,6 +100,15 @@ export function Severance({ item }: { item: CalcItem }) {
               : []
           }
           empty="기간과 3개월 임금만 넣으면 평균임금 퇴직금이 나옵니다."
+          next={
+            taxQuery
+              ? {
+                  href: `${calcPath("retirement-tax")}${taxQuery}`,
+                  label: "이 금액으로 퇴직소득세",
+                  note: "근속연수는 년 단위로 넘깁니다.",
+                }
+              : undefined
+          }
         />
       }
     >
