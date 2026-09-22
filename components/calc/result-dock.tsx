@@ -1,6 +1,7 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { copyResultLine, shareResultLine, useCanShare } from "@/components/calc/result-actions"
 import { useResultFlash } from "@/components/calc/use-result-flash"
 import { cn } from "@/lib/utils"
@@ -10,18 +11,30 @@ export function ResultDock({
   display,
   caption,
   line,
+  next,
 }: {
   title: string
   display: string
   caption?: string
   line: string
+  next?: { href: string; label: string }
 }) {
   const canShare = useCanShare()
   const flash = useResultFlash(display)
 
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 px-4 pt-2.5 backdrop-blur-md lg:hidden pb-[max(0.65rem,env(safe-area-inset-bottom))]">
-      <div className="mx-auto flex max-w-5xl items-center gap-2">
+      <div className="mx-auto max-w-5xl">
+        {next ? (
+          <Link
+            href={next.href}
+            data-next-calc-dock
+            className={cn(buttonVariants({ variant: "default" }), "mb-2 h-11 w-full")}
+          >
+            {next.label}
+          </Link>
+        ) : null}
+        <div className="flex items-center gap-2">
         <button
           type="button"
           className="min-w-0 flex-1 text-left"
@@ -59,6 +72,7 @@ export function ResultDock({
             공유
           </Button>
         ) : null}
+        </div>
       </div>
     </div>
   )

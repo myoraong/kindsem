@@ -125,7 +125,15 @@ export function ResultReceipt({
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
-      {hasResult ? <ResultDock title={title} display={display} caption={spoken} line={line} /> : null}
+      {hasResult ? (
+        <ResultDock
+          title={title}
+          display={display}
+          caption={spoken}
+          line={line}
+          next={next ? { href: next.href, label: next.label } : undefined}
+        />
+      ) : null}
     </aside>
   )
 }
