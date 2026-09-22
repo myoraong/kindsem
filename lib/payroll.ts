@@ -1,4 +1,5 @@
-import { truncWon } from "./format.ts"
+import { encodeCalcQuery } from "./calc-persist.ts"
+import { truncWon, wonToManwonField } from "./format.ts"
 import { INCOME_BRACKETS, PAYROLL_DEDUCTIONS, PAYROLL_INSURANCE } from "./policy.generated.ts"
 import { simplifiedWithholdingTax, withholdingRatePercent } from "./simplified-wage-tax.ts"
 
@@ -20,6 +21,18 @@ export function convertPayEntry(amount: string, from: PayPeriod, to: PayPeriod) 
   const n = Number(amount)
   if (!Number.isFinite(n) || n <= 0) return amount
   return String(to === "month" ? Math.round(n / 12) : n * 12)
+}
+
+/**
+ * 계산된 세전 월급(원)을 실수령 월급 칸으로 넘깁니다.
+ * 단위를 월급으로 고정해, 저장된 연봉 칸에 월 금액이 들어가지 않게 합니다.
+ */
+export function takeHomeMonthlyQuery(monthlyWon: number): string {
+  if (!Number.isFinite(monthlyWon) || monthlyWon <= 0) return ""
+  return encodeCalcQuery({
+    period: "month",
+    current: wonToManwonField(monthlyWon),
+  })
 }
 
 export const SIDE_JOB_PRESETS = {

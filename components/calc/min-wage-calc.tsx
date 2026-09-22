@@ -14,6 +14,8 @@ import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcMinWage } from "@/lib/min-wage"
+import { takeHomeMonthlyQuery } from "@/lib/payroll"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -60,6 +62,13 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
           }
       : null
   const amount = converted?.amount ?? result?.floorMonthly ?? null
+  const takeHomeWon =
+    !result || v.pay === "monthly"
+      ? 0
+      : result.userMonthly > 0
+        ? result.userMonthly
+        : result.floorMonthly
+  const takeHomeQuery = takeHomeWon > 0 ? takeHomeMonthlyQuery(takeHomeWon) : ""
   const caption = result
     ? result.meetsHourly == null && result.meetsMonthly == null
       ? `고시 시급 ${formatWon(result.hourly)}`
@@ -89,6 +98,15 @@ export function MinWageCalc({ item }: { item: CalcItem }) {
               : undefined
           }
           lawLine={`${MIN_WAGE.year}년 적용 최저임금 고시 · 시간급 ${MIN_WAGE.hourly.toLocaleString("ko-KR")}원 · 주 40시간 월 ${MIN_WAGE.monthlyHours}시간`}
+          next={
+            takeHomeQuery
+              ? {
+                  href: `${calcPath("take-home")}${takeHomeQuery}`,
+                  label: "이 월급으로 실수령",
+                  note: "월 환산 세전 금액을 월급으로 넘깁니다.",
+                }
+              : undefined
+          }
           rows={
             result
               ? [

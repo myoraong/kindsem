@@ -1,5 +1,6 @@
 import assert from "node:assert/strict"
 import test from "node:test"
+import { manwonToWon } from "./format.ts"
 import {
   PAYROLL,
   calcBenefitNet,
@@ -10,12 +11,24 @@ import {
   calcSideJobTax,
   calcTakeHome,
   convertPayEntry,
+  takeHomeMonthlyQuery,
   earnedIncomeDeduction,
   earnedIncomeTaxCredit,
   fullHealthPremium,
   pensionBaseMonthly,
   personCountFromDependents,
 } from "./payroll.ts"
+
+test("세전 월급 원을 실수령 월급 칸으로 넘기면 단위도 월급이다", () => {
+  const query = takeHomeMonthlyQuery(2_096_270)
+  const params = new URLSearchParams(query.slice(1))
+  assert.equal(params.get("period"), "month")
+  assert.equal(params.get("current"), "209.627")
+  assert.equal(params.get("mealExempt"), null)
+  assert.equal(manwonToWon(Number(params.get("current"))), 2_096_270)
+  assert.equal(takeHomeMonthlyQuery(0), "")
+  assert.equal(takeHomeMonthlyQuery(Number.NaN), "")
+})
 
 test("연봉 칸을 월급으로 바꾸면 12로 나눈다", () => {
   assert.equal(convertPayEntry("4000", "year", "month"), "333")

@@ -14,6 +14,8 @@ import { formatWon, kakaoCopyLine } from "@/lib/format"
 import { LAW_SOURCES } from "@/lib/law-sources"
 import { MIN_WAGE } from "@/lib/policy.generated"
 import { calcPartTimeMonth } from "@/lib/labor"
+import { takeHomeMonthlyQuery } from "@/lib/payroll"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -42,6 +44,9 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
       attended: v.attended,
     })
   }, [v])
+
+  const takeHomeQuery =
+    result && result.monthTotal > 0 ? takeHomeMonthlyQuery(result.monthTotal) : ""
 
   return (
     <CalcShell
@@ -76,6 +81,15 @@ export function PartTimeMonth({ item }: { item: CalcItem }) {
               : []
           }
           empty="시급과 주 근로시간만 넣으면 월 환산이 나옵니다."
+          next={
+            takeHomeQuery
+              ? {
+                  href: `${calcPath("take-home")}${takeHomeQuery}`,
+                  label: "이 월급으로 실수령",
+                  note: "월 환산 세전 금액을 월급으로 넘깁니다.",
+                }
+              : undefined
+          }
         />
       }
     >
