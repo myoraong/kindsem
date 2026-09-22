@@ -8,10 +8,12 @@ import { cn } from "@/lib/utils"
 export function ResultDock({
   title,
   display,
+  caption,
   line,
 }: {
   title: string
   display: string
+  caption?: string
   line: string
 }) {
   const canShare = useCanShare()
@@ -23,13 +25,16 @@ export function ResultDock({
         <button
           type="button"
           className="min-w-0 flex-1 text-left"
-          aria-label={`${title} 자세한 결과`}
+          aria-label={caption ? `${title} ${display}, ${caption}. 자세한 결과` : `${title} 자세한 결과`}
           onClick={() => {
             document.getElementById("calc-result")?.scrollIntoView({ behavior: "smooth", block: "start" })
           }}
         >
           <span className="block text-[11px] text-muted-foreground">{title}</span>
           <span className={cn("block truncate text-lg font-semibold tabular", flash && "result-flash")}>{display}</span>
+          {caption ? (
+            <span className="block truncate text-[11px] leading-4 text-muted-foreground">{caption}</span>
+          ) : null}
         </button>
         <Button
           type="button"

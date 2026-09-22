@@ -7,6 +7,7 @@ import { CalcDirRow, CATALOG_GRID } from "@/components/calc-card"
 import { HomeQuickCalc } from "@/components/home-quick-calc"
 import { PopularCalcs } from "@/components/popular-calcs"
 import { RecentCalcs } from "@/components/recent-calcs"
+import { ResumeCalc } from "@/components/resume-calc"
 import { RealtyCatalog } from "@/components/realty-catalog"
 import { Input } from "@/components/ui/input"
 import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
@@ -145,8 +146,9 @@ export function HomeBrowse() {
       {!searching ? (
         <div className="mt-6 grid md:grid-cols-[minmax(0,1fr)_23.5rem] md:items-stretch md:gap-x-6">
           <div className="flex min-w-0 flex-col gap-5">
+            <ResumeCalc from={section} />
             <PopularCalcs from={section} />
-            <RecentCalcs from={section} />
+            <RecentCalcs from={section} skip={1} />
             <CategoryJump section={section} flush />
             <div className="md:hidden">
               <HomeQuickCalc folded />

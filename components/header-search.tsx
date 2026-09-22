@@ -4,11 +4,41 @@ import { useEffect, useId, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Search, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { useRecentResult } from "@/components/recent-result-context"
 import { popularCalculators } from "@/lib/popular-calcs"
 import { closeNavMenu } from "@/lib/nav-menu-open"
 import { searchCalculators } from "@/lib/search"
 import { calcPath, calcSeo } from "@/lib/seo"
 import { cn } from "@/lib/utils"
+
+function SearchHit({
+  item,
+  onOpen,
+}: {
+  item: { slug: string; blurb: string }
+  onOpen: () => void
+}) {
+  const result = useRecentResult(item.slug)
+  return (
+    <button
+      type="button"
+      className="flex min-h-11 w-full items-center rounded-xl px-2.5 py-2.5 text-left text-sm hover:bg-muted"
+      onClick={onOpen}
+    >
+      <span className="min-w-0">
+        <span className="block font-medium">{calcSeo(item.slug).query}</span>
+        {result ? (
+          <span className="mt-0.5 block truncate text-xs font-medium tabular text-foreground">
+            <span className="sr-only">마지막 결과 </span>
+            {result}
+          </span>
+        ) : (
+          <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.blurb}</span>
+        )}
+      </span>
+    </button>
+  )
+}
 
 export function HeaderSearch() {
   const router = useRouter()
@@ -120,16 +150,7 @@ export function HeaderSearch() {
             <ul className="mt-1 max-h-[min(16rem,50dvh)] space-y-0.5 overflow-y-auto overscroll-contain">
               {list.map((item) => (
                 <li key={item.slug}>
-                  <button
-                    type="button"
-                    className="flex min-h-11 w-full items-center rounded-xl px-2.5 py-2.5 text-left text-sm hover:bg-muted"
-                    onClick={() => go(item.slug)}
-                  >
-                    <span className="min-w-0">
-                      <span className="block font-medium">{calcSeo(item.slug).query}</span>
-                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">{item.blurb}</span>
-                    </span>
-                  </button>
+                  <SearchHit item={item} onOpen={() => go(item.slug)} />
                 </li>
               ))}
             </ul>

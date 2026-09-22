@@ -8,6 +8,7 @@ import { RelatedCalcs } from "@/components/calc/related-calcs"
 import { RecentCalcs } from "@/components/recent-calcs"
 import type { CalcItem } from "@/lib/catalog"
 import { calcSeo } from "@/lib/seo"
+import { CalcSlugProvider } from "@/components/calc/calc-slug"
 import { rememberRecentCalc } from "@/lib/recent-calcs"
 import { requestCalcReset } from "@/lib/use-calc-persist"
 import { backLinkFor, homeSectionForGroup, readBackSection } from "@/lib/home-back"
@@ -51,7 +52,8 @@ export function CalcShell({
   const seo = calcSeo(item.slug)
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 pt-6 pb-28 md:pt-10 lg:pb-10">
+    <CalcSlugProvider slug={item.slug}>
+    <div className="mx-auto w-full max-w-5xl px-4 pt-6 pb-36 md:pt-10 lg:pb-10">
       <Link
         href={backHref}
         className="mb-5 inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
@@ -79,17 +81,40 @@ export function CalcShell({
       </div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.1fr)_minmax(280px,0.9fr)]">
         <section className="rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:p-6">
-          {item.slug !== "quick" && item.slug !== "ladder" ? (
-            <div className="mb-4 flex justify-end">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <a
+              href="#calc-result"
+              className="inline-flex h-11 items-center text-sm font-medium text-primary"
+              onClick={(event) => {
+                const target = document.getElementById("calc-result")
+                if (!target) return
+                event.preventDefault()
+                target.scrollIntoView({ behavior: "smooth", block: "start" })
+              }}
+            >
+              결과 보기
+            </a>
+            {item.slug !== "quick" && item.slug !== "ladder" ? (
               <button
                 type="button"
                 className="inline-flex h-11 items-center px-1 text-sm text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                onClick={() => requestCalcReset(item.slug)}
+                onClick={(event) => {
+                  requestCalcReset(item.slug)
+                  const section = event.currentTarget.closest("section")
+                  window.setTimeout(() => {
+                    const field = section?.querySelector(
+                      "input:not([type=checkbox]):not([type=radio])",
+                    )
+                    if (field instanceof HTMLInputElement) field.focus()
+                  }, 30)
+                }}
               >
                 처음 값
               </button>
-            </div>
-          ) : null}
+            ) : (
+              <span />
+            )}
+          </div>
           {children}
         </section>
         {result}
@@ -103,5 +128,6 @@ export function CalcShell({
       <AdSenseInPage />
       <PolicyStamp />
     </div>
+    </CalcSlugProvider>
   )
 }

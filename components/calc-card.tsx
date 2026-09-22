@@ -36,6 +36,7 @@ import {
   Umbrella,
   Wallet,
 } from "lucide-react"
+import { useRecentResult } from "@/components/recent-result-context"
 import type { CalcItem } from "@/lib/catalog"
 import { rememberBackSection } from "@/lib/home-back"
 import type { HomeSection } from "@/lib/home-section"
@@ -85,6 +86,7 @@ export const CATALOG_GRID =
 
 export function CalcDirRow({ item, from }: { item: CalcItem; from?: HomeSection }) {
   const Icon = ICONS[item.slug] ?? Calculator
+  const result = useRecentResult(item.slug)
   return (
     <Link
       href={calcPath(item.slug)}
@@ -100,9 +102,16 @@ export function CalcDirRow({ item, from }: { item: CalcItem; from?: HomeSection 
         <span className="block text-[13px] font-medium leading-snug break-keep sm:text-sm">
           {calcSeo(item.slug).query}
         </span>
-        <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground sm:truncate sm:text-xs">
-          {item.when}
-        </span>
+        {result ? (
+          <span className="mt-0.5 block truncate text-[11px] font-medium tabular leading-snug text-foreground sm:text-xs">
+            <span className="sr-only">마지막 결과 </span>
+            {result}
+          </span>
+        ) : (
+          <span className="mt-0.5 block text-[11px] leading-snug text-muted-foreground sm:truncate sm:text-xs">
+            {item.when}
+          </span>
+        )}
       </span>
     </Link>
   )

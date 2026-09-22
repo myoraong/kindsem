@@ -3,6 +3,7 @@
 import type { ReactNode } from "react"
 import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
+import { useRememberRecentResult } from "@/components/calc/use-remember-result"
 import { useResultFlash } from "@/components/calc/use-result-flash"
 import { useResultTitle } from "@/components/calc/use-result-title"
 import { formatKoreanUnit, formatSignedWon, formatWon, kakaoCopyLine } from "@/lib/format"
@@ -107,6 +108,7 @@ function Frame({
 }) {
   const flash = useResultFlash(headline ?? "")
   useResultTitle(headline ?? "", title)
+  useRememberRecentResult(headline ?? "")
 
   return (
     <aside
@@ -132,7 +134,9 @@ function Frame({
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
-      {headline && copyValue ? <ResultDock title={title} display={headline} line={copyValue} /> : null}
+      {headline && copyValue ? (
+        <ResultDock title={title} display={headline} caption={caption} line={copyValue} />
+      ) : null}
     </aside>
   )
 }

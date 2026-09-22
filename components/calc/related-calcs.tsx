@@ -1,4 +1,7 @@
+"use client"
+
 import Link from "next/link"
+import { useRecentResult } from "@/components/recent-result-context"
 import { relatedCalculators } from "@/lib/related-calcs"
 import { calcPath, calcSeo } from "@/lib/seo"
 
@@ -12,15 +15,28 @@ export function RelatedCalcs({ slug }: { slug: string }) {
       <ul className="mt-2 flex flex-wrap gap-2">
         {items.map((item) => (
           <li key={item.slug}>
-            <Link
-              href={calcPath(item.slug)}
-              className="inline-flex h-11 items-center rounded-full bg-card px-3.5 text-sm ring-1 ring-foreground/8 hover:bg-accent"
-            >
-              {calcSeo(item.slug).query}
-            </Link>
+            <RelatedLink slug={item.slug} />
           </li>
         ))}
       </ul>
     </nav>
+  )
+}
+
+function RelatedLink({ slug }: { slug: string }) {
+  const result = useRecentResult(slug)
+  return (
+    <Link
+      href={calcPath(slug)}
+      className="inline-flex min-h-11 max-w-[16rem] flex-col justify-center rounded-full bg-card px-3.5 py-1 text-sm ring-1 ring-foreground/8 hover:bg-accent"
+    >
+      <span className="truncate">{calcSeo(slug).query}</span>
+      {result ? (
+        <span className="truncate text-xs font-medium tabular text-foreground">
+          <span className="sr-only">마지막 결과 </span>
+          {result}
+        </span>
+      ) : null}
+    </Link>
   )
 }

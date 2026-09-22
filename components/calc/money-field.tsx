@@ -2,7 +2,7 @@
 
 import { useLayoutEffect, useRef, useState } from "react"
 import { Label } from "@/components/ui/label"
-import { fieldNeedsReveal } from "@/lib/field-reveal"
+import { fieldNeedsReveal, MOBILE_RESULT_DOCK_PX } from "@/lib/field-reveal"
 import {
   caretIndexAfterGroup,
   formatCalcNumber,
@@ -17,7 +17,7 @@ import {
 import { cn } from "@/lib/utils"
 
 function revealField(el: HTMLElement) {
-  const dock = window.matchMedia("(max-width: 1023px)").matches ? 96 : 16
+  const dock = window.matchMedia("(max-width: 1023px)").matches ? MOBILE_RESULT_DOCK_PX : 16
   const rect = el.getBoundingClientRect()
   if (!fieldNeedsReveal(rect, window.innerHeight, 80, dock)) return
   window.setTimeout(() => {
@@ -105,7 +105,7 @@ export function MoneyField({
   }, [value])
 
   return (
-    <div className="scroll-mb-28 space-y-1.5 lg:scroll-mb-4">
+    <div className="scroll-mb-36 space-y-1.5 lg:scroll-mb-4">
       <div className="flex items-baseline justify-between gap-3">
         <Label htmlFor={id}>{label}</Label>
         {preview ? (

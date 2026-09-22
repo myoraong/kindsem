@@ -322,13 +322,16 @@ function LadderResult({
   }
 
   return (
-    <aside className="paper-rule rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20">
+    <aside
+      id="calc-result"
+      className="paper-rule scroll-mt-24 rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20"
+    >
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">누가 어디로</p>
         <button
           type="button"
           disabled={!hasBoard || rows.length === 0}
-          className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+          className="inline-flex h-11 shrink-0 items-center gap-1 rounded-lg px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
           onClick={onClear}
         >
           <Trash2 className="size-3.5" />
@@ -572,11 +575,10 @@ export function LadderCalc({ item }: { item: CalcItem }) {
                     if (rungs) replay(i)
                   }}
                   className={cn(
-                    "h-10 w-full min-w-0 rounded-xl border bg-transparent px-1 text-center outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+                    "h-11 w-full min-w-0 rounded-xl border bg-transparent px-1 text-center text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
                     selected === i || (map != null && prizes[map[i]!])
                       ? "border-primary"
                       : "border-input",
-                    n >= 7 ? "text-xs" : "text-sm",
                   )}
                 />
               </label>
@@ -613,11 +615,10 @@ export function LadderCalc({ item }: { item: CalcItem }) {
                       setEnds((prev) => prev.map((item, idx) => (idx === i ? value : item)))
                     }}
                     className={cn(
-                      "h-10 w-full min-w-0 rounded-xl border bg-transparent px-1 text-center outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+                      "h-11 w-full min-w-0 rounded-xl border bg-transparent px-1 text-center text-base outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
                       prizes[i] || (map && selected !== null && map[selected] === i)
                         ? "border-primary"
                         : "border-input",
-                      n >= 7 ? "text-xs" : "text-sm",
                     )}
                   />
                 </label>
@@ -629,7 +630,7 @@ export function LadderCalc({ item }: { item: CalcItem }) {
                     setPrizes((prev) => prev.map((on, idx) => (idx === i ? !on : on)))
                   }}
                   className={cn(
-                    "mt-1 h-7 w-full truncate rounded-lg px-0.5 text-[11px] leading-none transition-colors",
+                    "mt-1 h-11 w-full truncate rounded-lg px-0.5 text-xs leading-none transition-colors",
                     prizes[i]
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground",

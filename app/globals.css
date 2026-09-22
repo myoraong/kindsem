@@ -313,6 +313,12 @@
   animation: kindsem-result-flash 0.7s ease;
 }
 
+details > summary {
+  min-height: 2.75rem;
+  padding-block: 0.35rem;
+  cursor: pointer;
+}
+
 /* Google이 칸을 비웠을 때(unfilled) 빈 「광고」 상자를 남기지 않습니다. */
 ins.adsbygoogle[data-ad-status="unfilled"] {
   display: none !important;

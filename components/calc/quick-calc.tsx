@@ -20,19 +20,22 @@ export function QuickCalc({ item }: { item: CalcItem }) {
   }
 
   const ghostTextBtn =
-    "inline-flex h-8 shrink-0 items-center rounded-md px-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+    "inline-flex h-11 shrink-0 items-center rounded-md px-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
 
   return (
     <CalcShell
       item={item}
       result={
-        <aside className="paper-rule rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20">
+        <aside
+          id="calc-result"
+          className="paper-rule scroll-mt-24 rounded-2xl bg-card p-5 ring-1 ring-foreground/8 md:sticky md:top-20"
+        >
           <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-muted-foreground">계산 기록</p>
             <button
               type="button"
               disabled={calc.history.length === 0}
-              className="inline-flex h-8 shrink-0 items-center gap-1 rounded-lg px-2.5 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
+              className="inline-flex h-11 shrink-0 items-center gap-1 rounded-lg px-2.5 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-40"
               onClick={calc.clearHistory}
             >
               <Trash2 className="size-3.5" />

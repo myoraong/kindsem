@@ -2,6 +2,7 @@
 
 import { ResultActions } from "@/components/calc/result-actions"
 import { ResultDock } from "@/components/calc/result-dock"
+import { useRememberRecentResult } from "@/components/calc/use-remember-result"
 import { useResultFlash } from "@/components/calc/use-result-flash"
 import { useResultTitle } from "@/components/calc/use-result-title"
 import { formatKoreanUnit, formatWon, kakaoCopyLine } from "@/lib/format"
@@ -52,11 +53,21 @@ export function ResultReceipt({
             ? `${amount.toFixed(amount % 1 === 0 ? 0 : 1)}일`
             : formatWon(Math.round(amount)))
 
+  const spoken =
+    caption ??
+    (kind === "won" && amount !== null
+      ? formatKoreanUnit(amount)
+      : kind === "months"
+        ? "세후 상승 기준"
+        : kind === "days"
+          ? "근로기준법 제60조"
+          : "연 기준 단순 수익률")
   const line =
     copyLine ??
     kakaoCopyLine(title, display, copyNote ?? (caption && caption.length <= 24 ? caption : undefined))
   const flash = useResultFlash(hasResult ? display : "")
   useResultTitle(hasResult ? display : "", title)
+  useRememberRecentResult(hasResult ? display : "")
 
   return (
     <aside
@@ -73,16 +84,7 @@ export function ResultReceipt({
           >
             {display}
           </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {caption ??
-              (kind === "won" && amount !== null
-                ? formatKoreanUnit(amount)
-                : kind === "months"
-                  ? "세후 상승 기준"
-                  : kind === "days"
-                    ? "근로기준법 제60조"
-                    : "연 기준 단순 수익률")}
-          </p>
+          <p className="mt-1 text-sm text-muted-foreground">{spoken}</p>
           <div className="mt-5 space-y-2.5 border-t border-dashed border-border pt-4">
             {rows.map((row, index) => (
               <div key={`${index}-${row.label}`} className="flex items-start justify-between gap-4 text-sm">
@@ -104,7 +106,7 @@ export function ResultReceipt({
       ) : (
         <p className="mt-6 text-sm leading-6 text-muted-foreground">{empty}</p>
       )}
-      {hasResult ? <ResultDock title={title} display={display} line={line} /> : null}
+      {hasResult ? <ResultDock title={title} display={display} caption={spoken} line={line} /> : null}
     </aside>
   )
 }
