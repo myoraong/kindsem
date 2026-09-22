@@ -92,6 +92,17 @@ export function manwonToWon(manwon: number): number {
   return Math.round(manwon * 10_000)
 }
 
+/** 원 금액을 만원 칸 문자열로 바꿉니다. 다시 원으로 곱하면 같은 원입니다. */
+export function wonToManwonField(won: number): string {
+  const rounded = Math.round(won)
+  const abs = Math.abs(rounded)
+  const whole = Math.trunc(abs / 10_000)
+  const frac = abs % 10_000
+  const body =
+    frac === 0 ? String(whole) : `${whole}.${String(frac).padStart(4, "0").replace(/0+$/, "")}`
+  return rounded < 0 ? `-${body}` : body
+}
+
 /**
  * 만원 칸에 원 금액을 그대로 넣었는지 봅니다.
  * 숫자 자체가 1,000,000 이상(만원으로 읽으면 100억 이상)이고

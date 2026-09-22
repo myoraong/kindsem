@@ -9,8 +9,10 @@ import { Hint } from "@/components/calc/hint"
 import { LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
+import { dsrMonthlyQuery } from "@/lib/dsr"
 import { calcLoanInterest, type Repayment } from "@/lib/loan"
 import { formatWon, kakaoCopyLine, manwonToWon } from "@/lib/format"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -44,6 +46,13 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
 
   const title =
     v.method === "equal-principal" ? "첫 달 납입" : v.method === "interest-only" ? "매달 이자" : "월 납입"
+  const dsrQuery = result && result.monthly > 0 ? dsrMonthlyQuery("other", result.monthly) : ""
+  const dsrNote =
+    v.method === "equal-principal"
+      ? "첫 달 납입액을 기타 대출 월 상환액으로 넘깁니다."
+      : v.method === "interest-only"
+        ? "매달 이자를 기타 대출 월 상환액으로 넘깁니다."
+        : "매달 같은 납입액을 기타 대출 월 상환액으로 넘깁니다."
 
   return (
     <CalcShell
@@ -75,6 +84,11 @@ export function LoanInterestCalc({ item }: { item: CalcItem }) {
               : []
           }
           empty="대출 금액, 금리, 기간만 넣으면 됩니다."
+          next={
+            dsrQuery
+              ? { href: `${calcPath("dsr")}${dsrQuery}`, label: "이 월 납입으로 DSR", note: dsrNote }
+              : undefined
+          }
         />
       }
     >

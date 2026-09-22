@@ -1,3 +1,5 @@
+import { encodeCalcQuery } from "./calc-persist.ts"
+import { wonToManwonField } from "./format.ts"
 import { DSR_POLICY } from "./policy.generated.ts"
 
 export type DsrBank = "bank" | "nonbank"
@@ -28,4 +30,14 @@ export function calculateDsr(input: {
     monthlyRemain: remain / 12,
     allowed: dsr <= limit + 1e-9,
   }
+}
+
+/**
+ * 계산된 월 납입(원)을 DSR의 주담대 또는 기타 대출 칸으로 넘깁니다.
+ * 그 칸만 주소에 실어, 연소득 등 나머지 저장값은 그대로 둡니다.
+ */
+export function dsrMonthlyQuery(field: "mortgage" | "other", monthlyWon: number): string {
+  if (field !== "mortgage" && field !== "other") return ""
+  if (!Number.isFinite(monthlyWon) || monthlyWon <= 0) return ""
+  return encodeCalcQuery({ [field]: wonToManwonField(monthlyWon) })
 }

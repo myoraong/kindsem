@@ -1,12 +1,11 @@
 import assert from "node:assert/strict"
 import test from "node:test"
-import { manwonToWon } from "./format.ts"
+import { manwonToWon, wonToManwonField } from "./format.ts"
 import {
   calcRetirementTax,
   convertedSalaryDeduction,
   retirementTaxQuery,
   serviceYearsDeduction,
-  wonToManwonField,
 } from "./retirement-tax.ts"
 
 test("근속연수공제는 제48조 표와 같다", () => {

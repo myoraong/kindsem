@@ -8,8 +8,10 @@ import { Hint } from "@/components/calc/hint"
 import { LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
+import { dsrMonthlyQuery } from "@/lib/dsr"
 import { interestOnly } from "@/lib/loan"
 import { formatWon, manwonToWon } from "@/lib/format"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -39,6 +41,8 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
     return interestOnly(p, r, months)
   }, [v])
 
+  const dsrQuery = result && result.monthly > 0 ? dsrMonthlyQuery("other", result.monthly) : ""
+
   return (
     <CalcShell
       item={item}
@@ -58,6 +62,15 @@ export function JeonseLoan({ item }: { item: CalcItem }) {
               : []
           }
           empty="전세자금은 보통 이자만 냅니다. 원금과 금리만 넣으면 됩니다."
+          next={
+            dsrQuery
+              ? {
+                  href: `${calcPath("dsr")}${dsrQuery}`,
+                  label: "이 월 납입으로 DSR",
+                  note: "매달 이자를 기타 대출 월 상환액으로 넘깁니다.",
+                }
+              : undefined
+          }
         />
       }
     >

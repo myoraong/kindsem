@@ -9,8 +9,10 @@ import { Hint } from "@/components/calc/hint"
 import { LoanSiblingHint } from "@/components/calc/sibling-hint"
 import { MoneyField } from "@/components/calc/money-field"
 import { ResultReceipt } from "@/components/calc/result-receipt"
+import { dsrMonthlyQuery } from "@/lib/dsr"
 import { equalPayment, equalPrincipal } from "@/lib/loan"
 import { formatWon, manwonToWon } from "@/lib/format"
+import { calcPath } from "@/lib/seo"
 import type { CalcItem } from "@/lib/catalog"
 import { useCalcPersist } from "@/lib/use-calc-persist"
 
@@ -61,6 +63,8 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
     }
   }, [v])
 
+  const dsrQuery = result && result.amount > 0 ? dsrMonthlyQuery("mortgage", result.amount) : ""
+
   return (
     <CalcShell
       item={item}
@@ -71,6 +75,18 @@ export function MortgageCalc({ item }: { item: CalcItem }) {
           amount={result?.amount ?? null}
           rows={result?.rows ?? []}
           empty="대출 금액, 금리, 기간만 넣으면 됩니다."
+          next={
+            dsrQuery
+              ? {
+                  href: `${calcPath("dsr")}${dsrQuery}`,
+                  label: "이 월 납입으로 DSR",
+                  note:
+                    v.method === "equal-principal"
+                      ? "첫 달 납입액을 주담대 월 상환액으로 넘깁니다."
+                      : "매달 같은 납입액을 주담대 월 상환액으로 넘깁니다.",
+                }
+              : undefined
+          }
         />
       }
     >

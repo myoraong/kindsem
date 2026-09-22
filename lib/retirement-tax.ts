@@ -1,5 +1,5 @@
 import { encodeCalcQuery } from "./calc-persist.ts"
-import { truncWon } from "./format.ts"
+import { truncWon, wonToManwonField } from "./format.ts"
 import { INTEREST_TAX, RETIREMENT } from "./policy.generated.ts"
 import { INCOME_BRACKETS, progressiveTax } from "./tax-brackets.ts"
 
@@ -48,17 +48,6 @@ export function calcRetirementTax(input: { payout: number; years: number }) {
     local,
     total: national + local,
   }
-}
-
-/** 원 금액을 퇴직소득세 만원 칸 문자열로 바꿉니다. 다시 원으로 곱하면 같은 원입니다. */
-export function wonToManwonField(won: number): string {
-  const rounded = Math.round(won)
-  const abs = Math.abs(rounded)
-  const whole = Math.trunc(abs / 10_000)
-  const frac = abs % 10_000
-  const body =
-    frac === 0 ? String(whole) : `${whole}.${String(frac).padStart(4, "0").replace(/0+$/, "")}`
-  return rounded < 0 ? `-${body}` : body
 }
 
 /**
