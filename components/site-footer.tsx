@@ -3,7 +3,7 @@ import { Sena } from "@/components/sena"
 import { MASCOT } from "@/lib/brand"
 import { calcSeo } from "@/lib/seo"
 import { calcFooterGroups } from "@/lib/site-urls"
-import { CONTACT_EMAIL } from "@/lib/site"
+import { CONTACT_EMAIL, SITE_BRAND_NAME } from "@/lib/site"
 
 export function SiteFooter() {
   const groups = calcFooterGroups()
@@ -13,7 +13,7 @@ export function SiteFooter() {
         <div className="mb-6 flex items-center gap-3">
           <Sena variant="face" className="size-11 overflow-hidden rounded-full object-cover" />
           <div>
-            <p className="text-[13px] font-semibold text-foreground">Kindsem 카인드셈</p>
+            <p className="text-[13px] font-semibold text-foreground">{SITE_BRAND_NAME}</p>
             <p className="mt-0.5 text-xs">
               {MASCOT.name} · {MASCOT.meaning}
             </p>
@@ -75,7 +75,7 @@ export function SiteFooter() {
             세금·대출 세율·상한은 현행 법령·고시입니다. 빠진 공제·사실관계가 있으면 결과가 달라집니다. 신고·대출 심사는 세무사·은행과 하세요.
           </p>
           <p className="text-[11px] text-muted-foreground/50">
-            © 2026 Kindsem 카인드셈
+            © 2026 {SITE_BRAND_NAME}
           </p>
         </div>
       </div>

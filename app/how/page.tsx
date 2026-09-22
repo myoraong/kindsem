@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { JsonLd } from "@/components/json-ld"
 import { HOW_METADATA, howJsonLd, calcPath } from "@/lib/seo"
-import { SITE_NAME } from "@/lib/site"
+import { SITE_BRAND_NAME } from "@/lib/site"
 
 export const metadata: Metadata = HOW_METADATA
 
@@ -10,7 +10,7 @@ export default function HowPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-8 md:py-12">
       <JsonLd data={howJsonLd()} />
-      <p className="text-sm font-medium text-primary">{SITE_NAME}</p>
+      <p className="text-sm font-medium text-primary">{SITE_BRAND_NAME}</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">
         숫자를 어떻게 받는지
       </h1>

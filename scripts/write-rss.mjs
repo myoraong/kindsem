@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url"
 import { CALCULATORS } from "../lib/catalog.ts"
 import { POLICY_FETCHED_AT } from "../lib/policy.generated.ts"
 import { calcDescription, calcSeo } from "../lib/seo.ts"
-import { SITE_NAME, SITE_SEARCH_NAME, SITE_URL } from "../lib/site.ts"
+import { SITE_SEARCH_NAME, SITE_URL } from "../lib/site.ts"
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 const out = join(root, "public/rss.xml")
@@ -36,19 +36,19 @@ const items = [
       "카인드셈은 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세, 양도세, DSR 등 40여 가지를 법령·고시 현행본으로 계산하는 무료 계산기입니다.",
   },
   {
-    title: `숫자를 어떻게 받는지 · ${SITE_NAME}`,
+    title: `숫자를 어떻게 받는지 · ${SITE_SEARCH_NAME}`,
     url: `${SITE_URL}/how/`,
     description:
       "카인드셈이 법제처·금융위 현행본에서 세율을 읽는 방식, 빼 두는 공제, 혜택을 기본으로 켜지 않는 이유.",
   },
   {
-    title: `소개 · ${SITE_NAME}`,
+    title: `소개 · ${SITE_SEARCH_NAME}`,
     url: `${SITE_URL}/about/`,
     description:
       "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
   },
   {
-    title: `부동산 계산기 · ${SITE_NAME}`,
+    title: `부동산 계산기 · ${SITE_SEARCH_NAME}`,
     url: `${SITE_URL}/realty/`,
     description: "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
   },

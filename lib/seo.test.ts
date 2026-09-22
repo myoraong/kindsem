@@ -81,18 +81,19 @@ test("JSON-LD에 계산기 URL이 있다", () => {
   assert.equal(app.image, "https://kindsem.com/kindsem-sena-share-live.png")
   assert.equal(crumbs["@type"], "BreadcrumbList")
   assert.equal((app.publisher as { name: string }).name, "카인드셈")
-  assert.deepEqual(
-    (app.publisher as { alternateName: string[] }).alternateName,
-    ["카인드셈 종합계산기", "Kindsem", "kindsem.com"],
-  )
+  assert.equal((app.publisher as { alternateName?: unknown }).alternateName, undefined)
 })
 
-test("홈 JSON-LD에 카인드셈 별칭이 있다", () => {
+test("홈 JSON-LD 사이트 이름은 도메인이나 영문이 아니다", () => {
   const [site] = homeJsonLd()
+  const publisher = site.publisher as { name: string; alternateName?: unknown }
   assert.equal(site["@type"], "WebSite")
   assert.equal(site.name, "카인드셈")
   assert.equal(site.url, "https://kindsem.com/")
-  assert.deepEqual(site.alternateName, ["카인드셈 종합계산기", "Kindsem", "kindsem.com"])
+  assert.equal(site.alternateName, undefined)
+  assert.equal(publisher.name, "카인드셈")
+  assert.equal(publisher.alternateName, undefined)
+  assert.doesNotMatch(String(site.name), /kindsem\.com|Kindsem/)
 })
 
 test("홈·부동산 Open Graph에 사이트명과 설명이 있다", () => {
@@ -125,6 +126,10 @@ test("계산기 Open Graph에 사이트명이 있다", () => {
   assert.ok(item)
   const meta = calcMetadata(item)
   assert.equal(meta.openGraph?.siteName, "카인드셈")
+  assert.equal(meta.openGraph?.title, "실수령액 계산기 · 카인드셈 종합계산기")
+  assert.doesNotMatch(String(meta.openGraph?.title), /Kindsem|kindsem\.com/)
+  assert.equal(HOW_METADATA.openGraph?.title, "숫자를 어떻게 받는지 · 카인드셈 종합계산기")
+  assert.equal(ABOUT_METADATA.openGraph?.title, "소개 · 카인드셈 종합계산기")
   assert.equal(meta.openGraph?.url, "/calc/take-home/")
   assert.equal(
     (meta.openGraph?.images as { url: string }[])[0]?.url,

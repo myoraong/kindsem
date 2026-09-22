@@ -2,6 +2,7 @@ import Link from "next/link"
 import { JsonLd } from "@/components/json-ld"
 import { CALCULATORS, CATALOG_HEADINGS } from "@/lib/catalog"
 import { CALC_INDEX_METADATA, calcSeo, homeJsonLd } from "@/lib/seo"
+import { SITE_BRAND_NAME } from "@/lib/site"
 
 export const metadata = CALC_INDEX_METADATA
 
@@ -27,7 +28,7 @@ export default function CalcIndexPage() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
       <JsonLd data={homeJsonLd()} />
-      <p className="text-sm font-medium text-primary">Kindsem 카인드셈</p>
+      <p className="text-sm font-medium text-primary">{SITE_BRAND_NAME}</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">계산기 목록</h1>
       <div className="mt-3 max-w-2xl space-y-3 text-pretty break-keep text-sm leading-7 text-muted-foreground">
         <p>

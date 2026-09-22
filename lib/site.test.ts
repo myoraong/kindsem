@@ -15,4 +15,6 @@ test("검색용 사이트 이름은 도메인이 아니라 계산기라고 적�
   assert.doesNotMatch(SITE_SEARCH_NAME, /kindsem\.com/i)
   assert.doesNotMatch(SITE_SEARCH_NAME, /편리한|친절한|최고|웰컴/)
   assert.equal(SITE_NAME, "Kindsem 카인드셈")
+  assert.notEqual(SITE_NAME, SITE_BRAND_NAME)
+  assert.notEqual(SITE_SEARCH_NAME, SITE_BRAND_NAME)
 })

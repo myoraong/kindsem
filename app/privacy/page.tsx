@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { MASCOT, MASCOT_SHARE } from "@/lib/brand"
 import { INDEX_ROBOTS } from "@/lib/seo"
-import { CONTACT_EMAIL } from "@/lib/site"
+import { CONTACT_EMAIL, SITE_BRAND_NAME, SITE_SEARCH_NAME } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "개인정보 안내",
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/privacy/" },
   robots: INDEX_ROBOTS,
   openGraph: {
-    title: "개인정보 안내 · Kindsem 카인드셈",
+    title: `개인정보 안내 · ${SITE_SEARCH_NAME}`,
+    siteName: SITE_BRAND_NAME,
     description:
       "Kindsem은 회원가입 없이 계산하며, 개인정보를 수집하지 않습니다.",
     url: "/privacy/",
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
-      <p className="text-sm font-medium text-primary">Kindsem</p>
+      <p className="text-sm font-medium text-primary">{SITE_BRAND_NAME}</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">개인정보 안내</h1>
       <div className="mt-6 max-w-xl space-y-8 text-sm leading-7 text-muted-foreground">
         <section className="space-y-3">

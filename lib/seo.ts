@@ -5,9 +5,7 @@ import { CALC_GUIDES } from "./calc-guides.ts"
 import { MASCOT, MASCOT_FAVICON, MASCOT_SHARE } from "./brand.ts"
 import {
   CONTACT_EMAIL,
-  SITE_ALTERNATE_NAMES,
   SITE_BRAND_NAME,
-  SITE_NAME,
   SITE_SEARCH_NAME,
   SITE_URL,
 } from "./site.ts"
@@ -268,7 +266,7 @@ export function calcMetadata(item: CalcItem): Metadata {
       canonical: url,
       languages: { "ko-KR": url },
     },
-    openGraph: pageOpenGraph(`${title} · ${SITE_NAME}`, description, url),
+    openGraph: pageOpenGraph(`${title} · ${SITE_SEARCH_NAME}`, description, url),
     twitter: {
       card: "summary_large_image",
       title,
@@ -301,7 +299,6 @@ export function calcJsonLd(item: CalcItem) {
       publisher: {
         "@type": "Organization",
         name: SITE_BRAND_NAME,
-        alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
         logo: `${SITE_URL}${MASCOT_FAVICON.png512}`,
         image: `${SITE_URL}${MASCOT_SHARE.src}`,
@@ -349,14 +346,12 @@ export function homeJsonLd() {
       "@context": "https://schema.org",
       "@type": "WebSite",
       name: SITE_BRAND_NAME,
-      alternateName: [...SITE_ALTERNATE_NAMES],
       url: `${SITE_URL}/`,
       inLanguage: "ko",
       description: HOME_DESCRIPTION,
       publisher: {
         "@type": "Organization",
         name: SITE_BRAND_NAME,
-        alternateName: [...SITE_ALTERNATE_NAMES],
         url: SITE_URL,
         logo: `${SITE_URL}${MASCOT_FAVICON.png512}`,
         image: `${SITE_URL}${MASCOT_SHARE.src}`,
@@ -410,7 +405,7 @@ export const CALC_INDEX_METADATA: Metadata = {
   robots: INDEX_ROBOTS,
   alternates: { canonical: "/calc/", languages: { "ko-KR": "/calc/" } },
   openGraph: pageOpenGraph(
-    `계산기 목록 · ${SITE_NAME}`,
+    `계산기 목록 · ${SITE_SEARCH_NAME}`,
     "카인드셈 생활·급여·부동산 계산기 전체. 실수령액, 주휴수당, 퇴직금, 취득세, 중개수수료, 자동차세.",
     "/calc/",
   ),
@@ -423,7 +418,7 @@ export const HOW_METADATA: Metadata = {
   robots: INDEX_ROBOTS,
   alternates: { canonical: "/how/", languages: { "ko-KR": "/how/" } },
   openGraph: pageOpenGraph(
-    `숫자를 어떻게 받는지 · ${SITE_NAME}`,
+    `숫자를 어떻게 받는지 · ${SITE_SEARCH_NAME}`,
     "카인드셈이 법제처·금융위 현행본에서 세율을 읽는 방식, 빼 두는 공제, 혜택을 기본으로 켜지 않는 이유.",
     "/how/",
   ),
@@ -440,7 +435,7 @@ export function howJsonLd() {
     url: `${SITE_URL}/how/`,
     publisher: {
       "@type": "Organization",
-      name: SITE_NAME,
+      name: SITE_BRAND_NAME,
       url: SITE_URL,
     },
   }
@@ -453,7 +448,7 @@ export const ABOUT_METADATA: Metadata = {
   robots: INDEX_ROBOTS,
   alternates: { canonical: "/about/", languages: { "ko-KR": "/about/" } },
   openGraph: pageOpenGraph(
-    `소개 · ${SITE_NAME}`,
+    `소개 · ${SITE_SEARCH_NAME}`,
     "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
     "/about/",
   ),
@@ -470,7 +465,7 @@ export function aboutJsonLd() {
       "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
     mainEntity: {
       "@type": "Organization",
-      name: SITE_NAME,
+      name: SITE_BRAND_NAME,
       url: SITE_URL,
       email: CONTACT_EMAIL,
     },
@@ -485,7 +480,7 @@ export const REALTY_METADATA: Metadata = {
   robots: INDEX_ROBOTS,
   alternates: { canonical: "/realty/", languages: { "ko-KR": "/realty/" } },
   openGraph: pageOpenGraph(
-    `부동산 계산기 · ${SITE_NAME}`,
+    `부동산 계산기 · ${SITE_SEARCH_NAME}`,
     "취득세, 양도세, 증여세, 중개수수료, 전월세 전환율, LTV, DSR 계산기. 법령·고시 기준.",
     "/realty/",
   ),

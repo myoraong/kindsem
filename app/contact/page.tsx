@@ -2,16 +2,17 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { MASCOT, MASCOT_SHARE } from "@/lib/brand"
 import { INDEX_ROBOTS } from "@/lib/seo"
-import { CONTACT_EMAIL, CONTACT_OPERATOR, SITE_NAME } from "@/lib/site"
+import { CONTACT_EMAIL, CONTACT_OPERATOR, SITE_BRAND_NAME, SITE_SEARCH_NAME } from "@/lib/site"
 
 export const metadata: Metadata = {
   title: "문의",
-  description: `${SITE_NAME} 운영 연락처. 생활·급여·부동산 계산기 문의는 이메일로 받습니다.`,
+  description: `${SITE_BRAND_NAME} 운영 연락처. 생활·급여·부동산 계산기 문의는 이메일로 받습니다.`,
   alternates: { canonical: "/contact/" },
   robots: INDEX_ROBOTS,
   openGraph: {
-    title: `문의 · ${SITE_NAME}`,
-    description: `${SITE_NAME} 운영 연락처. 생활·급여·부동산 계산기 문의는 이메일로 받습니다.`,
+    title: `문의 · ${SITE_SEARCH_NAME}`,
+    siteName: SITE_BRAND_NAME,
+    description: `${SITE_BRAND_NAME} 운영 연락처. 생활·급여·부동산 계산기 문의는 이메일로 받습니다.`,
     url: "/contact/",
     images: [
       {
@@ -27,7 +28,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-8 md:py-12">
-      <p className="text-sm font-medium text-primary">{SITE_NAME}</p>
+      <p className="text-sm font-medium text-primary">{SITE_BRAND_NAME}</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">문의</h1>
       <div className="mt-6 max-w-xl space-y-4 text-sm leading-7 text-muted-foreground">
         <p>

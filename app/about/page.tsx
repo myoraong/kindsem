@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { JsonLd } from "@/components/json-ld"
 import { ABOUT_METADATA, aboutJsonLd, calcPath } from "@/lib/seo"
-import { CONTACT_EMAIL, CONTACT_OPERATOR, SITE_NAME } from "@/lib/site"
+import { CONTACT_EMAIL, CONTACT_OPERATOR, SITE_BRAND_NAME } from "@/lib/site"
 
 export const metadata: Metadata = ABOUT_METADATA
 
@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-8 md:py-12">
       <JsonLd data={aboutJsonLd()} />
-      <p className="text-sm font-medium text-primary">{SITE_NAME}</p>
+      <p className="text-sm font-medium text-primary">{SITE_BRAND_NAME}</p>
       <h1 className="mt-2 text-[1.7rem] font-semibold tracking-tight sm:text-3xl">소개</h1>
       <div className="mt-6 space-y-5 text-pretty break-keep text-sm leading-7 text-muted-foreground">
         <p>
