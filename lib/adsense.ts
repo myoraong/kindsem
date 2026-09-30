@@ -66,6 +66,7 @@ const NO_INPAGE_AD = new Set([
   "/calc",
   "/realty",
   "/calc/quick",
+  "/calc/dutch",
   "/calc/ladder",
   "/calc/pyeong",
   "/calc/cert-payback",

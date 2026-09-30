@@ -75,6 +75,8 @@ test("인페이지 광고는 본문이 짧은 안내·목록·사칙 경로에�
   assert.equal(shouldRenderAdOnPath("/calc/"), false)
   assert.equal(shouldRenderAdOnPath("/calc/quick"), false)
   assert.equal(shouldRenderAdOnPath("/calc/quick/"), false)
+  assert.equal(shouldRenderAdOnPath("/calc/dutch"), false)
+  assert.equal(shouldRenderAdOnPath("/calc/dutch/"), false)
   assert.equal(shouldRenderAdOnPath("/calc/ladder"), false)
   assert.equal(shouldRenderAdOnPath("/calc/ladder/"), false)
   assert.equal(shouldRenderAdOnPath("/calc/pyeong"), false)
