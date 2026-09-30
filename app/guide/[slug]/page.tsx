@@ -11,6 +11,7 @@ import {
   readingPath,
 } from "@/lib/reading"
 import { calcPath, calcSeo } from "@/lib/seo"
+import { CONTACT_OPERATOR } from "@/lib/site"
 
 export const dynamicParams = false
 
@@ -58,6 +59,17 @@ export default async function GuideArticlePage({
       </h1>
       <p className="mt-3 text-pretty break-keep text-sm leading-7 text-muted-foreground">
         {item.description}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        운영자{" "}
+        <Link href="/about/" className="text-foreground underline underline-offset-2">
+          {CONTACT_OPERATOR}
+        </Link>
+        . 법령에 없는 공제는 넣지 않고, 숫자 출처는{" "}
+        <Link href="/how/" className="text-foreground underline underline-offset-2">
+          숫자를 어떻게 받는지
+        </Link>
+        에 있습니다.
       </p>
       <div className="mt-6 space-y-5 text-pretty break-keep text-sm leading-7 text-muted-foreground">
         {item.sections.map((section) => (

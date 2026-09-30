@@ -24,11 +24,17 @@ const CALC_LINKS: Record<string, readonly string[]> = {
   "dsr-and-ltv": ["dsr", "ltv", "mortgage", "loan-interest"],
   "jeonse-or-rent": ["jeonse", "rent-convert", "jeonse-vs-rent", "rent-credit"],
   "car-two-taxes": ["car-tax", "vehicle-tax"],
+  "gift-by-relation": ["gift-tax", "encumbered-gift", "license-tax"],
+  "inheritance-first": ["inheritance"],
+  "holding-two-bills": ["holding-tax"],
+  "overtime-overlap": ["overtime-pay", "annual-leave", "prorate-pay"],
+  "withholding-33": ["side-job-tax", "benefit-net"],
+  "leave-is-not-salary": ["parental-leave", "maternity-leave"],
 }
 
 test("읽어 두기 글은 제목이 고유하고 본문이 문장이다", () => {
   assert.ok(READINGS.length >= 8)
-  assert.ok(READINGS.length <= 10)
+  assert.ok(READINGS.length <= 16)
   const titles = new Set<string>()
   const slugs = new Set<string>()
   const openings = new Set<string>()

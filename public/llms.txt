@@ -19,6 +19,12 @@
 - DSR과 LTV는 같은 대출 한도가 아닙니다: https://kindsem.com/guide/dsr-and-ltv/
 - 전세와 월세는 같은 집의 다른 계약입니다: https://kindsem.com/guide/jeonse-or-rent/
 - 자동차를 살 때 내는 세금과 매년 내는 자동차세는 다릅니다: https://kindsem.com/guide/car-two-taxes/
+- 증여세는 받는 사람과의 관계로 공제가 갈립니다: https://kindsem.com/guide/gift-by-relation/
+- 상속세는 일괄공제와 배우자공제부터 봅니다: https://kindsem.com/guide/inheritance-first/
+- 보유세는 재산세와 종부세가 한 고지가 아닙니다: https://kindsem.com/guide/holding-two-bills/
+- 연장·야간·휴일 가산은 같은 시간에 겹칠 수 있습니다: https://kindsem.com/guide/overtime-overlap/
+- 3.3%를 뗀 알바는 5월에 다시 정산합니다: https://kindsem.com/guide/withholding-33/
+- 육아휴직 급여는 회사가 주는 월급이 아닙니다: https://kindsem.com/guide/leave-is-not-salary/
 - 문의: https://kindsem.com/contact/
 - 개인정보: https://kindsem.com/privacy/
 - 사이트맵: https://kindsem.com/sitemap.xml
