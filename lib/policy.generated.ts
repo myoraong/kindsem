@@ -1,5 +1,5 @@
 /* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
-export const POLICY_FETCHED_AT = "2026-09-30"
+export const POLICY_FETCHED_AT = "2026-10-01"
 
 export const POLICY_SOURCES = {
   "income": {
@@ -180,10 +180,10 @@ export const POLICY_SOURCES = {
   },
   "banking": {
     "query": "은행업감독규정",
-    "id": "2100000276094",
+    "id": "2100000285624",
     "name": "은행업감독규정",
-    "enforced": "2026-04-01",
-    "promulgated": "2026-03-18",
+    "enforced": "2026-10-02",
+    "promulgated": "2026-09-29",
     "revision": "일부개정"
   },
   "pensionBase": {
@@ -204,10 +204,10 @@ export const POLICY_SOURCES = {
   },
   "expressNotice": {
     "query": "특송물품 수입통관 사무처리에 관한 고시",
-    "id": "2100000269938",
+    "id": "2100000285588",
     "name": "특송물품 수입통관 사무처리에 관한 고시",
-    "enforced": "2025-12-22",
-    "promulgated": "2025-12-22",
+    "enforced": "2026-09-29",
+    "promulgated": "2026-09-29",
     "revision": "일부개정"
   },
   "minWageNotice": {
