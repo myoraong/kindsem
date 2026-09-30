@@ -75,7 +75,7 @@ export default function AboutPage() {
         <h2 className="pt-2 text-base font-semibold text-foreground">광고</h2>
         <p>
           페이지에 광고가 붙더라도 세율 표와 계산식은 광고와 섞지 않습니다. 개인정보 안내에 Google
-          광고 쿠키 안내를 두었고, 문의·소개·법령 출처 페이지에는 광고 칸을 두지 않습니다.
+          광고 쿠키 안내를 두었고, 문의·소개·법령 출처·읽어 두기 페이지에는 광고 칸을 두지 않습니다.
         </p>
       </div>
     </div>

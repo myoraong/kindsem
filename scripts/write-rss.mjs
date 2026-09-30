@@ -8,6 +8,7 @@ import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 import { CALCULATORS } from "../lib/catalog.ts"
 import { POLICY_FETCHED_AT } from "../lib/policy.generated.ts"
+import { READINGS, readingPath } from "../lib/reading.ts"
 import { calcDescription, calcSeo } from "../lib/seo.ts"
 import { SITE_SEARCH_NAME, SITE_URL } from "../lib/site.ts"
 
@@ -47,6 +48,17 @@ const items = [
     description:
       "카인드셈은 김성민이 운영하는 한국 생활·급여·부동산 계산기입니다. 세율은 법제처·금융위 현행본에서 읽고, 표에 없는 공제는 결과에 넣지 않습니다.",
   },
+  {
+    title: `읽어 두기 · ${SITE_SEARCH_NAME}`,
+    url: `${SITE_URL}/guide/`,
+    description:
+      "실수령, 4대보험, 퇴직금, 주휴수당, 취득세, 중개보수, 양도세, 대출 한도, 전월세, 자동차세처럼 계산 전에 순서가 헷갈리는 이야기를 풀어 둔 글입니다.",
+  },
+  ...READINGS.map((item) => ({
+    title: item.title,
+    url: `${SITE_URL}${readingPath(item.slug)}`,
+    description: item.description,
+  })),
   {
     title: `부동산 계산기 · ${SITE_SEARCH_NAME}`,
     url: `${SITE_URL}/realty/`,

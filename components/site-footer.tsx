@@ -52,6 +52,9 @@ export function SiteFooter() {
             <Link href="/calc/" className="underline-offset-2 hover:text-foreground hover:underline">
               계산기 목록
             </Link>
+            <Link href="/guide/" className="underline-offset-2 hover:text-foreground hover:underline">
+              읽어 두기
+            </Link>
             <Link href="/how/" className="underline-offset-2 hover:text-foreground hover:underline">
               숫자를 어떻게 받는지
             </Link>

@@ -13,6 +13,7 @@ test("공개 URL은 홈·목록·계산기를 모두 포함한다", () => {
   assert.ok(paths.includes("/realty/"))
   assert.ok(paths.includes("/about/"))
   assert.ok(paths.includes("/how/"))
+  assert.ok(paths.includes("/guide/"))
   for (const item of CALCULATORS) {
     assert.ok(paths.includes(`/calc/${item.slug}/`), item.slug)
   }

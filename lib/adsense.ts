@@ -56,12 +56,13 @@ export function resolveAdsenseClientId(
   return adsenseClientIdFromEnv(envClient) ?? adsenseClientIdFromEnv(ADSENSE_CLIENT)
 }
 
-/** 본문이 짧은 안내·목록·사칙 페이지에는 인페이지 광고 칸을 두지 않습니다. */
+/** 안내·목록·사칙·읽어 두기에는 인페이지 광고 칸을 두지 않습니다. */
 const NO_INPAGE_AD = new Set([
   "/privacy",
   "/contact",
   "/about",
   "/how",
+  "/guide",
   "/calc",
   "/realty",
   "/calc/quick",
@@ -70,6 +71,7 @@ const NO_INPAGE_AD = new Set([
 export function shouldRenderAdOnPath(pathname: string | null | undefined): boolean {
   const raw = (pathname ?? "/").split("?")[0].split("#")[0]
   const path = raw.replace(/\/+$/, "") || "/"
+  if (path === "/guide" || path.startsWith("/guide/")) return false
   return !NO_INPAGE_AD.has(path)
 }
 
