@@ -12,7 +12,7 @@ permissions:
 
 concurrency:
   group: policy-refresh
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   refresh:
@@ -54,11 +54,11 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-  # GITHUB_TOKEN 푸시는 다른 워크플로를 안 깨우므로, 세율이 바뀌면 여기서 Pages까지 올립니다.
-  # checkout 기본값은 워크플로가 시작된 커밋이라, 방금 올린 조회일이 사이트에 빠집니다.
+  # GITHUB_TOKEN 푸시는 다른 워크플로를 안 깨우므로, 여기 배포가 사이트를 올립니다.
+  # 날짜가 이미 같아 커밋이 없어도 배포합니다. 직전 배포가 옛 커밋을 올렸으면 다음 갱신에서 따라잡습니다.
   deploy:
     needs: refresh
-    if: needs.refresh.outputs.changed == 'true'
+    if: needs.refresh.result == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
