@@ -27,23 +27,31 @@ export function CalcArticle({
         </>
       ) : null}
       {extra ? <div className="mt-3">{extra}</div> : null}
-      {related.length > 0 ? (
-        <div className={copy || extra ? "mt-5 border-t border-border/70 pt-4" : undefined}>
-          <p className="text-xs font-semibold tracking-wide text-foreground/80">읽어 두기</p>
-          <ul className="mt-2 grid gap-2">
-            {related.map((item) => (
-              <li key={item.slug}>
-                <Link
-                  href={readingPath(item.slug)}
-                  className="font-medium text-foreground underline underline-offset-2"
-                >
-                  {item.title}
-                </Link>
-              </li>
+      {related.map((item) => {
+        const opening = item.sections[0]
+        return (
+          <section
+            key={item.slug}
+            className="mt-5 space-y-3 border-t border-border/70 pt-4"
+          >
+            <h3 className="text-sm font-semibold tracking-tight text-foreground">{item.title}</h3>
+            <p className="text-xs font-semibold text-foreground/80">{opening.heading}</p>
+            {opening.paragraphs.map((paragraph) => (
+              <p key={paragraph.slice(0, 32)} className="text-pretty break-keep">
+                {paragraph}
+              </p>
             ))}
-          </ul>
-        </div>
-      ) : null}
+            <p>
+              <Link
+                href={readingPath(item.slug)}
+                className="font-medium text-foreground underline underline-offset-2"
+              >
+                글 전체
+              </Link>
+            </p>
+          </section>
+        )
+      })}
     </article>
   )
 }

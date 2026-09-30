@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { HeaderSearch } from "@/components/header-search"
 import { Moon, Sun } from "lucide-react"
 import { BrandLink } from "@/components/brand-mark"
@@ -20,6 +21,12 @@ export function SiteHeader() {
           <TodayMenu />
           <WorkMenu />
           <RealtyMenu />
+          <Link
+            href="/guide/"
+            className="shrink-0 rounded-xl px-2 py-1 text-[13px] font-medium text-foreground/80 hover:bg-muted hover:text-foreground"
+          >
+            읽어 두기
+          </Link>
         </nav>
         <HeaderSearch />
         <button

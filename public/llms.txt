@@ -25,6 +25,11 @@
 - 연장·야간·휴일 가산은 같은 시간에 겹칠 수 있습니다: https://kindsem.com/guide/overtime-overlap/
 - 3.3%를 뗀 알바는 5월에 다시 정산합니다: https://kindsem.com/guide/withholding-33/
 - 육아휴직 급여는 회사가 주는 월급이 아닙니다: https://kindsem.com/guide/leave-is-not-salary/
+- 해외직구는 한도를 넘는 부분만 과세되지 않습니다: https://kindsem.com/guide/list-clearance/
+- 예적금 세금은 이자에만 붙고 원금에는 없습니다: https://kindsem.com/guide/deposit-after-tax/
+- 이사 당일 현금은 복비만이 아닙니다: https://kindsem.com/guide/moving-cash/
+- 임대수익률은 보증금을 뺀 뒤의 현금 흐름입니다: https://kindsem.com/guide/rent-yield/
+- 부가세 포함 금액은 10%를 빼는 값이 아닙니다: https://kindsem.com/guide/vat-included/
 - 문의: https://kindsem.com/contact/
 - 개인정보: https://kindsem.com/privacy/
 - 사이트맵: https://kindsem.com/sitemap.xml

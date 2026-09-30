@@ -30,11 +30,16 @@ const CALC_LINKS: Record<string, readonly string[]> = {
   "overtime-overlap": ["overtime-pay", "annual-leave", "prorate-pay"],
   "withholding-33": ["side-job-tax", "benefit-net"],
   "leave-is-not-salary": ["parental-leave", "maternity-leave"],
+  "list-clearance": ["import-duty"],
+  "deposit-after-tax": ["deposit"],
+  "moving-cash": ["moving"],
+  "rent-yield": ["yield"],
+  "vat-included": ["sale-vat"],
 }
 
 test("읽어 두기 글은 제목이 고유하고 본문이 문장이다", () => {
   assert.ok(READINGS.length >= 8)
-  assert.ok(READINGS.length <= 16)
+  assert.ok(READINGS.length <= 21)
   const titles = new Set<string>()
   const slugs = new Set<string>()
   const openings = new Set<string>()

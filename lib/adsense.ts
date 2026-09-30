@@ -66,6 +66,9 @@ const NO_INPAGE_AD = new Set([
   "/calc",
   "/realty",
   "/calc/quick",
+  "/calc/ladder",
+  "/calc/pyeong",
+  "/calc/cert-payback",
 ])
 
 export function shouldRenderAdOnPath(pathname: string | null | undefined): boolean {
