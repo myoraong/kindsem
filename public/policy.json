@@ -86,8 +86,8 @@
       "query": "종합부동산세법 시행령",
       "id": "009968",
       "name": "종합부동산세법 시행령",
-      "enforced": "2026-02-27",
-      "promulgated": "2026-02-27",
+      "enforced": "2026-10-01",
+      "promulgated": "2026-09-30",
       "revision": "일부개정"
     },
     "specialTax": {
@@ -126,8 +126,8 @@
       "query": "국민건강보험법 시행령",
       "id": "002813",
       "name": "국민건강보험법 시행령",
-      "enforced": "2026-02-19",
-      "promulgated": "2026-02-19",
+      "enforced": "2026-10-01",
+      "promulgated": "2026-09-15",
       "revision": "일부개정"
     },
     "ltcDecree": {
