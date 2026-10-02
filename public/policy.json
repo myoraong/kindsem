@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-01",
+  "fetchedAt": "2026-10-02",
   "source": "법제처 국가법령정보 공동활용",
   "sources": {
     "income": {
@@ -102,8 +102,8 @@
       "query": "근로기준법",
       "id": "001872",
       "name": "근로기준법",
-      "enforced": "2026-08-20",
-      "promulgated": "2026-02-19",
+      "enforced": "2026-10-02",
+      "promulgated": "2026-08-04",
       "revision": "타법개정"
     },
     "minWageDecree": {

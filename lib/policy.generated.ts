@@ -1,5 +1,5 @@
 /* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
-export const POLICY_FETCHED_AT = "2026-10-01"
+export const POLICY_FETCHED_AT = "2026-10-02"
 
 export const POLICY_SOURCES = {
   "income": {
@@ -102,8 +102,8 @@ export const POLICY_SOURCES = {
     "query": "근로기준법",
     "id": "001872",
     "name": "근로기준법",
-    "enforced": "2026-08-20",
-    "promulgated": "2026-02-19",
+    "enforced": "2026-10-02",
+    "promulgated": "2026-08-04",
     "revision": "타법개정"
   },
   "minWageDecree": {
