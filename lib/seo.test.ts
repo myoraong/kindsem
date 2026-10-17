@@ -8,6 +8,7 @@ import {
   HOME_METADATA,
   HOW_METADATA,
   INDEX_ROBOTS,
+  calcRobots,
   REALTY_METADATA,
   calcDescription,
   calcJsonLd,
@@ -114,6 +115,10 @@ test("전 페이지 메타는 구글 이미지 색인을 끈다", () => {
   const item = CALCULATORS.find((row) => row.slug === "take-home")
   assert.ok(item)
   assert.deepEqual(calcMetadata(item).robots, INDEX_ROBOTS)
+  const ladder = CALCULATORS.find((row) => row.slug === "ladder")
+  assert.ok(ladder)
+  assert.equal(calcRobots("ladder").index, false)
+  assert.equal(calcMetadata(ladder).robots?.index, false)
   assert.deepEqual(HOME_METADATA.robots, INDEX_ROBOTS)
   assert.deepEqual(CALC_INDEX_METADATA.robots, INDEX_ROBOTS)
   assert.deepEqual(HOW_METADATA.robots, INDEX_ROBOTS)

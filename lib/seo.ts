@@ -211,6 +211,28 @@ export const INDEX_ROBOTS = {
   },
 } as const
 
+/** 사이트 주제(급여·세금·부동산)와 멀고 본문이 짧은 화면. 검색에는 올리지 않습니다. */
+export const UNINDEXED_CALC_SLUGS = new Set([
+  "quick",
+  "dutch",
+  "ladder",
+  "pyeong",
+  "cert-payback",
+])
+
+export function calcRobots(slug: string) {
+  if (!UNINDEXED_CALC_SLUGS.has(slug)) return INDEX_ROBOTS
+  return {
+    index: false,
+    follow: true,
+    googleBot: {
+      index: false,
+      follow: true,
+      noimageindex: true,
+    },
+  }
+}
+
 export function calcSeo(slug: string): CalcSeo {
   return CALC_SEO[slug] ?? { query: slug, also: [] }
 }
@@ -261,7 +283,7 @@ export function calcMetadata(item: CalcItem): Metadata {
     title,
     description,
     keywords: [title, ...seo.also, "카인드셈", "Kindsem"],
-    robots: INDEX_ROBOTS,
+    robots: calcRobots(item.slug),
     alternates: {
       canonical: url,
       languages: { "ko-KR": url },

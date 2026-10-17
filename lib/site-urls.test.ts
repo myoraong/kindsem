@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs"
 import { join } from "node:path"
 import test from "node:test"
 import { CALCULATORS } from "./catalog.ts"
+import { UNINDEXED_CALC_SLUGS } from "./seo.ts"
 import { SITE_URL } from "./site.ts"
 import { INDEXNOW_KEY, publicPaths, publicUrls } from "./site-urls.ts"
 
@@ -15,7 +16,8 @@ test("공개 URL은 홈·목록·계산기를 모두 포함한다", () => {
   assert.ok(paths.includes("/how/"))
   assert.ok(paths.includes("/guide/"))
   for (const item of CALCULATORS) {
-    assert.ok(paths.includes(`/calc/${item.slug}/`), item.slug)
+    const listed = paths.includes(`/calc/${item.slug}/`)
+    assert.equal(listed, !UNINDEXED_CALC_SLUGS.has(item.slug), item.slug)
   }
   assert.ok(publicUrls().every((url) => url.startsWith(SITE_URL)))
 })
