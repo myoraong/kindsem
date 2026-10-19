@@ -1,5 +1,5 @@
 /* 자동 생성. scripts/refresh-policy.mjs 가 법제처·금융위 규정에서 다시 씁니다. */
-export const POLICY_FETCHED_AT = "2026-10-19"
+export const POLICY_FETCHED_AT = "2026-10-20"
 
 export const POLICY_SOURCES = {
   "income": {
@@ -118,8 +118,8 @@ export const POLICY_SOURCES = {
     "query": "국민연금법",
     "id": "001781",
     "name": "국민연금법",
-    "enforced": "2026-06-17",
-    "promulgated": "2025-12-16",
+    "enforced": "2026-10-20",
+    "promulgated": "2026-10-20",
     "revision": "일부개정"
   },
   "nhisDecree": {

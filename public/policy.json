@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-19",
+  "fetchedAt": "2026-10-20",
   "source": "법제처 국가법령정보 공동활용",
   "sources": {
     "income": {
@@ -118,8 +118,8 @@
       "query": "국민연금법",
       "id": "001781",
       "name": "국민연금법",
-      "enforced": "2026-06-17",
-      "promulgated": "2025-12-16",
+      "enforced": "2026-10-20",
+      "promulgated": "2026-10-20",
       "revision": "일부개정"
     },
     "nhisDecree": {
