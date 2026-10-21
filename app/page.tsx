@@ -1,7 +1,7 @@
+import { AdSenseInPage } from "@/components/adsense-inpage"
 import { FaqList } from "@/components/calc/faq-list"
 import { HomeBrowse } from "@/components/home-browse"
 import { HomeHow } from "@/components/home-how"
-import { HomeReading } from "@/components/home-reading"
 import { HomeUses } from "@/components/home-uses"
 import { HomeWhy } from "@/components/home-why"
 import { JsonLd } from "@/components/json-ld"
@@ -52,12 +52,12 @@ export default function HomePage() {
         <SenaFigure priority />
       </section>
 
-      <HomeReading />
       <HomeBrowse />
       <HomeWhy />
       <HomeUses />
       <HomeHow />
       <FaqList items={HOME_FAQ} />
+      <AdSenseInPage />
     </div>
   )
 }
