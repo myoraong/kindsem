@@ -1,6 +1,4 @@
 import { CALCULATORS } from "./catalog.ts"
-import { UNINDEXED_CALC_SLUGS } from "./seo.ts"
-import { GUIDE_PATH, readingPath, READINGS } from "./reading.ts"
 import { SITE_URL } from "./site.ts"
 
 /** Bing·Yandex IndexNow. 파일명은 public/{key}.txt 와 같아야 합니다. */
@@ -15,11 +13,7 @@ export function publicPaths() {
     "/privacy/",
     "/how/",
     "/about/",
-    GUIDE_PATH,
-    ...READINGS.map((item) => readingPath(item.slug)),
-    ...CALCULATORS.filter((item) => !UNINDEXED_CALC_SLUGS.has(item.slug)).map(
-      (item) => `/calc/${item.slug}/`,
-    ),
+    ...CALCULATORS.map((item) => `/calc/${item.slug}/`),
   ]
 }
 

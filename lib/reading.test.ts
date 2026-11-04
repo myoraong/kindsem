@@ -100,10 +100,10 @@ test("계산기에서 관련 글로 연결된다", () => {
   assert.deepEqual(readingsForCalc("quick"), [])
 })
 
-test("사이트맵 경로에 읽어 두기가 들어간다", () => {
+test("읽어 두기는 검색 사이트맵에 넣지 않는다", () => {
   const paths = publicPaths()
-  assert.ok(paths.includes("/guide/"))
+  assert.equal(paths.includes("/guide/"), false)
   for (const item of READINGS) {
-    assert.ok(paths.includes(readingPath(item.slug)), item.slug)
+    assert.equal(paths.includes(readingPath(item.slug)), false, item.slug)
   }
 })

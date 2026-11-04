@@ -1062,7 +1062,7 @@ function openGraph(title: string, description: string, url: string) {
 export const GUIDE_METADATA: Metadata = {
   title: GUIDE_TITLE,
   description: GUIDE_DESCRIPTION,
-  robots: { index: true, follow: true },
+  robots: { index: false, follow: true },
   alternates: { canonical: GUIDE_PATH, languages: { "ko-KR": GUIDE_PATH } },
   openGraph: openGraph(`${GUIDE_TITLE} · ${SITE_NAME}`, GUIDE_DESCRIPTION, GUIDE_PATH),
 }
@@ -1072,7 +1072,7 @@ export function readingMetadata(item: ReadingArticle): Metadata {
   return {
     title: item.title,
     description: item.description,
-    robots: { index: true, follow: true },
+    robots: { index: false, follow: true },
     alternates: { canonical: url, languages: { "ko-KR": url } },
     openGraph: openGraph(`${item.title} · ${SITE_NAME}`, item.description, url),
   }

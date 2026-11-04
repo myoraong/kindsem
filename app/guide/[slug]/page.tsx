@@ -1,7 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
-import { AdSenseInPage } from "@/components/adsense-inpage"
 import { JsonLd } from "@/components/json-ld"
 import { getCalculator } from "@/lib/catalog"
 import {
@@ -109,7 +108,6 @@ export default async function GuideArticlePage({
           </Link>
           를 보세요.
         </p>
-        <AdSenseInPage />
         <ul className="grid gap-2">
           {others.map((article) => (
             <li key={article.slug}>

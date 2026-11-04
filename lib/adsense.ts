@@ -56,14 +56,23 @@ export function resolveAdsenseClientId(
   return adsenseClientIdFromEnv(envClient) ?? adsenseClientIdFromEnv(ADSENSE_CLIENT)
 }
 
-/**
- * 광고는 읽어 두기 글 본문 뒤에만 둡니다.
- * 계산기·목록·홈은 도구이거나 탐색 화면이라 게시자 정책상 광고를 넣지 않습니다.
- */
+/** 안내·목록·사칙·읽어 두기에는 인페이지 광고 칸을 두지 않습니다. */
+const NO_INPAGE_AD = new Set([
+  "/privacy",
+  "/contact",
+  "/about",
+  "/how",
+  "/guide",
+  "/calc",
+  "/realty",
+  "/calc/quick",
+])
+
 export function shouldRenderAdOnPath(pathname: string | null | undefined): boolean {
   const raw = (pathname ?? "/").split("?")[0].split("#")[0]
   const path = raw.replace(/\/+$/, "") || "/"
-  return path.startsWith("/guide/") && path !== "/guide"
+  if (path === "/guide" || path.startsWith("/guide/")) return false
+  return !NO_INPAGE_AD.has(path)
 }
 
 export type AdFill = "pending" | "filled" | "unfilled"
