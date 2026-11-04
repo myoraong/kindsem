@@ -73,12 +73,20 @@ export default async function GuideArticlePage({
       </p>
       <div className="mt-6 space-y-5 text-pretty break-keep text-sm leading-7 text-muted-foreground">
         {item.sections.map((section) => (
-          <section key={section.heading} className="space-y-5">
-            <h2 className="pt-2 text-base font-semibold text-foreground">{section.heading}</h2>
-            {section.paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 32)}>{paragraph}</p>
-            ))}
-          </section>
+          <details key={section.heading} className="group rounded-2xl bg-card ring-1 ring-foreground/8">
+            <summary className="flex cursor-pointer list-none items-start justify-between gap-4 px-5 py-4 text-left marker:content-none [&::-webkit-details-marker]:hidden">
+              <h2 className="text-base font-semibold text-foreground">{section.heading}</h2>
+              <span className="shrink-0 text-muted-foreground">
+                <span className="group-open:hidden">+</span>
+                <span className="hidden group-open:inline">−</span>
+              </span>
+            </summary>
+            <div className="space-y-5 px-5 pb-5">
+              {section.paragraphs.map((paragraph) => (
+                <p key={paragraph.slice(0, 32)}>{paragraph}</p>
+              ))}
+            </div>
+          </details>
         ))}
         {calcs.length > 0 ? (
           <section className="space-y-3">
