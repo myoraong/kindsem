@@ -230,27 +230,27 @@ export const POLICY_SOURCES = {
 
 export const INCOME_BRACKETS = [
   { upTo: 14000000, rate: 0.06, deduction: 0 },
-  { upTo: 50000000, rate: 0.15, deduction: 1260000 },
-  { upTo: 88000000, rate: 0.24, deduction: 5760000 },
-  { upTo: 150000000, rate: 0.35, deduction: 15440000 },
-  { upTo: 300000000, rate: 0.38, deduction: 19940000 },
-  { upTo: 500000000, rate: 0.4, deduction: 25940000 },
-  { upTo: 1000000000, rate: 0.42, deduction: 35940000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.15, deduction: 1260000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.24, deduction: 5760000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.35, deduction: 15440000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.38, deduction: 19940000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.4, deduction: 25940000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.42, deduction: 35940000 },
   { upTo: Number.POSITIVE_INFINITY, rate: 0.45, deduction: 65940000 },
 ] as const
 
 export const GIFT_BRACKETS = [
   { upTo: 100000000, rate: 0.1, deduction: 0 },
-  { upTo: 500000000, rate: 0.2, deduction: 10000000 },
-  { upTo: 1000000000, rate: 0.3, deduction: 60000000 },
-  { upTo: 3000000000, rate: 0.4, deduction: 160000000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.2, deduction: 10000000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.3, deduction: 60000000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.4, deduction: 160000000 },
   { upTo: Number.POSITIVE_INFINITY, rate: 0.5, deduction: 460000000 },
 ] as const
 
 export const CORP_BRACKETS = [
   { upTo: 200000000, rate: 0.1, deduction: 0 },
-  { upTo: 20000000000, rate: 0.2, deduction: 20000000 },
-  { upTo: 300000000000, rate: 0.22, deduction: 420000000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.2, deduction: 20000000 },
+  { upTo: Number.POSITIVE_INFINITY, rate: 0.22, deduction: 420000000 },
   { upTo: Number.POSITIVE_INFINITY, rate: 0.25, deduction: 9420000000 },
 ] as const
 
