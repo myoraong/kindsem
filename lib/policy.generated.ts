@@ -220,10 +220,10 @@ export const POLICY_SOURCES = {
   },
   "maternityCapNotice": {
     "query": "출산전후휴가 급여등 상한액 고시",
-    "id": "2100000285290",
+    "id": "2100000288716",
     "name": "출산전후휴가 급여등 상한액 고시",
-    "enforced": "2026-09-18",
-    "promulgated": "2026-09-17",
+    "enforced": "2026-11-27",
+    "promulgated": "2026-11-27",
     "revision": "일부개정"
   }
 } as const
